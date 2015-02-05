@@ -3,7 +3,7 @@
 }
 
 #patrolmancam {
-  border:2px blue solid; background-color:#fff;position: absolute; width:805px; height:620px; top: 50%; left:50%; border:1px solid gray;padding:5px;display:none;
+  border:2px blue solid; background-color:#fff;position: absolute; width:805px; height:620px; top: 10%; left:10%; border:1px solid gray;padding:5px;display:none;
 }
 
 #policecarcam {

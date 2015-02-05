@@ -35,11 +35,11 @@
           </div>
           <div id="policecarcam_video_right">
             <div id="ptz_container">
-              <div id="pan_nw" class="box"><img src="images/ptz_nw.png" border:0/></div>
+              <div id="pan_nw" class="box" onclick='send_ptz_command(PTZ_CAMERA_URL,"pan=102"); return false;'><img src="images/ptz_nw.png" border:0/></div>
               <div id="pan_n"  class="box"><img src="images/ptz_n.png" border:0/></div>
               <div id="pan_ne" class="box"><img src="images/ptz_ne.png" border:0/></div>
               <div id="pan_w"  class="box"><img src="images/ptz_w.png" border:0/></div>
-              <div id="pan_c"  class="box"><img src="images/ptz_center.png" border:0/></div>
+              <div id="pan_c"  class="box" onclick='send_ptz_command(PTZ_CAMERA_URL,"gotoserverpresetname=Drive_wide"); return false;'><img src="images/ptz_center.png" border:0/></div>
               <div id="pan_e"  class="box"><img src="images/ptz_e.png" border:0/></div>
               <div id="pan_sw" class="box"><img src="images/ptz_sw.png" border:0/></div>
               <div id="pan_s"  class="box"><img src="images/ptz_s.png" border:0/></div>
@@ -57,7 +57,7 @@
         <div id="patrolmancam_header_left">PATROLMAN CAMERA</div>
         <div id="patrolmancam_header_right"><a href="#" onclick='document.getElementById("patrolmancam").style.display="none"; return false;'>Close </a></div>
       </div>
-      <iframe frameborder="1" src="http://54.80.60.180:6080/img_video.htm">
+      <iframe frameborder="0" scrolling="0" width="800" height="600" src="http://54.80.60.180:6080/img_video.htm">
       </iframe>
    </div>
     
