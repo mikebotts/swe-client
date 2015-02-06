@@ -182,7 +182,7 @@ function buildGPSMarker(data, markerType) {
                                 [s_lat, s_long], 
                                 {icon: L.icon({ iconUrl: 'http://54.80.60.180:6080/images/policecar.png',
                                                 iconSize: [24, 24],})}).addTo(map)
-                              .bindPopup('<div id="pop-livePoliceCarFeed">Latitude: ' + s_lat + '<br />Longitude: ' + s_long + '</div>', { className: 'marker-popup' });
+                              .bindPopup('<div id="pop-livePoliceCarFeed">Latitude: ' + s_lat + '<br />Longitude: ' + s_long + '</div>', { className: 'marker-popup' , closeButton: false});
         } else {
           livePoliceCarFeed.setLatLng([s_lat, s_long]);
           $('#pop-livePoliceCarFeed').html('Latitude: ' + s_lat + '<br />Longitude: ' + s_long);
@@ -194,7 +194,7 @@ function buildGPSMarker(data, markerType) {
                                 [s_lat, s_long], 
                                 {icon: L.icon({ iconUrl: 'http://54.80.60.180:6080/images/policeman.png',
                                                 iconSize: [24, 24],})}).addTo(map)
-                              .bindPopup('<div id="pop-livePatrolmanFeed">Latitude: ' + s_lat + '<br />Longitude: ' + s_long + '</div>', { className: 'marker-popup' });
+                              .bindPopup('<div id="pop-livePatrolmanFeed">Latitude: ' + s_lat + '<br />Longitude: ' + s_long + '</div>', { className: 'marker-popup' , closeButton: false });
         } else {
           livePatrolmanFeed.setLatLng([s_lat, s_long]);
           $('#pop-livePatrolmanFeed').html('Latitude: ' + s_lat + '<br />Longitude: ' + s_long);

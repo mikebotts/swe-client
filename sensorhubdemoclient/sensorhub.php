@@ -31,7 +31,7 @@
     <div id="policecarcam">
       <div id="policecar_cam_header_container">
         <div id="policecarcam_header_left">POLICE CAR CAMERA</div>
-        <div id="policecarcam_header_right"><a href="#"  onclick='document.getElementById("policecarcam").style.display="none"; return false;'>Close</a></div>
+        <div id="policecarcam_header_right"><a href="#" onclick='document.getElementById("policecarcam").style.display="none"; return false;'>Close</a></div>
       </div>
       <div id="policecarcam_video_container">
         <div id="policecarcam_video_left">
@@ -67,7 +67,7 @@
         <div id="patrolmancam_header_left">PATROLMAN CAMERA</div>
         <div id="patrolmancam_header_right"><a href="#" onclick='document.getElementById("patrolmancam").style.display="none"; return false;'>Close </a></div>
       </div>
-      <iframe frameborder="0" scrolling="0" width="800" height="600" src="http://54.80.60.180:6080/patrolman_camera.htm">
+      <iframe frameborder="0" scrolling="0" width="400" height="300" src="http://54.80.60.180:6080/patrolman_camera.htm">
       </iframe>
    </div>
     
