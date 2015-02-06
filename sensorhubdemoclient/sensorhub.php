@@ -31,24 +31,34 @@
       </div>
       <div id="policecarcam_video_container">
         <div id="policecarcam_video_left">
-          <iframe frameborder="0" scrolling="0" width="710" height="485" src="http://54.80.60.180:6080/police_car_ptz_camera.htm">
+          <iframe frameborder="0" scrolling="0" width="355" height="242" src="http://54.80.60.180:6080/police_car_ptz_camera.htm">
           </iframe>
         </div>
         <div id="policecarcam_video_right">
           <div id="ptz_container">
-            <div id="pan_nw" class="box" onclick='send_ptz_command(PTZ_CAMERA_URL,"pan=102"); return false;'><img src="images/ptz_nw.png" border:0/></div>
-            <div id="pan_n"  class="box"><img src="images/ptz_n.png" border:0/></div>
-            <div id="pan_ne" class="box"><img src="images/ptz_ne.png" border:0/></div>
-            <div id="pan_w"  class="box"><img src="images/ptz_w.png" border:0/></div>
-            <div id="pan_c"  class="box" onclick='send_ptz_command(PTZ_CAMERA_URL,"gotoserverpresetname=Drive_wide"); return false;'><img src="images/ptz_center.png" border:0/></div>
-            <div id="pan_e"  class="box"><img src="images/ptz_e.png" border:0/></div>
-            <div id="pan_sw" class="box"><img src="images/ptz_sw.png" border:0/></div>
+            <div id="pan_nw" class="box"><img src="images/ptz_blank.png" border:0/></div>
+            <div id="pan_n"  class="box"onclick='send_ptz_command(PTZ_CAMERA_URL,"rtilt=10"); return false;'><img src="images/ptz_n.png" border:0/></div>
+            <div id="pan_ne" class="box"><img src="images/ptz_blank.png" border:0/></div>
+            <div id="pan_w"  class="box" onclick='send_ptz_command(PTZ_CAMERA_URL,"rpan=10"); return false;'><img src="images/ptz_w.png" border:0/></div>
+            <div id="pan_c"  class="box" onclick='send_ptz_command(PTZ_CAMERA_URL,"gotoserverpresetname=Drive_wide"); return false;'><img src="images/ptz_blank.png" border:0/></div>
+            <div id="pan_e"  class="box" onclick='send_ptz_command(PTZ_CAMERA_URL,"rpan=10"); return false;'><img src="images/ptz_e.png" border:0/></div>
+            <div id="pan_sw" class="box"><img src="images/ptz_zoomin.png" border:0/></div>
             <div id="pan_s"  class="box"><img src="images/ptz_s.png" border:0/></div>
-            <div id="pan_se" class="box"><img src="images/ptz_se.png" border:0/></div>
-            <div id="ptz_zi" class="box"><img src="images/ptz_zoomin.png" border:0/></div>
-            <div id="ptz_na" class="box"><img src="images/ptz_blank.png" border:0/></div>
-            <div id="ptz_zo" class="box"><img src="images/ptz_zoomout.png" border:0/></div>
+            <div id="pan_se" class="box"><img src="images/ptz_zoomout.png" border:0/></div>
+            <!--
+              <div id="ptz_zi" class="box"><img src="images/ptz_zoomin.png" border:0/></div>
+              <div id="ptz_na" class="box"><img src="images/ptz_blank.png" border:0/></div>
+              <div id="ptz_zo" class="box"><img src="images/ptz_zoomout.png" border:0/></div>
+            -->
           </div>
+          <ul class="navigation">
+            <a class="main" href="#url">Presets</a>
+            <li class="n2"><a href="#">Back</a></li>
+            <li class="n1"><a href="#">Forward</a></li>
+            <li class="n4"><a href="#">Front</a></li>
+            <li class="n3"><a href="#">Right</a></li>
+            <li class="n5"><a href="#">Zero</a></li>
+          </ul>          
         </div>
       </div>
     </div>
