@@ -34,7 +34,7 @@ function refreshAllPoints() {
 function _con(obj) {
   if (CONSOLE_DEBUG) console.log(obj);
 }
-map.on('popupopen', mapPopupOpen);
+//map.on('popupopen', mapPopupOpen);
 function mapPopupOpen(e) {
   _con('mapPopupOpen start');
   _con(e);

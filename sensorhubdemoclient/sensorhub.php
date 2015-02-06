@@ -79,22 +79,36 @@
     <script src="js/drag_div_no_jquery_ui.js"></script>
     <script src="leaflet/leaflet.js"></script>
     <script src='https://api.tiles.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v0.0.4/Leaflet.fullscreen.min.js'></script>
-    <link href='https://api.tiles.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v0.0.4/leaflet.fullscreen.css' rel='stylesheet' />  
+    <link href='https://api.tiles.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v0.0.4/leaflet.fullscreen.css' rel='stylesheet' />
+
     <script src="http://code.highcharts.com/highcharts.js"></script>
     <script src="http://code.highcharts.com/highcharts-more.js"></script>
     <script type="text/javascript" src="zTree/jquery.ztree.core-3.5.js"></script>
     <script type="text/javascript" src="zTree/jquery.ztree.excheck-3.5.js"></script>
     <script>
-
-    var map = L.map('map').setView([34.73, -86.585], 12);
-      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        maxZoom: 18,
-        attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, ' +
-        '<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
-        'Imagery © <a href="http://mapbox.com">Mapbox</a>',
-        id: 'examples.map-i875mjb7'
-      }).addTo(map);
-      
+    
+      var osmUrl = 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+      osmAttrib = 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, ' +
+                  '<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
+                  'Imagery © <a href="http://mapbox.com">Mapbox</a>',
+      osm = L.tileLayer(osmUrl, {maxZoom: 18, attribution: osmAttrib, id: 'examples.map-i875mjb7'}),
+      osm2 = new L.TileLayer(osmUrl, {attribution: 'Hello world'});
+      var map = new L.Map('map').addLayer(osm).setView(new L.LatLng(34.73, -86.585), 12);
+     
+      var marker = new L.Marker(new L.LatLng(50.5, 30.505), {color: 'red'});
+    map.addLayer(osm);
+    map.addLayer(marker);
+    marker.bindPopup("Leaflet is designed with simplicity, performance and usability in mind. It works efficiently across all major desktop and mobile platforms out of the box, taking advantage of HTML5 and CSS3 on modern browsers while still being accessible on older ones.").openPopup();
+    var marker2 = new L.Marker(new L.LatLng(50.502, 30.515));
+    map.addLayer(marker2);
+var layersControl = new L.Control.Layers({
+      'OSM': osm,
+      'OSM2': osm2
+    }, {
+      'Some marker': marker,
+      'Another marker': marker2
+    });
+    map.addControl(layersControl);    
       var livePoliceCarFeed = null,
           livePatrolmanFeed = null;
 
@@ -113,6 +127,7 @@
       $("#menuContent").drags();
       $("#weather_winddirection").drags();
       $("#weather_windspeed").drags(); 
+     
     </script>
   </body>
 </html>

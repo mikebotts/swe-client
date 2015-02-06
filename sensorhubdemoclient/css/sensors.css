@@ -9,11 +9,10 @@
 }
 
 #patrolmancam {
-  border:2px blue solid; 
   background-color:#fff;
   position: absolute; 
   width:402px; 
-  height:310px; 
+  height:330px; 
   top: 10%; 
   left:10%; 
   border:1px solid gray;
