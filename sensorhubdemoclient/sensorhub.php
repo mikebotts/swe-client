@@ -1,3 +1,7 @@
+<!-- This Source Code Form is subject to the terms of the Mozilla Public
+   - License, v. 2.0. If a copy of the MPL was not distributed with this
+   - file, You can obtain one at http://mozilla.org/MPL/2.0/. -->
+
 <!DOCTYPE html>
 <html>
   <head>
@@ -45,11 +49,6 @@
             <div id="pan_sw" class="box"><img src="images/ptz_zoomin.png" border:0/></div>
             <div id="pan_s"  class="box"><img src="images/ptz_s.png" border:0/></div>
             <div id="pan_se" class="box"><img src="images/ptz_zoomout.png" border:0/></div>
-            <!--
-              <div id="ptz_zi" class="box"><img src="images/ptz_zoomin.png" border:0/></div>
-              <div id="ptz_na" class="box"><img src="images/ptz_blank.png" border:0/></div>
-              <div id="ptz_zo" class="box"><img src="images/ptz_zoomout.png" border:0/></div>
-            -->
           </div>
           <ul class="navigation">
             <a class="main" href="#url">Presets</a>
@@ -68,7 +67,7 @@
         <div id="patrolmancam_header_left">PATROLMAN CAMERA</div>
         <div id="patrolmancam_header_right"><a href="#" onclick='document.getElementById("patrolmancam").style.display="none"; return false;'>Close </a></div>
       </div>
-      <iframe frameborder="0" scrolling="0" width="800" height="600" src="http://54.80.60.180:6080/img_video.htm">
+      <iframe frameborder="0" scrolling="0" width="800" height="600" src="http://54.80.60.180:6080/patrolman_camera.htm">
       </iframe>
    </div>
     
@@ -102,7 +101,6 @@
     </script>
     <script src="js/init.js"></script>
     <script src="js/init_stream.js"></script>
-    <script src="js/highchart_init.js"></script>
     <script src="js/ztree_init.js"></script>
     <script src="js/drag_div_no_jquery_ui.js"></script>
     <script src="js/weather_wind_direction.js"></script>
