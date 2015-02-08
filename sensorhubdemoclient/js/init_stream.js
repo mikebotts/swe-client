@@ -14,7 +14,9 @@ var POLICECAR_GPS_FEED = 'http://54.172.40.148:8080/sensorhub/sos?service=SOS&ve
     WEATHER_RT_FEED = 'http://54.172.40.148:8080/sensorhub/sos?service=SOS&version=2.0&request=GetResult&offering=urn:mysos:offering03&observedProperty=http://sensorml.com/ont/swe/property/Weather&temporalFilter=phenomenonTime,now/2115-01-28T16:24:48Z',
     POLICECAR_CAM_FEED = 'http://54.172.40.148:8080/sensorhub/sos?service=SOS&version=2.0&request=GetResult&offering=urn:mysos:offering04&observedProperty=http://sensorml.com/ont/swe/property/VideoFrame&temporalFilter=phenTime,now/2115-01-28T16:24:48Z',
     PATROLMAN_CAM_FEED = '';
-var PTZ_CAMERA_URL="http://bottsgeo.simple-url.com/axis-cgi/com/ptz.cgi";    
+var PATROL_CAR_PTZ_CAMERA_URL="http://bottsgeo.simple-url.com/axis-cgi/com/ptz.cgi";
+var PTZ_TASKING_COMMAND_REPLACE_TOKEN="{SWE_PTZ_TASKING_COMMAND}"; 
+var PTZ_TASKING_COMMAND_BASE='<?xml version="1.0" encoding="UTF-8"?><sps:Submit service="SPS" version="2.0" xmlns:sps="http://www.opengis.net/sps/2.0" xmlns:swe="http://www.opengis.net/swe/2.0"><sps:procedure>d136b6ea-3951-4691-bf56-c84ec7d89d72</sps:procedure><sps:taskingParameters><sps:ParameterData><sps:encoding><swe:TextEncoding blockSeparator=" " collapseWhiteSpaces="true" decimalSeparator="." tokenSeparator=","/></sps:encoding><sps:values>' + PTZ_TASKING_COMMAND_REPLACE_TOKEN + '</sps:values></sps:ParameterData></sps:taskingParameters></sps:Submit>';
 var policecarGPSFeedPollTimer=0, 
     patrolmanGPSFeedPollTimer=0,
     windDirectionFeedPollTimer=0,
@@ -75,7 +77,7 @@ var policecarGPSFeedPollTimer=0,
 function send_ptz_command(ptzURL, ptzParams) {
   var http = new XMLHttpRequest();
   var url = ptzURL;
-  var params = ptzParams;
+  var params = PTZ_TASKING_COMMAND_BASE.replace(PTZ_TASKING_COMMAND_REPLACE_TOKEN,ptzParams);
   http.open("POST", url, true);
 
   //Send the proper header information along with the request
@@ -181,8 +183,9 @@ function buildGPSMarker(data, markerType) {
           livePoliceCarFeed = L.rotatedMarker(
                                 [s_lat, s_long], 
                                 {icon: L.icon({ iconUrl: 'http://54.80.60.180:6080/images/policecar.png',
-                                                iconSize: [24, 24],})}).addTo(map)
+                                                iconSize: [35, 75],})}).addTo(map)
                               .bindPopup('<div id="pop-livePoliceCarFeed">Latitude: ' + s_lat + '<br />Longitude: ' + s_long + '</div>', { className: 'marker-popup' , closeButton: false});
+          //livePoliceCarFeed.options.angle = 90;                              
         } else {
           livePoliceCarFeed.setLatLng([s_lat, s_long]);
           $('#pop-livePoliceCarFeed').html('Latitude: ' + s_lat + '<br />Longitude: ' + s_long);
@@ -195,6 +198,7 @@ function buildGPSMarker(data, markerType) {
                                 {icon: L.icon({ iconUrl: 'http://54.80.60.180:6080/images/policeman.png',
                                                 iconSize: [24, 24],})}).addTo(map)
                               .bindPopup('<div id="pop-livePatrolmanFeed">Latitude: ' + s_lat + '<br />Longitude: ' + s_long + '</div>', { className: 'marker-popup' , closeButton: false });
+          //livePatrolmanFeed.options.angle = 90;                              
         } else {
           livePatrolmanFeed.setLatLng([s_lat, s_long]);
           $('#pop-livePatrolmanFeed').html('Latitude: ' + s_lat + '<br />Longitude: ' + s_long);

@@ -41,13 +41,13 @@
         <div id="policecarcam_video_right">
           <div id="ptz_container">
             <div id="pan_nw" class="box"><img src="images/ptz_blank.png" border:0/></div>
-            <div id="pan_n"  class="box"onclick='send_ptz_command(PTZ_CAMERA_URL,"rtilt=10"); return false;'><img src="images/ptz_n.png" border:0/></div>
+            <div id="pan_n"  class="box" onclick='send_ptz_command(PATROL_CAR_PTZ_CAMERA_URL,"rtilt,10"); return false;'><img src="images/ptz_n.png" border:0/></div>
             <div id="pan_ne" class="box"><img src="images/ptz_blank.png" border:0/></div>
-            <div id="pan_w"  class="box" onclick='send_ptz_command(PTZ_CAMERA_URL,"rpan=10"); return false;'><img src="images/ptz_w.png" border:0/></div>
-            <div id="pan_c"  class="box" onclick='send_ptz_command(PTZ_CAMERA_URL,"gotoserverpresetname=Drive_wide"); return false;'><img src="images/ptz_blank.png" border:0/></div>
-            <div id="pan_e"  class="box" onclick='send_ptz_command(PTZ_CAMERA_URL,"rpan=10"); return false;'><img src="images/ptz_e.png" border:0/></div>
+            <div id="pan_w"  class="box" onclick='send_ptz_command(PATROL_CAR_PTZ_CAMERA_URL,"rpan,10"); return false;'><img src="images/ptz_w.png" border:0/></div>
+            <div id="pan_c"  class="box" onclick='send_ptz_command(PATROL_CAR_PTZ_CAMERA_URL,"gotoserverpresetname=Drive_wide"); return false;'><img src="images/ptz_blank.png" border:0/></div>
+            <div id="pan_e"  class="box" onclick='send_ptz_command(PATROL_CAR_PTZ_CAMERA_URL,"rpan,10"); return false;'><img src="images/ptz_e.png" border:0/></div>
             <div id="pan_sw" class="box"><img src="images/ptz_zoomin.png" border:0/></div>
-            <div id="pan_s"  class="box"><img src="images/ptz_s.png" border:0/></div>
+            <div id="pan_s"  class="box" onclick='send_ptz_command(PATROL_CAR_PTZ_CAMERA_URL,"rtilt,10"); return false;'><img src="images/ptz_s.png" border:0/></div>
             <div id="pan_se" class="box"><img src="images/ptz_zoomout.png" border:0/></div>
           </div>
           <ul class="navigation">
@@ -87,28 +87,27 @@
     <script type="text/javascript" src="zTree/jquery.ztree.excheck-3.5.js"></script>
     <script>
     
-      var osmUrl = 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-      osmAttrib = 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, ' +
-                  '<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
-                  'Imagery © <a href="http://mapbox.com">Mapbox</a>',
-      osm = L.tileLayer(osmUrl, {maxZoom: 18, attribution: osmAttrib, id: 'examples.map-i875mjb7'}),
-      osm2 = new L.TileLayer(osmUrl, {attribution: 'Hello world'});
-      var map = new L.Map('map').addLayer(osm).setView(new L.LatLng(34.73, -86.585), 12);
-     
-      var marker = new L.Marker(new L.LatLng(50.5, 30.505), {color: 'red'});
-    map.addLayer(osm);
-    map.addLayer(marker);
-    marker.bindPopup("Leaflet is designed with simplicity, performance and usability in mind. It works efficiently across all major desktop and mobile platforms out of the box, taking advantage of HTML5 and CSS3 on modern browsers while still being accessible on older ones.").openPopup();
-    var marker2 = new L.Marker(new L.LatLng(50.502, 30.515));
-    map.addLayer(marker2);
-var layersControl = new L.Control.Layers({
-      'OSM': osm,
-      'OSM2': osm2
-    }, {
-      'Some marker': marker,
-      'Another marker': marker2
-    });
-    map.addControl(layersControl);    
+      var osm_StreetMapURL = 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+      osm_StreetMapAttrib = 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, ' +
+                            '<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
+                            'Imagery © <a href="http://mapbox.com">Mapbox</a>',
+      osm_SatelliteMapAttrib = 'Map data © OpenWeatherMap',
+      osm_SatelliteMapURL = 'http://{s}.tile.openweathermap.org/map/clouds/{z}/{x}/{y}.png',
+      osm_StreetMap = L.tileLayer(osm_StreetMapURL, {maxZoom: 18, attribution: osm_StreetMapAttrib, id: 'examples.map-street'});
+      osm_SatelliteMap = L.tileLayer(osm_SatelliteMapURL,{maxZoom: 18, attribution: osm_SatelliteMapAttrib, id: 'examples.map-openweather'});
+      
+      var map = new L.Map('map').addLayer(osm_StreetMap).setView(new L.LatLng(34.73, -86.585), 12);
+      
+      map.addLayer(osm_StreetMap);
+      map.addLayer(osm_SatelliteMap);
+      
+      var layersControl = new L.Control.Layers({
+        'Streets': osm_StreetMap,
+        'Satellite': osm_SatelliteMap
+      });
+      
+      map.addControl(layersControl);  
+      
       var livePoliceCarFeed = null,
           livePatrolmanFeed = null;
 
@@ -127,7 +126,6 @@ var layersControl = new L.Control.Layers({
       $("#menuContent").drags();
       $("#weather_winddirection").drags();
       $("#weather_windspeed").drags(); 
-     
     </script>
   </body>
 </html>
