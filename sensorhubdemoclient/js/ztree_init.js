@@ -75,7 +75,11 @@ function processCheckedNodes(nodes) {
           }
           break;
         case 9: // Weather live feed
+          //NOOP
           break;
+        case 10: // Weather Station 1
+          break;
+          getRTWeatherFeed(WEATHER_RT_FEED,"location");
         default:
           throw new Error("Unknown data object");
       }

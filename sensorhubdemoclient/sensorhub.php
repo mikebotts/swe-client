@@ -41,22 +41,22 @@
         <div id="policecarcam_video_right">
           <div id="ptz_container">
             <div id="pan_nw" class="box"><img src="images/ptz_blank.png" border:0/></div>
-            <div id="pan_n"  class="box" onclick='send_ptz_command(PATROL_CAR_PTZ_CAMERA_URL,"rtilt,10"); return false;'><img src="images/ptz_n.png" border:0/></div>
+            <div id="pan_n"  class="box" onclick='send_ptz_command(PATROL_CAR_PTZ_CAMERA_URL,"rtilt,2"); return false;'><img src="images/ptz_n.png" border:0/></div>
             <div id="pan_ne" class="box"><img src="images/ptz_blank.png" border:0/></div>
-            <div id="pan_w"  class="box" onclick='send_ptz_command(PATROL_CAR_PTZ_CAMERA_URL,"rpan,10"); return false;'><img src="images/ptz_w.png" border:0/></div>
-            <div id="pan_c"  class="box" onclick='send_ptz_command(PATROL_CAR_PTZ_CAMERA_URL,"gotoserverpresetname=Drive_wide"); return false;'><img src="images/ptz_blank.png" border:0/></div>
-            <div id="pan_e"  class="box" onclick='send_ptz_command(PATROL_CAR_PTZ_CAMERA_URL,"rpan,10"); return false;'><img src="images/ptz_e.png" border:0/></div>
-            <div id="pan_sw" class="box"><img src="images/ptz_zoomin.png" border:0/></div>
-            <div id="pan_s"  class="box" onclick='send_ptz_command(PATROL_CAR_PTZ_CAMERA_URL,"rtilt,10"); return false;'><img src="images/ptz_s.png" border:0/></div>
-            <div id="pan_se" class="box"><img src="images/ptz_zoomout.png" border:0/></div>
+            <div id="pan_w"  class="box" onclick='send_ptz_command(PATROL_CAR_PTZ_CAMERA_URL,"rpan,-5"); return false;'><img src="images/ptz_w.png" border:0/></div>
+            <div id="pan_c"  class="box" onclick='send_ptz_command(PATROL_CAR_PTZ_CAMERA_URL,"zoom 1"); return false;'><img src="images/ptz_blank.png" border:0/></div>
+            <div id="pan_e"  class="box" onclick='send_ptz_command(PATROL_CAR_PTZ_CAMERA_URL,"rpan,5"); return false;'><img src="images/ptz_e.png" border:0/></div>
+            <div id="pan_sw" class="box" onclick='send_ptz_command(PATROL_CAR_PTZ_CAMERA_URL,"rzoom,200"); return false;'><img src="images/ptz_zoomin.png" border:0/></div>
+            <div id="pan_s"  class="box" onclick='send_ptz_command(PATROL_CAR_PTZ_CAMERA_URL,"rtilt,-2"); return false;'><img src="images/ptz_s.png" border:0/></div>
+            <div id="pan_se" class="box" onclick='send_ptz_command(PATROL_CAR_PTZ_CAMERA_URL,"rzoom,-200"); return false;'><img src="images/ptz_zoomout.png" border:0/></div>
           </div>
           <ul class="navigation">
             <a class="main" href="#url">Presets</a>
-            <li class="n2"><a href="#">Back</a></li>
-            <li class="n1"><a href="#">Forward</a></li>
-            <li class="n4"><a href="#">Front</a></li>
-            <li class="n3"><a href="#">Right</a></li>
-            <li class="n5"><a href="#">Zero</a></li>
+            <li class="n2"><a href="#" onclick='send_ptz_command(PATROL_CAR_PTZ_CAMERA_URL,"gotoserverpresetname,Back"); return false;'>Back</a></li>
+            <li class="n1"><a href="#" onclick='send_ptz_command(PATROL_CAR_PTZ_CAMERA_URL,"gotoserverpresetname,Forward"); return false;'>Forward</a></li>
+            <li class="n4"><a href="#" onclick='send_ptz_command(PATROL_CAR_PTZ_CAMERA_URL,"gotoserverpresetname,Left"); return false;'>Left</a></li>
+            <li class="n3"><a href="#" onclick='send_ptz_command(PATROL_CAR_PTZ_CAMERA_URL,"gotoserverpresetname,Right"); return false;'>Right</a></li>
+            <li class="n5"><a href="#" onclick='send_ptz_command(PATROL_CAR_PTZ_CAMERA_URL,"gotoserverpresetname,zero"); return false;'>Zero</a></li>
           </ul>          
         </div>
       </div>
@@ -109,7 +109,8 @@
       map.addControl(layersControl);  
       
       var livePoliceCarFeed = null,
-          livePatrolmanFeed = null;
+          livePatrolmanFeed = null,
+          liveWeatherFeed = null;
 
     </script>
     <script src="js/init.js"></script>

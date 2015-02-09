@@ -3,7 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
  
 var template = null;
-var gpsFields = [], weatherFields = [];
+var gpsFields = [], weatherFields = [], weatherSensorLocations = [];
 var INTERVALS = 0, MAX_INTERVALS = 60, POLL_INTERVAL = 1000;
 var WEATHER_DESCRIPTOR = 'http://54.172.40.148:8080/sensorhub/sos?service=SOS&version=2.0&request=DescribeSensor&procedure=urn:test:sensors:fakeweather&procedureDescriptionFormat=http://www.opengis.net/sensorml/2.0',
     GPS_DESCRIPTOR = 'http://54.172.40.148:8080/sensorhub/sos?service=SOS&version=2.0&request=GetResultTemplate&offering=urn:mysos:offering02&observedProperty=http://sensorml.com/ont/swe/property/Location',
@@ -15,13 +15,22 @@ var POLICECAR_GPS_FEED = 'http://54.172.40.148:8080/sensorhub/sos?service=SOS&ve
     POLICECAR_CAM_FEED = 'http://54.172.40.148:8080/sensorhub/sos?service=SOS&version=2.0&request=GetResult&offering=urn:mysos:offering04&observedProperty=http://sensorml.com/ont/swe/property/VideoFrame&temporalFilter=phenTime,now/2115-01-28T16:24:48Z',
     PATROLMAN_CAM_FEED = '';
 var PATROL_CAR_PTZ_CAMERA_URL="http://bottsgeo.simple-url.com/axis-cgi/com/ptz.cgi";
+
+//var PATROL_CAR_PTZ_CAMERA_URL="http://bottsgeo.simple-url.com:8080/sensorhub/sps?";
+
+
+var t = 'http://bottsgeo.simple-url.com:8080/sensorhub/sps?';
+
 var PTZ_TASKING_COMMAND_REPLACE_TOKEN="{SWE_PTZ_TASKING_COMMAND}"; 
 var PTZ_TASKING_COMMAND_BASE='<?xml version="1.0" encoding="UTF-8"?><sps:Submit service="SPS" version="2.0" xmlns:sps="http://www.opengis.net/sps/2.0" xmlns:swe="http://www.opengis.net/swe/2.0"><sps:procedure>d136b6ea-3951-4691-bf56-c84ec7d89d72</sps:procedure><sps:taskingParameters><sps:ParameterData><sps:encoding><swe:TextEncoding blockSeparator=" " collapseWhiteSpaces="true" decimalSeparator="." tokenSeparator=","/></sps:encoding><sps:values>' + PTZ_TASKING_COMMAND_REPLACE_TOKEN + '</sps:values></sps:ParameterData></sps:taskingParameters></sps:Submit>';
+//var PTZ_TASKING_COMMAND_BASE='<?xml version="1.0" encoding="UTF-8"?><sps:Submit service="SPS" version="2.0" xmlns:sps="http://www.opengis.net/sps/2.0" xmlns:swe="http://www.opengis.net/swe/2.0"><sps:procedure>d136b6ea-3951-4691-bf56-c84ec7d89d72</sps:procedure><sps:taskingParameters><sps:ParameterData><sps:encoding><swe:TextEncoding blockSeparator=" " collapseWhiteSpaces="true" decimalSeparator="." tokenSeparator=","/></sps:encoding><sps:values>rpan,45</sps:values></sps:ParameterData></sps:taskingParameters></sps:Submit>';
 var policecarGPSFeedPollTimer=0, 
     patrolmanGPSFeedPollTimer=0,
     windDirectionFeedPollTimer=0,
-    windSpeedFeedPollTimer=0;
-
+    windSpeedFeedPollTimer=0,
+    weatherLocationPollTimer=0,
+    weatherTemperaturePollTimer=0,
+    weatherBarometricPressurePollTimer=0;
   $( document ).ready(function() {
   
   /*
@@ -54,7 +63,19 @@ var policecarGPSFeedPollTimer=0,
       return new L.RotatedMarker(pos, options);
   };
   // End of Marker rotation code
-  
+
+  // Get weather sensor locations.  This one is hard-coded for the first demonstration.
+  // The URL must be changed to something that gives locations of all the sensors.
+  $.get(WEATHER_DESCRIPTOR,
+    function(data) {
+      // TODO: We need to change the logic here to loop through resulting data and store actual locations
+      var station = new Object();
+      station.name = "Station 1";
+      station.lat = 34.73;
+      station.lon = -86.585;
+      weatherSensorLocations[0] = station;
+      }, 'xml');  
+    
   // Get data descriptor for real-time weather feed
   $.get(WEATHER_DESCRIPTOR,
     function(data) {
@@ -76,8 +97,9 @@ var policecarGPSFeedPollTimer=0,
 
 function send_ptz_command(ptzURL, ptzParams) {
   var http = new XMLHttpRequest();
-  var url = ptzURL;
+  var url = t;
   var params = PTZ_TASKING_COMMAND_BASE.replace(PTZ_TASKING_COMMAND_REPLACE_TOKEN,ptzParams);
+  //var params = PTZ_TASKING_COMMAND_BASE;
   http.open("POST", url, true);
 
   //Send the proper header information along with the request
@@ -85,8 +107,8 @@ function send_ptz_command(ptzURL, ptzParams) {
   http.setRequestHeader("Content-length", params.length);
   http.setRequestHeader("Connection", "close");  
   http.onreadystatechange = function() {//Call a function when the state changes.
-      if(http.readyState == 4 && http.status == 200) {
-          alert(http.responseText);
+      if(http.readyState ==4 && http.status == 200) {
+         // alert(http.responseText);
       }
   }
   http.send(params);  
@@ -123,15 +145,20 @@ function getRTWeatherFeed(feedSource, display) {
   xhReq.open("GET", feedSource, true);
   xhReq.send();
   switch(display) {
+    case "location" :
+      weatherLocationPollTimer = setInterval(processFeed, POLL_INTERVAL, weatherFields, "WEATHER_STATION_LOCATION", "N/A", weatherSensorLocations);
+      break;
     case "temperature" :
+      weatherTemperaturePollTimer = setInterval(processFeed, POLL_INTERVAL, weatherFields, "WEATHER_TEMPERATURE", "TEMPERATURE", weatherSensorLocations);
       break;
     case "pressure" :
+      weatherTemperaturePollTimer = setInterval(processFeed, POLL_INTERVAL, weatherFields, "WEATHER_BAROMETRIC_PRESSURE", "PRESSURE", weatherSensorLocations);
       break;
     case "windspeed" :
-      windSpeedFeedPollTimer = setInterval(processFeed, POLL_INTERVAL, weatherFields, "WEATHER_WIND_SPEED", "N/A");
+      windSpeedFeedPollTimer = setInterval(processFeed, POLL_INTERVAL, weatherFields, "WEATHER_WIND_SPEED", "N/A", "N/A");
       break;
     case "winddirection" :
-      windDirectionFeedPollTimer = setInterval(processFeed, POLL_INTERVAL, weatherFields, "WEATHER_WIND_DIRECTION", "N/A");
+      windDirectionFeedPollTimer = setInterval(processFeed, POLL_INTERVAL, weatherFields, "WEATHER_WIND_DIRECTION", "N/A", "N/A");
       break;
      default:
       throw new Error("Unknown weather data display type.");
@@ -139,7 +166,7 @@ function getRTWeatherFeed(feedSource, display) {
 }
 
 // Generic feed parser
-function processFeed(recordDescriptor, typeofFeed, markerType) {
+function processFeed(recordDescriptor, typeofFeed, markerType, markerLocations) {
 
   var allMessages = xhReq.responseText;
   var endRec = allMessages.lastIndexOf("\n");
@@ -153,6 +180,9 @@ function processFeed(recordDescriptor, typeofFeed, markerType) {
       case "GPS":
         buildGPSMarker(response, markerType);
         break;
+      case "WEATHER_STATION_LOCATION":
+        buildWeatherStationMarker(weatherSensorLocations[0]);
+        break;
       case "WEATHER_WIND_DIRECTION" :
         var chart=$("#weather_winddirection").highcharts();
         var point = chart.series[0].points[0];
@@ -163,12 +193,26 @@ function processFeed(recordDescriptor, typeofFeed, markerType) {
         var series = chart.series[0];
         series.addPoint([Date.parse(response.time), parseInt(response.windspeed)], true, true);
         break;
+      case "WEATHER_TEMPERATURE" :
+      
+      case "WEATHER_BAROMETRIC_PRESSURE":
+        break;
       default:
         throw new Error("Cannot parse feed.  Unknown feed type.");
     }
     
   }
 }
+
+function buildWeatherStationMarker(sensorLocation) {
+  if (livePoliceCarFeed === null) {
+    weatherStationMarker = L.Marker(
+                          [sensorLocation.lat, sensorLocation.lon], 
+                          {icon: L.icon({ iconUrl: 'http://54.80.60.180:6080/images/weatherstationicon.png',
+                                          iconSize: [34, 77],})}).addTo(map)
+                        .bindPopup('<div id="pop-weatherStationName">Station ID: ' + sensorLocation.name + '</div>', { className: 'marker-popup' , closeButton: false});
+  }
+} // buildWeatherStationMarker
 
 function buildGPSMarker(data, markerType) {
   var s_lat = data.lat, s_long = data.long, s_alt = data.alt, s_time = data.time;
