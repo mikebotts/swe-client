@@ -67,8 +67,8 @@
         <div id="patrolmancam_header_left">PATROLMAN CAMERA</div>
         <div id="patrolmancam_header_right"><a href="#" onclick='document.getElementById("patrolmancam").style.display="none"; return false;'>Close </a></div>
       </div>
-      <iframe frameborder="0" scrolling="0" width="400" height="300" src="http://54.80.60.180:6080/patrolman_camera.htm">
-      </iframe>
+      <!--<iframe frameborder="0" scrolling="0" width="400" height="300" src="http://54.80.60.180:6080/patrolman_camera.htm">
+      </iframe>-->
    </div>
     
     <div id="menuContent" class="menuContent">
@@ -111,6 +111,7 @@
       var livePoliceCarFeed = null,
           livePatrolmanFeed = null,
           liveWeatherFeed = null;
+
 
     </script>
     <script src="js/init.js"></script>

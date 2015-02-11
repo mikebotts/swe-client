@@ -77,9 +77,6 @@ function processCheckedNodes(nodes) {
         case 9: // Weather live feed
           //NOOP
           break;
-        case 10: // Weather Station 1
-          break;
-          getRTWeatherFeed(WEATHER_RT_FEED,"location");
         default:
           throw new Error("Unknown data object");
       }
@@ -113,6 +110,10 @@ function processCheckedNodes(nodes) {
             default:
               throw new Error("Unknown data object");
           }
+        case 9: // Weather Station 1
+          getRTWeatherFeed(WEATHER_RT_FEED,"location");
+          break;
+        
         case 10:  
           switch (nodes[i].id) {
             
@@ -198,6 +199,10 @@ function processUnCheckedNodes(nodes) {
             default:
               throw new Error("Unknown data object");
           }
+          break;
+        case 9: // Weather Station 1
+          clearInterval(weatherLocationPollTimer);
+          weatherLocationPollTimer = 0;            
           break;
         case 10:  
           switch (nodes[i].id) {

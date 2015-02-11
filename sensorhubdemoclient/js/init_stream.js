@@ -14,16 +14,10 @@ var POLICECAR_GPS_FEED = 'http://54.172.40.148:8080/sensorhub/sos?service=SOS&ve
     WEATHER_RT_FEED = 'http://54.172.40.148:8080/sensorhub/sos?service=SOS&version=2.0&request=GetResult&offering=urn:mysos:offering03&observedProperty=http://sensorml.com/ont/swe/property/Weather&temporalFilter=phenomenonTime,now/2115-01-28T16:24:48Z',
     POLICECAR_CAM_FEED = 'http://54.172.40.148:8080/sensorhub/sos?service=SOS&version=2.0&request=GetResult&offering=urn:mysos:offering04&observedProperty=http://sensorml.com/ont/swe/property/VideoFrame&temporalFilter=phenTime,now/2115-01-28T16:24:48Z',
     PATROLMAN_CAM_FEED = '';
-var PATROL_CAR_PTZ_CAMERA_URL="http://bottsgeo.simple-url.com/axis-cgi/com/ptz.cgi";
-
-//var PATROL_CAR_PTZ_CAMERA_URL="http://bottsgeo.simple-url.com:8080/sensorhub/sps?";
-
-
-var t = 'http://bottsgeo.simple-url.com:8080/sensorhub/sps?';
-
+//var PATROL_CAR_PTZ_CAMERA_URL="http://bottsgeo.simple-url.com/axis-cgi/com/ptz.cgi";
+var PATROL_CAR_PTZ_CAMERA_URL="http://bottsgeo.simple-url.com:8080/sensorhub/sps?";
 var PTZ_TASKING_COMMAND_REPLACE_TOKEN="{SWE_PTZ_TASKING_COMMAND}"; 
 var PTZ_TASKING_COMMAND_BASE='<?xml version="1.0" encoding="UTF-8"?><sps:Submit service="SPS" version="2.0" xmlns:sps="http://www.opengis.net/sps/2.0" xmlns:swe="http://www.opengis.net/swe/2.0"><sps:procedure>d136b6ea-3951-4691-bf56-c84ec7d89d72</sps:procedure><sps:taskingParameters><sps:ParameterData><sps:encoding><swe:TextEncoding blockSeparator=" " collapseWhiteSpaces="true" decimalSeparator="." tokenSeparator=","/></sps:encoding><sps:values>' + PTZ_TASKING_COMMAND_REPLACE_TOKEN + '</sps:values></sps:ParameterData></sps:taskingParameters></sps:Submit>';
-//var PTZ_TASKING_COMMAND_BASE='<?xml version="1.0" encoding="UTF-8"?><sps:Submit service="SPS" version="2.0" xmlns:sps="http://www.opengis.net/sps/2.0" xmlns:swe="http://www.opengis.net/swe/2.0"><sps:procedure>d136b6ea-3951-4691-bf56-c84ec7d89d72</sps:procedure><sps:taskingParameters><sps:ParameterData><sps:encoding><swe:TextEncoding blockSeparator=" " collapseWhiteSpaces="true" decimalSeparator="." tokenSeparator=","/></sps:encoding><sps:values>rpan,45</sps:values></sps:ParameterData></sps:taskingParameters></sps:Submit>';
 var policecarGPSFeedPollTimer=0, 
     patrolmanGPSFeedPollTimer=0,
     windDirectionFeedPollTimer=0,
@@ -31,7 +25,8 @@ var policecarGPSFeedPollTimer=0,
     weatherLocationPollTimer=0,
     weatherTemperaturePollTimer=0,
     weatherBarometricPressurePollTimer=0;
-  $( document ).ready(function() {
+
+$( document ).ready(function() {
   
   /*
     Start Marker rotation code.
@@ -97,9 +92,7 @@ var policecarGPSFeedPollTimer=0,
 
 function send_ptz_command(ptzURL, ptzParams) {
   var http = new XMLHttpRequest();
-  var url = t;
   var params = PTZ_TASKING_COMMAND_BASE.replace(PTZ_TASKING_COMMAND_REPLACE_TOKEN,ptzParams);
-  //var params = PTZ_TASKING_COMMAND_BASE;
   http.open("POST", url, true);
 
   //Send the proper header information along with the request
