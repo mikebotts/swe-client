@@ -89,6 +89,7 @@ function processCheckedNodes(nodes) {
               if (null !== livePoliceCarFeed) livePoliceCarFeed.openPopup();
               break;
             case 3: // Police car camera look rays
+              getRTQuaternionFeed(PATROLCAR_QUAT_FEED);
               break;
             case 4: // Police car live camera feed
               document.getElementById("policecarcam").style.display="block";
@@ -103,6 +104,8 @@ function processCheckedNodes(nodes) {
               if (null !==  livePatrolmanFeed) livePatrolmanFeed.openPopup();
               break;
             case 7: // Patrolman camera look rays
+              getRTQuaternionFeed(PATROLMAN_QUAT_FEED);
+              break;
               break;
             case 8: // Patrolman live camera feed
               document.getElementById("patrolmancam").style.display="block";
@@ -111,7 +114,7 @@ function processCheckedNodes(nodes) {
               throw new Error("Unknown data object");
           }
         case 9: // Weather Station 1
-          getRTWeatherFeed(WEATHER_RT_FEED,"location");
+          //getRTWeatherFeed(WEATHER_RT_FEED,"location");
           break;
         
         case 10:  
@@ -178,6 +181,12 @@ function processUnCheckedNodes(nodes) {
               if (null !== livePoliceCarFeed) livePoliceCarFeed.closePopup();
               break;
             case 3: // Police car camera look rays
+              if (0 < policecarQuaternionFeedPollTimer ) {
+                clearInterval(policecarQuaternionFeedPollTimer);
+                policecarQuaternionFeedPollTimer = 0;
+                //map.removeLayer(livePoliceCarFeed);
+                livePolicecarQuaternionFeed=null;            
+              } 
               break;
             case 4: // Police car live camera feed
               document.getElementById("policecarcam").style.display="none";
@@ -192,6 +201,12 @@ function processUnCheckedNodes(nodes) {
               if (null !== livePatrolmanFeed) livePatrolmanFeed.closePopup();
               break;
             case 7: // Patrolman camera look rays
+              if (0 < patrolmanQuaternionFeedPollTimer ) {
+                clearInterval(patrolmanQuaternionFeedPollTimer);
+                patrolmanQuaternionFeedPollTimer = 0;
+                //map.removeLayer(livePoliceCarFeed);
+                livePatrolmanQuaternionFeed=null;            
+              } 
               break;
             case 8: // Patrolman live camera feed
               document.getElementById("patrolmancam").style.display="none";              

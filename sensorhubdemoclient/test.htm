@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset=utf-8 />
+<title>Leaflet layers control</title>
+<meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+<script src='https://api.tiles.mapbox.com/mapbox.js/v2.1.5/mapbox.js'></script>
+<link href='https://api.tiles.mapbox.com/mapbox.js/v2.1.5/mapbox.css' rel='stylesheet' />
+<style>
+  body { margin:0; padding:0; }
+  #map { position:absolute; top:0; bottom:0; width:100%; }
+  .divIcon {
+   // border:1px solid red;
+    font-size:16px;
+    font-weight:bold;
+    color:blue;
+    width:auto;
+    height:auto;
+    min-width:100px;
+    min-height:40px;
+    max-width:200px;
+    max-height: 200px;
+    background-color:#fff
+  }
+</style>
+</head>
+<body>
+
+
+<div id='map'></div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function(event) { 
+  L.RotatedMarker = L.Marker.extend({
+    options: { angle: 0 },
+    _setPos: function(pos) {
+      L.Marker.prototype._setPos.call(this, pos);
+      if (L.DomUtil.TRANSFORM) {
+        // use the CSS transform rule if available
+        this._icon.style[L.DomUtil.TRANSFORM] += ' rotate(' + this.options.angle + 'deg)';
+      } else if (L.Browser.ie) {
+        // fallback for IE6, IE7, IE8
+        var rad = this.options.angle * L.LatLng.DEG_TO_RAD,
+        costheta = Math.cos(rad),
+        sintheta = Math.sin(rad);
+        this._icon.style.filter += ' progid:DXImageTransform.Microsoft.Matrix(sizingMethod=\'auto expand\', M11=' +
+          costheta + ', M12=' + (-sintheta) + ', M21=' + sintheta + ', M22=' + costheta + ')';
+      }
+    }
+  });
+  
+  L.rotatedMarker = function(pos, options) {
+      return new L.RotatedMarker(pos, options);
+  };
+  
+  
+var osm_StreetMapURL = 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+      osm_StreetMapAttrib = 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, ' +
+                            '<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
+                            'Imagery © <a href="http://mapbox.com">Mapbox</a>',
+      osm_StreetMap = L.tileLayer(osm_StreetMapURL, {maxZoom: 18, attribution: osm_StreetMapAttrib, id: 'examples.map-street'});
+
+      var map = new L.Map('map').addLayer(osm_StreetMap).setView(new L.LatLng(34.73, -86.585), 12);
+      
+      map.addLayer(osm_StreetMap);
+      
+      var dummyMarker = L.marker([34.73, -86.585]).addTo(map);
+      
+      var markHuntsvilleAL = L.rotatedMarker([34.73, -86.585],{icon: L.icon({ iconUrl: 'http://54.80.60.180:6080/images/lookrays.png',
+                                                iconSize: [64,64],})}).addTo(map);
+                                                
+/*
+{
+            icon: L.divIcon({
+                className: 'divIcon',
+                html: "Temperature: 90 degress",
+                iconAnchor: [50,-10],
+                //iconSize: [100,40]
+            })
+        }
+*/        
+        
+markHuntsvilleAL.options.angle = 90;     
+markHuntsvilleAL.update(markHuntsvilleAL);
+    
+});
+</script>
+
+
+</body>
+</html>

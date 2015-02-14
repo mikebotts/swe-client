@@ -110,7 +110,9 @@
       
       var livePoliceCarFeed = null,
           livePatrolmanFeed = null,
-          liveWeatherFeed = null;
+          liveWeatherFeed = null,
+          livePolicecarQuaternionFeed = null,
+          livePatrolmanQuaternionFeed = null;
 
 
     </script>
@@ -120,6 +122,8 @@
     <script src="js/drag_div_no_jquery_ui.js"></script>
     <script src="js/weather_wind_direction.js"></script>
     <script src="js/weather_wind_speed.js"></script>
+    <script src="js/swe_quaternion.js"></script>
+    
     <script>
       L.control.fullscreen().addTo(map);
       // All DIVs that need to be draggable can be placed here!
