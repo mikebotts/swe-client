@@ -38,6 +38,11 @@ var policecarGPSFeedPollTimer=0,
     policecarQuaternionFeedPollTimer=0;
 
 $( document ).ready(function() {
+
+  $('#selectObjects').click(function (e) {
+    e.preventDefault();
+    showMenu();
+  });
   
   /*
     Start Marker rotation code.
