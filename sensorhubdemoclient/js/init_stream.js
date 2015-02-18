@@ -2,11 +2,11 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-//urn:android:device:04e4413b0a286002-sos
+//Mike's Nexus -- urn:android:device:04e4413b0a286002-sos
 
 var template = null;
 var gpsFields = [], weatherFields = [], quatFields = [], weatherSensorLocations = [];
-var INTERVALS = 0, MAX_INTERVALS = 60, POLL_INTERVAL = 1000;
+var INTERVALS = 0, MAX_INTERVALS = 60, POLL_INTERVAL = 100;
 var WEATHER_DESCRIPTOR = 'http://54.172.40.148:8080/sensorhub/sos?service=SOS&version=2.0&request=DescribeSensor&procedure=urn:test:sensors:fakeweather&procedureDescriptionFormat=http://www.opengis.net/sensorml/2.0',
     GPS_DESCRIPTOR = 'http://54.172.40.148:8080/sensorhub/sos?service=SOS&version=2.0&request=GetResultTemplate&offering=urn:mysos:offering02&observedProperty=http://sensorml.com/ont/swe/property/Location',
     CAM_DESCRIPTOR = 'http://54.172.40.148:8080/sensorhub/sos?service=SOS&version=2.0&request=DescribeSensor&procedure=urn:test:sensors:fakecam&procedureDescriptionFormat=http://www.opengis.net/sensorml/2.0',
@@ -133,12 +133,42 @@ function is(type, obj) {
     return obj !== undefined && obj !== null && clas === type;
 }
 
+
+/*
+            // query SOS GPS stream
+            xhReq = new XMLHttpRequest();
+            xhReq.open("GET", "sensorhub/sos?service=SOS&version=2.0&request=GetResult&offering=urn:android:device:060693280a28e015-sos&observedProperty=http://sensorml.com/ont/swe/property/Location&temporalFilter=phenomenonTime,2015-02-16T07:50:00Z/now&replaySpeed=8", true);
+            xhReq.send();
+            pollTimer = setInterval(pollLatestResponse, 100);
+        }
+
+        function pollLatestResponse() {
+            var allMessages = xhReq.responseText;
+            var endRec = allMessages.lastIndexOf("\n");
+            var startRec = allMessages.lastIndexOf("\n", endRec-1) + 1;
+            if (startRec < 0)
+                startRec = 0;
+            var rec = allMessages.substring(startRec, endRec);
+
+            if (rec.length > 0) {
+              document.getElementById("text").innerHTML = rec;
+              var tokens = rec.split(",");
+              var lat = parseFloat(tokens[1]);
+              var lon = parseFloat(tokens[2]);
+              var alt = parseFloat(tokens[3]);
+              marker.lonlat = new OpenLayers.LonLat(lon, lat).transform(epsg4326, map.getProjectionObject());
+              markers.redraw();
+              //map.setCenter(marker.lonlat, 17);
+            }
+        }
+*/
+
 // Real-time quaternion feed
 function getRTQuaternionFeed(feedSource) {
   // Query SOS Quaternion stream
   xhReq = new XMLHttpRequest();
   xhReq.open("GET", feedSource, true);
-  xhReq.send();
+  xhReq.send(null);
   switch(feedSource) {
     case PATROLMAN_QUAT_FEED:
       patrolmanQuaternionFeedPollTimer = setInterval(processFeed, POLL_INTERVAL, quatFields, "QUATERNION", "PATROLMAN_QUAT_FEED", "N/A");
@@ -206,6 +236,7 @@ function processFeed(recordDescriptor, typeofFeed, markerType, markerLocations) 
   var rec = allMessages.substring(startRec, endRec);
 
   if (rec.length > 0) {
+    alert('got a record');
     response = interpretFeed(rec, recordDescriptor, typeofFeed, ',');
     switch (typeofFeed) {
       case "QUATERNION":
