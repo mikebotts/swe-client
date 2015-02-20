@@ -1,4 +1,7 @@
 var menuStatus=0;
+var policecarsocket=null,
+    patrolmansocket=null;
+
 
 var zNodes = [
   {id:1, pId:0, name:"Patrol Car 257", open:true, icon:"ztree/img/diy/policecar.png"},
@@ -65,14 +68,10 @@ function processCheckedNodes(nodes) {
       // Parent node
       switch (nodes[i].id) {
         case 1: // Police car live gps feed
-          if (0 == policecarGPSFeedPollTimer) {
-            getRTGPSFeed(POLICECAR_GPS_FEED);
-          }
+          policecarsocket = getRTGPSFeed(POLICECAR_GPS_FEED);
           break;
         case 5: // Patrolman live gps feed (basically phone location)
-          if (0 == patrolmanGPSFeedPollTimer)  {
-            getRTGPSFeed(PATROLMAN_GPS_FEED);
-          }
+          patrolmansocket = getRTGPSFeed(PATROLMAN_GPS_FEED);
           break;
         case 9: // Weather live feed
           //NOOP
@@ -149,22 +148,15 @@ function processUnCheckedNodes(nodes) {
       // Parent node
       switch (nodes[i].id) {
         case 1: // Police car live gps feed
-        
-          if (0 < policecarGPSFeedPollTimer ) {
-            clearInterval(policecarGPSFeedPollTimer);
-            policecarGPSFeedPollTimer = 0;
-            map.removeLayer(livePoliceCarFeed);
-            livePoliceCarFeed=null;            
-          } 
-          
-
+          if (null!==policecarsocket) {
+            if (policecarsocket.readyState === WebSocket.OPEN) 
+              policecarsocket.close();
+          }
           break;
         case 5: // Patrolman live gps feed (basically phone location)
-          if (0 < patrolmanGPSFeedPollTimer) {
-            clearInterval(patrolmanGPSFeedPollTimer);
-            patrolmanGPSFeedPollTimer = 0;
-            map.removeLayer(livePatrolmanFeed);
-            livePatrolmanFeed=null;              
+          if (null!==patrolmansocket) {
+            if (patrolmansocket.readyState === WebSocket.OPEN) 
+              patrolmansocket.close();
           }
           break;
         case 9: // Weather live feed
