@@ -13,13 +13,14 @@ var WEATHER_DESCRIPTOR = 'http://54.172.40.148:8080/sensorhub/sos?service=SOS&ve
     CAM_DESCRIPTOR = 'http://54.172.40.148:8080/sensorhub/sos?service=SOS&version=2.0&request=DescribeSensor&procedure=urn:test:sensors:fakecam&procedureDescriptionFormat=http://www.opengis.net/sensorml/2.0',
     quaternion_DESCRIPTOR = 'http://bottsgeo.com:8181/sensorhub/sos?service=SOS&version=2.0&request=GetResultTemplate&offering=urn:android:device:FA44CWM03715-sos&observedProperty=http://sensorml.com/ont/swe/property/OrientationQuaternion&temporalFilter=phenomenonTime,now/2015-06-01';
     //var POLICECAR_GPS_FEED = 'http://54.172.40.148:8080/sensorhub/sos?service=SOS&version=2.0&request=GetResult&offering=urn:mysos:offering02&observedProperty=http://sensorml.com/ont/swe/property/Location&temporalFilter=phenomenonTime,now/2115-01-28T16:24:48Z',
-var //POLICECAR_GPS_FEED = 'http://bottsgeo.com:8181/sensorhub/sos?service=SOS&version=2.0&request=GetResult&offering=urn:android:device:FA44CWM03715-sos&observedProperty=http://sensorml.com/ont/swe/property/Location&temporalFilter=phenomenonTime,now/2115-01-28T16:24:48Z',
+var POLICECAR_GPS_FEED = 'ws://bottsgeo.com:8181/sensorhub/sos?service=SOS&version=2.0&request=GetResult&offering=urn:android:device:FA44CWM03715-sos&observedProperty=http://sensorml.com/ont/swe/property/Location&temporalFilter=phenomenonTime,now/2115-01-28T16:24:48Z',
     //POLICECAR_GPS_FEED = 'http://54.172.40.148:8080/sensorhub/sos?service=SOS&version=2.0&request=GetResult&offering=urn:mysos:offering02&observedProperty=http://sensorml.com/ont/swe/property/Location&temporalFilter=phenTime,now/2015-06-01',
-    POLICECAR_GPS_FEED = 'ws://54.172.40.148:8080/sensorhub/sos?service=SOS&version=2.0&request=GetResult&offering=urn:mysos:offering02&observedProperty=http://sensorml.com/ont/swe/property/Location&temporalFilter=phenomenonTime,now/2055-01-01',
+    //POLICECAR_GPS_FEED = 'ws://54.172.40.148:8080/sensorhub/sos?service=SOS&version=2.0&request=GetResult&offering=urn:mysos:offering02&observedProperty=http://sensorml.com/ont/swe/property/Location&temporalFilter=phenomenonTime,now/2055-01-01',
     //PATROLMAN_GPS_FEED = 'http://54.172.40.148:8080/sensorhub/sos?service=SOS&version=2.0&request=GetResult&offering=urn:mysos:offering01&observedProperty=http://sensorml.com/ont/swe/property/Location&temporalFilter=phenomenonTime,now/2115-01-28T16:24:48Z',
     //PATROLMAN_GPS_FEED = 'http://bottsgeo.com:8181/sensorhub/sos?service=SOS&version=2.0&request=GetResult&offering=urn:android:device:04e4413b0a286002-sos&observedProperty=http://sensorml.com/ont/swe/property/Location&temporalFilter=phenomenonTime,now/2015-06-01',
     PATROLMAN_GPS_FEED = 'ws://bottsgeo.com:8181/sensorhub/sos?service=SOS&version=2.0&request=GetResult&offering=urn:android:device:04e4413b0a286002-sos&observedProperty=http://sensorml.com/ont/swe/property/Location&temporalFilter=phenomenonTime,now/2015-06-01',
-    WEATHER_RT_FEED = 'http://54.172.40.148:8080/sensorhub/sos?service=SOS&version=2.0&request=GetResult&offering=urn:mysos:offering03&observedProperty=http://sensorml.com/ont/swe/property/Weather&temporalFilter=phenomenonTime,now/2115-01-28T16:24:48Z',
+    //WEATHER_RT_FEED = 'http://54.172.40.148:8080/sensorhub/sos?service=SOS&version=2.0&request=GetResult&offering=urn:mysos:offering03&observedProperty=http://sensorml.com/ont/swe/property/Weather&temporalFilter=phenomenonTime,now/2115-01-28T16:24:48Z',
+    WEATHER_RT_FEED = 'ws://54.172.40.148:8080/sensorhub/sos?service=SOS&version=2.0&request=GetResult&offering=urn:mysos:offering03&observedProperty=http://sensorml.com/ont/swe/property/Weather&temporalFilter=phenomenonTime,now/2115-01-28T16:24:48Z',
     POLICECAR_CAM_FEED = 'http://bottsgeo.com:8181/sensorhub/sos?service=SOS&version=2.0&request=GetResult&offering=d136b6ea-3951-4691-bf56-c84ec7d89d72-sos&observedProperty=http://sensorml.com/ont/swe/property/VideoFrame&temporalFilter=phenomenonTime,now/2115-01-28T16:24:48Z',
     PATROLMAN_CAM_FEED = 'http://bottsgeo.com:8181/sensorhub/sos?service=SOS&version=2.0&request=GetResult&offering=urn:android:device:04e4413b0a286002-sos&observedProperty=http://sensorml.com/ont/swe/property/VideoFrame&temporalFilter=phenomenonTime,now/2115-01-28T16:24:48Z',
     POLICECAR_QUAT_FEED = 'http://bottsgeo.com:8181/sensorhub/sos?service=SOS&version=2.0&request=GetResult&offering=urn:android:device:04e4413b0a286002-sos&observedProperty=http://sensorml.com/ont/swe/property/OrientationQuaternion&temporalFilter=phenomenonTime,now/2015-06-01',
@@ -35,13 +36,9 @@ var PATROL_CAR_PTZ_CAMERA_URL="http://bottsgeo.simple-url.com:2015/sensorhub/sps
 
 var PTZ_TASKING_COMMAND_REPLACE_TOKEN="{SWE_PTZ_TASKING_COMMAND}"; 
 var PTZ_TASKING_COMMAND_BASE='<?xml version="1.0" encoding="UTF-8"?><sps:Submit service="SPS" version="2.0" xmlns:sps="http://www.opengis.net/sps/2.0" xmlns:swe="http://www.opengis.net/swe/2.0"><sps:procedure>d136b6ea-3951-4691-bf56-c84ec7d89d72</sps:procedure><sps:taskingParameters><sps:ParameterData><sps:encoding><swe:TextEncoding blockSeparator=" " collapseWhiteSpaces="true" decimalSeparator="." tokenSeparator=","/></sps:encoding><sps:values>' + PTZ_TASKING_COMMAND_REPLACE_TOKEN + '</sps:values></sps:ParameterData></sps:taskingParameters></sps:Submit>';
-var windDirectionFeedPollTimer=0,
-    windSpeedFeedPollTimer=0,
-    weatherLocationPollTimer=0,
-    weatherTemperaturePollTimer=0,
-    weatherBarometricPressurePollTimer=0,
-    patrolmanQuaternionFeedPollTimer=0,
-    policecarQuaternionFeedPollTimer=0;
+/*var patrolmanQuaternionFeedPollTimer=0,
+    policecarQuaternionFeedPollTimer=0;*/
+
 
 $( document ).ready(function() {
 
@@ -134,22 +131,38 @@ function is(type, obj) {
   return obj !== undefined && obj !== null && clas === type;
 }
 
-// Real-time quaternion feed
-function getRTQuaternionFeed(feedSource) {
-  // Query SOS Quaternion stream
-  xhReq = new XMLHttpRequest();
-  xhReq.open("GET", feedSource, true);
-  xhReq.send(null);
-  switch(feedSource) {
-    case PATROLMAN_QUAT_FEED:
-      patrolmanQuaternionFeedPollTimer = setInterval(processFeed, POLL_INTERVAL, quatFields, "QUATERNION", "PATROLMAN_QUAT_FEED", "N/A");
-      break;
-    case PATROLCAR_QUAT_FEED:
-      patrolcarQuaternionFeedPollTimer = setInterval(processFeed, POLL_INTERVAL, quatFields, "QUATERNION", "POLICECAR_QUAT_FEED", "N/A");
-      break;
-     default:
-      throw new Error("Unknown real-time quaternion feed source.");
+// Real-time orientation feed
+function getRTOrientationFeed(feedSource) {
+  // Query SOS Orientation stream
+  var reader = new FileReader();
+  reader.onload = function () {
+    var rec = reader.result;
+    if (null===rec) {
+      console.log("no orientation data");
+    } else {
+      switch(feedSource) {
+        case POLICECAR_GPS_FEED:
+          processWebSocketFeed(rec, quatFields, "QUATERNION", "PATROLMAN_QUAT_FEED", "N/A");
+          break;
+        case PATROLMAN_GPS_FEED:
+          processWebSocketFeed(rec, quatFields, "QUATERNION", "POLICECAR_QUAT_FEED", "N/A");
+          break;
+         default:
+          throw new Error("Unknown real-time orientation feed source.");
+      }
+    }
   }
+  var ws = new WebSocket(feedSource);
+  ws.onmessage = function (event) {
+      reader.readAsText(event.data);
+  }
+  ws.onerror = function (event) {
+      ws.close();
+  }
+  ws.onclose = function (event) {
+    console.log ("Socket closing...");
+  }
+  return ws;
 }
 
 function getRTGPSFeed(feedSource) {
@@ -158,7 +171,7 @@ function getRTGPSFeed(feedSource) {
   reader.onload = function () {
     var rec = reader.result;
     if (null===rec) {
-      console.log("no data");
+      console.log("no gps data");
     } else {
       switch(feedSource) {
         case POLICECAR_GPS_FEED:
@@ -184,16 +197,16 @@ function getRTGPSFeed(feedSource) {
     switch(feedSource) {
       case POLICECAR_GPS_FEED:
         policecarsocket=null;
-        map.removeLayer(livePoliceCarFeed);
-        livePoliceCarFeed.update(livePoliceCarFeed);
-        livePoliceCarFeed=null;
+        map.removeLayer(policeCarMarker);
+        policeCarMarker.update(policeCarMarker);
+        policeCarMarker=null;
         console.log("Closed police car feed...");        
         break;
       case PATROLMAN_GPS_FEED:
         patrolmansocket=null;
-        map.removeLayer(livePatrolmanFeed);
-        livePatrolmanFeed.update(livePatrolmanFeed);
-        livePatrolmanFeed=null;            
+        map.removeLayer(patrolManMarker);
+        patrolManMarker.update(patrolManMarker);
+        patrolManMarker=null;            
         console.log("Closed patrolman feed...");        
         break;
        default:
@@ -204,32 +217,66 @@ function getRTGPSFeed(feedSource) {
   return ws;
 }
 
-
 // Real-time weather feed
 function getRTWeatherFeed(feedSource, display) {
-  // Query SOS GPS stream
-  xhReq = new XMLHttpRequest();
-  xhReq.open("GET", feedSource, true);
-  xhReq.send();
-  switch(display) {
-    case "location" :
-      weatherLocationPollTimer = setInterval(processFeed, POLL_INTERVAL, weatherFields, "WEATHER_STATION_LOCATION", "N/A", weatherSensorLocations);
-      break;
-    case "temperature" :
-      weatherTemperaturePollTimer = setInterval(processFeed, POLL_INTERVAL, weatherFields, "WEATHER_TEMPERATURE", "TEMPERATURE", weatherSensorLocations);
-      break;
-    case "pressure" :
-      weatherTemperaturePollTimer = setInterval(processFeed, POLL_INTERVAL, weatherFields, "WEATHER_BAROMETRIC_PRESSURE", "PRESSURE", weatherSensorLocations);
-      break;
-    case "windspeed" :
-      windSpeedFeedPollTimer = setInterval(processFeed, POLL_INTERVAL, weatherFields, "WEATHER_WIND_SPEED", "N/A", "N/A");
-      break;
-    case "winddirection" :
-      windDirectionFeedPollTimer = setInterval(processFeed, POLL_INTERVAL, weatherFields, "WEATHER_WIND_DIRECTION", "N/A", "N/A");
-      break;
-     default:
-      throw new Error("Unknown weather data display type.");
+  // Query SOS weather stream
+  var reader = new FileReader();
+  reader.onload = function () {
+    var rec = reader.result;
+    if (null===rec) {
+      console.log("no weather data");
+    } else {
+      switch(display) {
+        case "location" :
+          processWebSocketFeed(rec, weatherFields, "WEATHER_STATION_LOCATION", "N/A", weatherSensorLocations);
+          break;
+        case "temperature" :
+          processWebSocketFeed(rec, weatherFields, "WEATHER_TEMPERATURE", "TEMPERATURE", weatherSensorLocations);
+          break;
+        case "pressure" :
+          processWebSocketFeed(rec, weatherFields, "WEATHER_BAROMETRIC_PRESSURE", "PRESSURE", weatherSensorLocations);
+          break;
+        case "windspeed" :
+          processWebSocketFeed(rec, weatherFields, "WEATHER_WIND_SPEED", "N/A", "N/A");
+          break;
+        case "winddirection" :
+          processWebSocketFeed(rec, weatherFields, "WEATHER_WIND_DIRECTION", "N/A", "N/A");
+          break;
+         default:
+          throw new Error("Unknown weather data display type.");
+      }      
+    }
   }
+  var ws = new WebSocket(feedSource);
+  ws.onmessage = function (event) {
+      reader.readAsText(event.data);
+  }
+  ws.onerror = function (event) {
+      ws.close();
+  }
+  ws.onclose = function (event) {
+    console.log ("Socket closing...");
+    switch(feedSource) {
+      case POLICECAR_GPS_FEED:
+        policecarsocket=null;
+        map.removeLayer(policeCarMarker);
+        policeCarMarker.update(policeCarMarker);
+        policeCarMarker=null;
+        console.log("Closed police car feed...");        
+        break;
+      case PATROLMAN_GPS_FEED:
+        patrolmansocket=null;
+        map.removeLayer(patrolManMarker);
+        patrolManMarker.update(patrolManMarker);
+        patrolManMarker=null;            
+        console.log("Closed patrolman feed...");        
+        break;
+       default:
+        throw new Error("Unknown real-time GPS feed source.");
+    }
+    
+  }
+  return ws;
 }
 
 // Generic feed parser
@@ -279,7 +326,7 @@ function processFeed(recordDescriptor, typeofFeed, markerType, markerLocations) 
 }
 
 function buildWeatherStationMarker(sensorLocation) {
-  if (livePoliceCarFeed === null) {
+  if (policeCarMarker === null) {
     weatherStationMarker = L.Marker(
                           [sensorLocation.lat, sensorLocation.lon], 
                           {icon: L.icon({ iconUrl: 'http://54.80.60.180:6080/images/weatherstationicon.png',
@@ -335,29 +382,29 @@ function buildGPSMarker(data, markerType) {
   } /*Latitude or Longitude empty */ else {
     switch (markerType) {
       case "POLICECARFEED" :
-        if (livePoliceCarFeed === null) {
-          livePoliceCarFeed = L.rotatedMarker(
+        if (policeCarMarker === null) {
+          policeCarMarker = L.rotatedMarker(
                                 [s_lat, s_long], 
                                 {icon: L.icon({ iconUrl: 'http://54.80.60.180:6080/images/policecar.png',
                                                 iconSize: [35, 75],})}).addTo(map)
-                              .bindPopup('<div id="pop-livePoliceCarFeed">Latitude: ' + s_lat + '<br />Longitude: ' + s_long + '</div>', { className: 'marker-popup' , closeButton: false});
-          //livePoliceCarFeed.options.angle = 90;                              
+                              .bindPopup('<div id="pop-policeCarMarker">Latitude: ' + s_lat + '<br />Longitude: ' + s_long + '</div>', { className: 'marker-popup' , closeButton: false});
+          //policeCarMarker.options.angle = 90;                              
         } else {
-          livePoliceCarFeed.setLatLng([s_lat, s_long]);
-          $('#pop-livePoliceCarFeed').html('Latitude: ' + s_lat + '<br />Longitude: ' + s_long);
+          policeCarMarker.setLatLng([s_lat, s_long]);
+          $('#pop-policeCarMarker').html('Latitude: ' + s_lat + '<br />Longitude: ' + s_long);
         }
         break;
       case "PATROLMANFEED" :
-        if (livePatrolmanFeed === null) {
-          livePatrolmanFeed = L.rotatedMarker(
+        if (patrolManMarker === null) {
+          patrolManMarker = L.rotatedMarker(
                                 [s_lat, s_long], 
                                 {icon: L.icon({ iconUrl: 'http://54.80.60.180:6080/images/policeman.png',
                                                 iconSize: [24, 24],})}).addTo(map)
-                              .bindPopup('<div id="pop-livePatrolmanFeed">Latitude: ' + s_lat + '<br />Longitude: ' + s_long + '</div>', { className: 'marker-popup' , closeButton: false });
-          //livePatrolmanFeed.options.angle = 90;                              
+                              .bindPopup('<div id="pop-patrolManMarker">Latitude: ' + s_lat + '<br />Longitude: ' + s_long + '</div>', { className: 'marker-popup' , closeButton: false });
+          //patrolManMarker.options.angle = 90;                              
         } else {
-          livePatrolmanFeed.setLatLng([s_lat, s_long]);
-          $('#pop-livePatrolmanFeed').html('Latitude: ' + s_lat + '<br />Longitude: ' + s_long);
+          patrolManMarker.setLatLng([s_lat, s_long]);
+          $('#pop-patrolManMarker').html('Latitude: ' + s_lat + '<br />Longitude: ' + s_long);
         }
         break;
       default:

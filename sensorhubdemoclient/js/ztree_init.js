@@ -85,10 +85,10 @@ function processCheckedNodes(nodes) {
         case 1:
           switch (nodes[i].id) {
             case 2: // Police car location information
-              if (null !== livePoliceCarFeed) livePoliceCarFeed.openPopup();
+              if (null !== policeCarMarker) policeCarMarker.openPopup();
               break;
             case 3: // Police car camera look rays
-              getRTQuaternionFeed(PATROLCAR_QUAT_FEED);
+              getRTOrientationFeed(PATROLCAR_QUAT_FEED);
               break;
             case 4: // Police car live camera feed
               document.getElementById("policecarcam").style.display="block";
@@ -100,10 +100,10 @@ function processCheckedNodes(nodes) {
         case 5:  
           switch (nodes[i].id) {
             case 6: // Patrolman location information
-              if (null !==  livePatrolmanFeed) livePatrolmanFeed.openPopup();
+              if (null !==  patrolManMarker) patrolManMarker.openPopup();
               break;
             case 7: // Patrolman camera look rays
-              getRTQuaternionFeed(PATROLMAN_QUAT_FEED);
+              getRTOrientationFeed(PATROLMAN_QUAT_FEED);
               break;
               break;
             case 8: // Patrolman live camera feed
@@ -170,13 +170,13 @@ function processUnCheckedNodes(nodes) {
         case 1:
           switch (nodes[i].id) {
             case 2: // Police car location information
-              if (null !== livePoliceCarFeed) livePoliceCarFeed.closePopup();
+              if (null !== policeCarMarker) policeCarMarker.closePopup();
               break;
             case 3: // Police car camera look rays
               if (0 < policecarQuaternionFeedPollTimer ) {
                 clearInterval(policecarQuaternionFeedPollTimer);
                 policecarQuaternionFeedPollTimer = 0;
-                //map.removeLayer(livePoliceCarFeed);
+                //map.removeLayer(policeCarMarker);
                 livePolicecarQuaternionFeed=null;            
               } 
               break;
@@ -190,13 +190,13 @@ function processUnCheckedNodes(nodes) {
         case 5:  
           switch (nodes[i].id) {
             case 6: // Patrolman location information
-              if (null !== livePatrolmanFeed) livePatrolmanFeed.closePopup();
+              if (null !== patrolManMarker) patrolManMarker.closePopup();
               break;
             case 7: // Patrolman camera look rays
               if (0 < patrolmanQuaternionFeedPollTimer ) {
                 clearInterval(patrolmanQuaternionFeedPollTimer);
                 patrolmanQuaternionFeedPollTimer = 0;
-                //map.removeLayer(livePoliceCarFeed);
+                //map.removeLayer(policeCarMarker);
                 livePatrolmanQuaternionFeed=null;            
               } 
               break;
