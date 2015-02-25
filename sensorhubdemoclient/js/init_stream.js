@@ -58,12 +58,16 @@ $( document ).ready(function() {
   policeCar.lat = 0;
   policeCar.lon = 0;
   policeCar.rotation = 0;
+  policeCar.buildmarker = false;
+  policeCar.lookrayson = false;
   dataObjects[0] = policeCar;
   
   var patrolMan = new Object();
   patrolMan.lat = 0;
   patrolMan.lon = 0;
   patrolMan.rotation = 0;
+  patrolMan.buildmarker = false;
+  patrolMan.lookrayson = false;
   dataObjects[1] = patrolMan;
   
   $('#selectObjects').click(function (e) {
@@ -202,30 +206,33 @@ function getRTOrientationFeed(feedSource, feedType) {
   return ws;
 }
 
-function getRTGPSFeed(feedSource, buildMarker, markerType) {
+function log(msg) {
+  $("<p>" + msg + "</p>").appendTo("#dbg");
+}
+
+function getRTGPSFeed(feedSource) {
   // Query SOS GPS stream
   var reader = new FileReader();
+  log("In getRTGPSFeed :: feedSource --> " + feedSource);
   reader.onload = function () {
     var rec = reader.result;
     if (null===rec) {
       console.log("no gps data");
     } else {
-      if ("undefined" === typeof buildMarker || null === buildMarker) {
-        buildMarker = true;
-      } 
       switch(feedSource) {
         case POLICECAR_GPS_FEED:
-          processWebSocketFeed(rec, gpsFields, markerType, "POLICECARFEED", "N/A");
-          if ((buildMarker) && ("GPS" === markerType))
+          processWebSocketFeed(rec, gpsFields, "GPS", "POLICECARFEED", "N/A");
+          log("In getRTGPSFeed :: police car build marker --> " + dataObjects[0].buildmarker);
+          if (dataObjects[0].buildmarker)
             buildGPSMarker(dataObjects[0],"POLICECARFEED");
-          if ((buildMarker) && ("LOOKRAYS" === markerType))
+          if ((dataObjects[0].lookrayson))
             buildGPSMarker(dataObjects[0],"POLICECARLOOKRAYFEED");
           break;
         case PATROLMAN_GPS_FEED:
-          processWebSocketFeed(rec, gpsFields, markerType, "PATROLMANFEED", "N/A");
-          if ((buildMarker) && ("GPS" === markerType))
-            buildGPSMarker(dataObjects[1],"POLICECARFEED");
-          if ((buildMarker) && ("LOOKRAYS" === markerType))
+          processWebSocketFeed(rec, gpsFields, "GPS", "PATROLMANFEED", "N/A");
+          if (dataObjects[1].buildmarker)
+            buildGPSMarker(dataObjects[1],"PATROLMANFEED");
+          if ((dataObjects[1].lookrayson))
             buildGPSMarker(dataObjects[1],"POLICECARLOOKRAYFEED");
           break;
         default:
@@ -304,16 +311,12 @@ function getRTWeatherFeed(feedSource, display) {
     console.log ("Socket closing...");
     switch(feedSource) {
       case POLICECAR_GPS_FEED:
-//        policecarsocket=null;
-        map.removeLayer(policeCarMarker);
-        policeCarMarker.update(policeCarMarker);
+        removeMarker(policeCarMarker);
         policeCarMarker=null;
         console.log("Closed police car feed...");        
         break;
       case PATROLMAN_GPS_FEED:
-//        patrolmansocket=null;
-        map.removeLayer(patrolManMarker);
-        patrolManMarker.update(patrolManMarker);
+        removeMarker(patrolManMarker);
         patrolManMarker=null;            
         console.log("Closed patrolman feed...");        
         break;
@@ -323,6 +326,11 @@ function getRTWeatherFeed(feedSource, display) {
     
   }
   return ws;
+}
+
+function removeMarker(thisMarker) {
+  map.removeLayer(thisMarker);
+  thisMarker.update(thisMarker);
 }
 
 function buildWeatherStationMarker(sensorLocation) {
@@ -335,45 +343,8 @@ function buildWeatherStationMarker(sensorLocation) {
   }
 } // buildWeatherStationMarker
 
-function buildLookRaysMarker(locationData, rotation, markerType) {
-  
-  var s_lat = locationData.lat, s_long = locationData.long, s_alt = locationData.alt, s_time = locationData.time;
-  
-  
-  if (typeof s_lat === "undefined" || typeof s_long === "undefined") {
-    throw new Error ("Latitude and/or Longitude for look rays is unavailable.");
-    return;
-  } /*Latitude or Longitude empty */ else {
-    switch (markerType) {
-      case "POLICECAR_ORIENTATION_FEED" :
-        if (livePolicecarLookRaysMarker === null) {
-          livePolicecarLookRaysMarker = L.rotatedMarker(
-                                [s_lat, s_long], 
-                                {icon: L.icon({ iconUrl: 'http://54.80.60.180:6080/images/cameralookrays.png',
-                                                iconSize: [64, 64],})}).addTo(map);
-        } else {
-          livePolicecarLookRaysMarker.setLatLng([s_lat, s_long]);
-        }
-        livePolicecarLookRaysMarker.options.angle = parseFloat(rotation);                              
-        break;
-      case "PATROLMAN_ORIENTATION_FEED" :
-        if (livePatrolmanLookRaysMarker === null) {
-          livePatrolmanLookRaysMarker = L.rotatedMarker(
-                                [s_lat, s_long], 
-                                {icon: L.icon({ iconUrl: 'http://54.80.60.180:6080/images/cameralookrays.png',
-                                                iconSize: [64, 64],})}).addTo(map);
-        } else {
-          livePatrolmanLookRaysMarker.setLatLng([s_lat, s_long]);
-        }
-        livePatrolmanLookRaysMarker.options.angle = parseFloat(rotation);                              
-        break;
-      default:
-        throw new Error ("Cannot build marker.  Unknown ORIENTATION marker type.");
-    } // Switching based on marker type
-  }  // Got Latitude or Longitude 
-} // buildLookRaysMarker
-
 function buildGPSMarker(data, markerType) {
+  log("In buildGPSMarker :: markerType ->" + markerType);
   var s_lat = data.lat, s_long = data.lon, rotation = data.rotation;
   
   if (typeof s_lat === "undefined" || typeof s_long === "undefined") {
@@ -454,7 +425,6 @@ function interpretFeed(data, iFields, typeofFeed, delimiter) {
         });
       return { rotation: s_rotation, pitch: s_pitch, roll: s_roll };
       break;
-    case "LOOKRAYS": 
     case "GPS":
       $(iFields).each(function (idx, field) {
           switch($(field).attr('name')) {
@@ -523,13 +493,11 @@ function processWebSocketFeed(rec, recordDescriptor, typeofFeed, markerType, mar
           dataObjects[1].lat = response.lat;
           dataObjects[1].lon = response.long;
           dataObjects[1].rotation = currentPatrolmanOrientation;
-          //buildGPSMarker(response, currentPatrolmanOrientation, markerType);
           break;
         case "POLICECARFEED":
           dataObjects[0].lat = response.lat;
           dataObjects[0].lon = response.long;
           dataObjects[0].rotation = currentPolicecarOrientation;
-          //buildGPSMarker(response, currentPolicecarOrientation, markerType);
           break;
       }
       break;
@@ -555,4 +523,3 @@ function processWebSocketFeed(rec, recordDescriptor, typeofFeed, markerType, mar
   }
     
 }
-

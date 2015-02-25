@@ -74,14 +74,22 @@ function processCheckedNodes(nodes) {
       // Parent node
       switch (nodes[i].id) {
         case 1: // Police car live gps feed
-          policecarsocket = getRTGPSFeed(POLICECAR_GPS_FEED,true,"GPS");
+          dataObjects[0].buildmarker = true;
+          if (null === policecarsocket) {
+            // It is possible that GPS feed is on because police car lookrays is checked!
+            policecarsocket = getRTGPSFeed(POLICECAR_GPS_FEED);
+          }
           if (null === policecarOrientationSocket) {
             // It is possible that orientation feed is on because look rays is checked!
             policecarOrientationSocket = getRTOrientationFeed(POLICECAR_ORIENTATION_FEED,POLICECAR_GPS_FEED);
           }
           break;
         case 5: // Patrolman live gps feed (basically phone location)
-          patrolmansocket = getRTGPSFeed(PATROLMAN_GPS_FEED,true,"GPS");
+          dataObjects[1].buildmarker = true;
+          if (null === patrolmansocket) {
+            // It is possible that GPS feed is on because patrolman lookrays is checked!
+            patrolmansocket = getRTGPSFeed(PATROLMAN_GPS_FEED);
+          }
           if (null===patrolmanOrientationSocket) {
             // It is possible that orientation feed is on because look rays is checked!
             patrolmanOrientationSocket = getRTOrientationFeed(PATROLMAN_ORIENTATION_FEED,PATROLMAN_GPS_FEED);
@@ -102,9 +110,10 @@ function processCheckedNodes(nodes) {
               if (null !== policeCarMarker) policeCarMarker.openPopup();
               break;
             case 3: // Police car camera look rays
+              dataObjects[0].lookrayson = true;
               if (null === policecarsocket) {
                 // It is possible that GPS feed is on because police car is checked!
-                policecarsocket = getRTGPSFeed(POLICECAR_GPS_FEED,true,"LOOKRAYS");
+                policecarsocket = getRTGPSFeed(POLICECAR_GPS_FEED);
               }
               if (null===policecarOrientationSocket) {
                 // It is possible that orientation feed is on because police car is checked!
@@ -124,9 +133,10 @@ function processCheckedNodes(nodes) {
               if (null !==  patrolManMarker) patrolManMarker.openPopup();
               break;
             case 7: // Patrolman camera look rays
+              dataObjects[1].lookrayson = true;
               if (null === patrolmansocket) {
                 // It is possible that GPS feed is on because patrolman is checked!
-                patrolmansocket = getRTGPSFeed(PATROLMAN_GPS_FEED,true,"LOOKRAYS");
+                patrolmansocket = getRTGPSFeed(PATROLMAN_GPS_FEED);
               }
               if (null === patrolmanOrientationSocket) {
                 // It is possible that orientation feed is on because patrolman is checked!
@@ -175,16 +185,37 @@ function processUnCheckedNodes(nodes) {
       // Parent node
       switch (nodes[i].id) {
         case 1: // Police car live gps feed
-          if (null !== policecarsocket) {
-            if (WebSocket.OPEN === policecarsocket.readyState) 
-              policecarsocket.close();
-              policecarsocket = null;
+          dataObjects[0].buildmarker = false;
+          if (!dataObjects[0].lookrayson) {
+            // If police car look rays are on, then we need the car feed!
+            if (null !== policecarsocket) {
+              if (WebSocket.OPEN === policecarsocket.readyState) { 
+                policecarsocket.close();
+                policecarsocket = null;
+              }
+            }
+          } else {
+            // Turn off police car marker.
+            map.removeLayer(policeCarMarker);
+            policeCarMarker.update(policeCarMarker);
+            policeCarMarker=null;
           }
           break;
         case 5: // Patrolman live gps feed (basically phone location)
-          if (null !== patrolmansocket) {
-            if (WebSocket.OPEN === patrolmansocket.readyState) 
-              patrolmansocket.close();
+          dataObjects[1].buildmarker = false;
+          if (!dataObjects[1].lookrayson) {
+             // If patrolman look rays are on, then we need the car feed!
+            if (null !== patrolmansocket) {
+              if (WebSocket.OPEN === patrolmansocket.readyState) {
+                patrolmansocket.close();
+                patrolmansocket = null;
+              } 
+            }
+          } else {
+            // Turn off patrolman marker
+            map.removeLayer(patrolManMarker);
+            patrolManMarker.update(patrolManMarker);
+            patrolManMarker=null;
           }
           break;
         case 9: // Weather live feed
@@ -201,6 +232,7 @@ function processUnCheckedNodes(nodes) {
               if (null !== policeCarMarker) policeCarMarker.closePopup();
               break;
             case 3: // Police car camera look rays
+              dataObjects[0].lookrayson = false;
               if (null === policecarsocket) {
                 // If police car is checked, then we still need orientation feed.
                 if (null !== policecarOrientationSocket) {
@@ -209,6 +241,11 @@ function processUnCheckedNodes(nodes) {
                     policecarOrientationSocket = null;
                   }
                 }                
+              } else {
+                // Police car socket is still alive but, we must turn off look rays
+                map.removeLayer(livePolicecarLookRaysMarker);
+                livePolicecarLookRaysMarker.update(livePolicecarLookRaysMarker);
+                livePolicecarLookRaysMarker=null;
               }
               break;
             case 4: // Police car live camera feed
@@ -224,13 +261,20 @@ function processUnCheckedNodes(nodes) {
               if (null !== patrolManMarker) patrolManMarker.closePopup();
               break;
             case 7: // Patrolman camera look rays
+              dataObjects[1].lookrayson = false;
               if (null === patrolmansocket) {
                 // If patrolman is checked, then we still need orientation feed.
                 if (null !== patrolmanOrientationSocket) {
                   if (WebSocket.OPEN === patrolmanOrientationSocket.readyState) {
                     patrolmanOrientationSocket.close();
+                    patrolmanOrientationSocket = null;
                   }
                 }
+              } else {
+                // Patrolman socket is still alive but, we must turn off look rays
+                map.removeLayer(livePatrolmanLookRaysMarker);
+                livePatrolmanLookRaysMarker.update(livePatrolmanLookRaysMarker);
+                livePatrolmanLookRaysMarker=null;
               }
               break;
             case 8: // Patrolman live camera feed
