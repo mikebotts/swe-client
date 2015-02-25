@@ -1,6 +1,12 @@
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+
 var menuStatus=0;
 var policecarsocket=null,
-    patrolmansocket=null;
+    policecarOrientationSocket=null,
+    patrolmansocket=null,
+    patrolmanOrientationSocket=null;
 
 
 var zNodes = [
@@ -69,9 +75,15 @@ function processCheckedNodes(nodes) {
       switch (nodes[i].id) {
         case 1: // Police car live gps feed
           policecarsocket = getRTGPSFeed(POLICECAR_GPS_FEED);
+          if (null===policecarOrientationSocket) {
+            policecarOrientationSocket = getRTOrientationFeed(POLICECAR_ORIENTATION_FEED,POLICECAR_GPS_FEED);
+          }
           break;
         case 5: // Patrolman live gps feed (basically phone location)
           patrolmansocket = getRTGPSFeed(PATROLMAN_GPS_FEED);
+          if (null===patrolmanOrientationSocket) {
+            patrolmanOrientationSocket = getRTOrientationFeed(PATROLMAN_ORIENTATION_FEED,PATROLMAN_GPS_FEED);
+          }
           break;
         case 9: // Weather live feed
           //NOOP
@@ -88,7 +100,9 @@ function processCheckedNodes(nodes) {
               if (null !== policeCarMarker) policeCarMarker.openPopup();
               break;
             case 3: // Police car camera look rays
-              getRTOrientationFeed(PATROLCAR_QUAT_FEED);
+              if (null===policecarOrientationSocket) {
+                policecarOrientationSocket = getRTOrientationFeed(POLICECAR_ORIENTATION_FEED,POLICECAR_GPS_FEED);
+              }
               break;
             case 4: // Police car live camera feed
               document.getElementById("policecarcam").style.display="block";
@@ -103,7 +117,9 @@ function processCheckedNodes(nodes) {
               if (null !==  patrolManMarker) patrolManMarker.openPopup();
               break;
             case 7: // Patrolman camera look rays
-              getRTOrientationFeed(PATROLMAN_QUAT_FEED);
+              if (null===patrolmanOrientationSocket) {
+                patrolmanOrientationSocket = getRTOrientationFeed(PATROLMAN_ORIENTATION_FEED,PATROLMAN_GPS_FEED);
+              }
               break;
               break;
             case 8: // Patrolman live camera feed
@@ -123,16 +139,16 @@ function processCheckedNodes(nodes) {
             case 12:
               break;
             case 13: // Station 1 - Wind Direction
-              if (0==windDirectionFeedPollTimer) {
+              /*if (0==windDirectionFeedPollTimer) {
                 document.getElementById("weather_winddirection").style.display = 'block';
                 getRTWeatherFeed(WEATHER_RT_FEED,"winddirection");                
-              }
+              }*/
               break;
             case 14: // Station 1 - Wind Speed
-              if (0==windSpeedFeedPollTimer) {
+              /*if (0==windSpeedFeedPollTimer) {
                 document.getElementById("weather_windspeed").style.display = 'block';
                 getRTWeatherFeed(WEATHER_RT_FEED,"windspeed");                
-              }
+              }*/
               break;
             default:
               throw new Error("Unknown data object");
@@ -148,14 +164,15 @@ function processUnCheckedNodes(nodes) {
       // Parent node
       switch (nodes[i].id) {
         case 1: // Police car live gps feed
-          if (null!==policecarsocket) {
-            if (policecarsocket.readyState === WebSocket.OPEN) 
+          if (null !== policecarsocket) {
+            if (WebSocket.OPEN === policecarsocket.readyState) 
               policecarsocket.close();
+              policecarsocket = null;
           }
           break;
         case 5: // Patrolman live gps feed (basically phone location)
-          if (null!==patrolmansocket) {
-            if (patrolmansocket.readyState === WebSocket.OPEN) 
+          if (null !== patrolmansocket) {
+            if (WebSocket.OPEN === patrolmansocket.readyState) 
               patrolmansocket.close();
           }
           break;
@@ -173,12 +190,14 @@ function processUnCheckedNodes(nodes) {
               if (null !== policeCarMarker) policeCarMarker.closePopup();
               break;
             case 3: // Police car camera look rays
-              if (0 < policecarQuaternionFeedPollTimer ) {
-                clearInterval(policecarQuaternionFeedPollTimer);
-                policecarQuaternionFeedPollTimer = 0;
-                //map.removeLayer(policeCarMarker);
-                livePolicecarQuaternionFeed=null;            
-              } 
+              if (null === policecarsocket) {
+                if (null !== policecarOrientationSocket) {
+                  if (WebSocket.OPEN === policecarOrientationSocket.readyState) {
+                    policecarOrientationSocket.close();
+                    policecarOrientationSocket = null;
+                  }
+                }                
+              }
               break;
             case 4: // Police car live camera feed
               document.getElementById("policecarcam").style.display="none";
@@ -193,12 +212,13 @@ function processUnCheckedNodes(nodes) {
               if (null !== patrolManMarker) patrolManMarker.closePopup();
               break;
             case 7: // Patrolman camera look rays
-              if (0 < patrolmanQuaternionFeedPollTimer ) {
-                clearInterval(patrolmanQuaternionFeedPollTimer);
-                patrolmanQuaternionFeedPollTimer = 0;
-                //map.removeLayer(policeCarMarker);
-                livePatrolmanQuaternionFeed=null;            
-              } 
+              if (null === patrolmansocket) {
+                if (null !== patrolmanOrientationSocket) {
+                  if (WebSocket.OPEN === patrolmanOrientationSocket.readyState) {
+                    patrolmanOrientationSocket.close();
+                  }
+                }
+              }
               break;
             case 8: // Patrolman live camera feed
               document.getElementById("patrolmancam").style.display="none";              
@@ -208,8 +228,8 @@ function processUnCheckedNodes(nodes) {
           }
           break;
         case 9: // Weather Station 1
-          clearInterval(weatherLocationPollTimer);
-          weatherLocationPollTimer = 0;            
+          //clearInterval(weatherLocationPollTimer);
+          //weatherLocationPollTimer = 0;            
           break;
         case 10:  
           switch (nodes[i].id) {
@@ -217,13 +237,13 @@ function processUnCheckedNodes(nodes) {
             case 12:
               break;
             case 13: // Station 1 - Wind Direction
-              clearInterval(windDirectionFeedPollTimer);
-              windDirectionFeedPollTimer = 0;            
+              //clearInterval(windDirectionFeedPollTimer);
+              //windDirectionFeedPollTimer = 0;            
               document.getElementById("weather_winddirection").style.display = 'none';
               break;
             case 14: // Station 1 - Wind Speed
-              clearInterval(windSpeedFeedPollTimer);
-              windSpeedFeedPollTimer = 0;            
+              //clearInterval(windSpeedFeedPollTimer);
+              //windSpeedFeedPollTimer = 0;            
               document.getElementById("weather_windspeed").style.display = 'none';
               break;
             default:
