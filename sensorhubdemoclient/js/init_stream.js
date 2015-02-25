@@ -2,39 +2,19 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-//Mike's Nexus -- urn:android:device:04e4413b0a286002-sos
-//Mani's HTC -- urn:android:device:FA44CWM03715-sos
-
 var template = null;
 var gpsFields = [], weatherFields = [], orientationFields = [], weatherSensorLocations = [];
-var INTERVALS = 0, MAX_INTERVALS = 60, POLL_INTERVAL = 100;
 var WEATHER_DESCRIPTOR = 'http://54.172.40.148:8080/sensorhub/sos?service=SOS&version=2.0&request=DescribeSensor&procedure=urn:test:sensors:fakeweather&procedureDescriptionFormat=http://www.opengis.net/sensorml/2.0',
     GPS_DESCRIPTOR = 'http://54.172.40.148:8080/sensorhub/sos?service=SOS&version=2.0&request=GetResultTemplate&offering=urn:mysos:offering02&observedProperty=http://sensorml.com/ont/swe/property/Location',
     CAM_DESCRIPTOR = 'http://54.172.40.148:8080/sensorhub/sos?service=SOS&version=2.0&request=DescribeSensor&procedure=urn:test:sensors:fakecam&procedureDescriptionFormat=http://www.opengis.net/sensorml/2.0',
     ORIENTATION_DESCRIPTOR = 'http://bottsgeo.com:8181/sensorhub/sos?service=SOS&version=2.0&request=GetResultTemplate&offering=urn:android:device:FA44CWM03715-sos&observedProperty=http://sensorml.com/ont/swe/property/Orientation';
-    //var POLICECAR_GPS_FEED = 'http://54.172.40.148:8080/sensorhub/sos?service=SOS&version=2.0&request=GetResult&offering=urn:mysos:offering02&observedProperty=http://sensorml.com/ont/swe/property/Location&temporalFilter=phenomenonTime,now/2115-01-28T16:24:48Z',
-//var POLICECAR_GPS_FEED = 'ws://bottsgeo.com:8181/sensorhub/sos?service=SOS&version=2.0&request=GetResult&offering=urn:android:device:FA44CWM03715-sos&observedProperty=http://sensorml.com/ont/swe/property/Location&temporalFilter=phenomenonTime,now/2115-01-28T16:24:48Z',
-//    POLICECAR_ORIENTATION_FEED = 'ws://bottsgeo.com:8181/sensorhub/sos?service=SOS&version=2.0&request=GetResult&offering=urn:android:device:FA44CWM03715-sos&observedProperty=http://sensorml.com/ont/swe/property/Orientation&temporalFilter=phenomenonTime,now/2115-01-28T16:24:48Z',
-var POLICECAR_GPS_FEED = 'ws://bottsgeo.com:8181/sensorhub/sos?service=SOS&version=2.0&request=GetResult&offering=urn:android:device:FA44CWM03715-sos&observedProperty=http://sensorml.com/ont/swe/property/Location&temporalFilter=phenomenonTime,2015-02-22T02:51:00Z/now&replaySpeed=1',
-    POLICECAR_ORIENTATION_FEED = 'ws://bottsgeo.com:8181/sensorhub/sos?service=SOS&version=2.0&request=GetResult&offering=urn:android:device:FA44CWM03715-sos&observedProperty=http://sensorml.com/ont/swe/property/Orientation&temporalFilter=phenomenonTime,2015-02-22T02:51:00Z/now&replaySpeed=1',
-    //POLICECAR_GPS_FEED = 'http://54.172.40.148:8080/sensorhub/sos?service=SOS&version=2.0&request=GetResult&offering=urn:mysos:offering02&observedProperty=http://sensorml.com/ont/swe/property/Location&temporalFilter=phenTime,now/2015-06-01',
-    //POLICECAR_GPS_FEED = 'ws://54.172.40.148:8080/sensorhub/sos?service=SOS&version=2.0&request=GetResult&offering=urn:mysos:offering02&observedProperty=http://sensorml.com/ont/swe/property/Location&temporalFilter=phenomenonTime,now/2055-01-01',
-    //PATROLMAN_GPS_FEED = 'http://54.172.40.148:8080/sensorhub/sos?service=SOS&version=2.0&request=GetResult&offering=urn:mysos:offering01&observedProperty=http://sensorml.com/ont/swe/property/Location&temporalFilter=phenomenonTime,now/2115-01-28T16:24:48Z',
-    //PATROLMAN_GPS_FEED = 'http://bottsgeo.com:8181/sensorhub/sos?service=SOS&version=2.0&request=GetResult&offering=urn:android:device:04e4413b0a286002-sos&observedProperty=http://sensorml.com/ont/swe/property/Location&temporalFilter=phenomenonTime,now/2015-06-01',
+var POLICECAR_GPS_FEED = 'ws://bottsgeo.com:8181/sensorhub/sos?service=SOS&version=2.0&request=GetResult&offering=urn:android:device:FA44CWM03715-sos&observedProperty=http://sensorml.com/ont/swe/property/Location&temporalFilter=phenomenonTime,2015-02-22T02:51:00Z/now&replaySpeed=3',
+    POLICECAR_ORIENTATION_FEED = 'ws://bottsgeo.com:8181/sensorhub/sos?service=SOS&version=2.0&request=GetResult&offering=urn:android:device:FA44CWM03715-sos&observedProperty=http://sensorml.com/ont/swe/property/Orientation&temporalFilter=phenomenonTime,2015-02-22T02:51:00Z/now&replaySpeed=3',
     PATROLMAN_GPS_FEED = 'ws://bottsgeo.com:8181/sensorhub/sos?service=SOS&version=2.0&request=GetResult&offering=urn:android:device:04e4413b0a286002-sos&observedProperty=http://sensorml.com/ont/swe/property/Location&temporalFilter=phenomenonTime,now/2015-06-01',
     PATROLMAN_ORIENTATION_FEED = 'ws://bottsgeo.com:8181/sensorhub/sos?service=SOS&version=2.0&request=GetResult&offering=urn:android:device:04e4413b0a286002-sos&observedProperty=http://sensorml.com/ont/swe/property/Orientation&temporalFilter=phenomenonTime,now/2015-06-01',
-    //WEATHER_RT_FEED = 'http://54.172.40.148:8080/sensorhub/sos?service=SOS&version=2.0&request=GetResult&offering=urn:mysos:offering03&observedProperty=http://sensorml.com/ont/swe/property/Weather&temporalFilter=phenomenonTime,now/2115-01-28T16:24:48Z',
     WEATHER_RT_FEED = 'ws://54.172.40.148:8080/sensorhub/sos?service=SOS&version=2.0&request=GetResult&offering=urn:mysos:offering03&observedProperty=http://sensorml.com/ont/swe/property/Weather&temporalFilter=phenomenonTime,now/2115-01-28T16:24:48Z',
     POLICECAR_CAM_FEED = 'http://bottsgeo.com:8181/sensorhub/sos?service=SOS&version=2.0&request=GetResult&offering=d136b6ea-3951-4691-bf56-c84ec7d89d72-sos&observedProperty=http://sensorml.com/ont/swe/property/VideoFrame&temporalFilter=phenomenonTime,now/2115-01-28T16:24:48Z';
-    //POLICECAR_ORIENTATION_FEED = 'http://bottsgeo.com:8181/sensorhub/sos?service=SOS&version=2.0&request=GetResult&offering=urn:android:device:04e4413b0a286002-sos&observedProperty=http://sensorml.com/ont/swe/property/Orientation&temporalFilter=phenomenonTime,now/2015-06-01',
-    //PATROLMAN_ORIENTATION_FEED = 'http://bottsgeo.com:8181/sensorhub/sos?service=SOS&version=2.0&request=GetResult&offering=urn:android:device:04e4413b0a286002-sos&observedProperty=http://sensorml.com/ont/swe/property/Orientation&temporalFilter=phenomenonTime,now/2015-06-01';
     
-//http://54.172.40.148:8080/sensorhub/sos?service=SOS&version=2.0&request=GetResult&offering=urn:mysos:offering02&observedProperty=http://sensorml.com/ont/swe/property/Location&temporalFilter=phenTime,now/2015-06-01    
-//var PATROL_CAR_PTZ_CAMERA_URL="http://bottsgeo.simple-url.com/axis-cgi/com/ptz.cgi";
-//var PATROL_CAR_PTZ_CAMERA_URL="http://bottsgeo.simple-url.com:8080/sensorhub/sps?";
-//var PATROL_CAR_PTZ_CAMERA_URL="http://192.168.1.38:2015/sensorhub/sps?";
-//var PATROL_CAR_PTZ_CAMERA_URL="http://192.168.43.183:2015/sensorhub/sps?";
-//  http://bottsgeo.simple-url.com:2015/sensorhub/sps
 var PATROL_CAR_PTZ_CAMERA_URL="http://bottsgeo.simple-url.com:2015/sensorhub/sps?";
 
 var PTZ_TASKING_COMMAND_REPLACE_TOKEN="{SWE_PTZ_TASKING_COMMAND}"; 
@@ -54,6 +34,7 @@ var dataObjects = [];
 
 $( document ).ready(function() {
 
+  // Police car
   var policeCar = new Object();
   policeCar.lat = 0;
   policeCar.lon = 0;
@@ -62,6 +43,7 @@ $( document ).ready(function() {
   policeCar.lookrayson = false;
   dataObjects[0] = policeCar;
   
+  // Patrolman
   var patrolMan = new Object();
   patrolMan.lat = 0;
   patrolMan.lon = 0;
@@ -159,14 +141,12 @@ function is(type, obj) {
   return obj !== undefined && obj !== null && clas === type;
 }
 
-// Real-time orientation feed
 function getRTOrientationFeed(feedSource, feedType) {
   // Query SOS Orientation stream
   var reader = new FileReader();
   reader.onload = function () {
     var rec = reader.result;
     if (null===rec) {
-      console.log("no orientation data");
     } else {
       switch(feedType) {
         case POLICECAR_GPS_FEED:
@@ -188,15 +168,12 @@ function getRTOrientationFeed(feedSource, feedType) {
       ws.close();
   }
   ws.onclose = function (event) {
-    console.log ("Socket closing...");
     switch(feedType) {
       case POLICECAR_GPS_FEED:
-        console.log("Closed police orientation feed...");        
         currentPolicecarOrientation = 0;
         break;
       case PATROLMAN_GPS_FEED:
         currentPatrolmanOrientation = 0;
-        console.log("Closed patrolman orientation feed...");        
         break;
        default:
         throw new Error("Unknown real-time orientation feed source.");
@@ -206,23 +183,16 @@ function getRTOrientationFeed(feedSource, feedType) {
   return ws;
 }
 
-function log(msg) {
-  $("<p>" + msg + "</p>").appendTo("#dbg");
-}
-
 function getRTGPSFeed(feedSource) {
   // Query SOS GPS stream
   var reader = new FileReader();
-  log("In getRTGPSFeed :: feedSource --> " + feedSource);
   reader.onload = function () {
     var rec = reader.result;
     if (null===rec) {
-      console.log("no gps data");
     } else {
       switch(feedSource) {
         case POLICECAR_GPS_FEED:
           processWebSocketFeed(rec, gpsFields, "GPS", "POLICECARFEED", "N/A");
-          log("In getRTGPSFeed :: police car build marker --> " + dataObjects[0].buildmarker);
           if (dataObjects[0].buildmarker)
             buildGPSMarker(dataObjects[0],"POLICECARFEED");
           if ((dataObjects[0].lookrayson))
@@ -248,19 +218,16 @@ function getRTGPSFeed(feedSource) {
       ws.close();
   }
   ws.onclose = function (event) {
-    console.log ("Socket closing...");
     switch(feedSource) {
       case POLICECAR_GPS_FEED:
         map.removeLayer(policeCarMarker);
         policeCarMarker.update(policeCarMarker);
         policeCarMarker=null;
-        console.log("Closed police car feed...");        
         break;
       case PATROLMAN_GPS_FEED:
         map.removeLayer(patrolManMarker);
         patrolManMarker.update(patrolManMarker);
         patrolManMarker=null;            
-        console.log("Closed patrolman feed...");        
         break;
        default:
         throw new Error("Unknown real-time GPS feed source.");
@@ -270,14 +237,12 @@ function getRTGPSFeed(feedSource) {
   return ws;
 }
 
-// Real-time weather feed
 function getRTWeatherFeed(feedSource, display) {
   // Query SOS weather stream
   var reader = new FileReader();
   reader.onload = function () {
     var rec = reader.result;
     if (null===rec) {
-      console.log("no weather data");
     } else {
       switch(display) {
         case "location" :
@@ -308,17 +273,14 @@ function getRTWeatherFeed(feedSource, display) {
       ws.close();
   }
   ws.onclose = function (event) {
-    console.log ("Socket closing...");
     switch(feedSource) {
       case POLICECAR_GPS_FEED:
         removeMarker(policeCarMarker);
         policeCarMarker=null;
-        console.log("Closed police car feed...");        
         break;
       case PATROLMAN_GPS_FEED:
         removeMarker(patrolManMarker);
         patrolManMarker=null;            
-        console.log("Closed patrolman feed...");        
         break;
        default:
         throw new Error("Unknown real-time GPS feed source.");
@@ -344,7 +306,6 @@ function buildWeatherStationMarker(sensorLocation) {
 } // buildWeatherStationMarker
 
 function buildGPSMarker(data, markerType) {
-  log("In buildGPSMarker :: markerType ->" + markerType);
   var s_lat = data.lat, s_long = data.lon, rotation = data.rotation;
   
   if (typeof s_lat === "undefined" || typeof s_long === "undefined") {

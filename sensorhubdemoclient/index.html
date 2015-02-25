@@ -14,7 +14,6 @@
   </head>
   <body style="margin: 0;">
     <div id="map"></div>
-    <div id="dbg" style="width:100%;height:100px;border:1px solid blue;overflow-x:scroll;overflow-y:scroll">MANI</div>
 
     <div id="dataObjectSelector">
       <button id="selectObjects">Select Data Objects</button>
@@ -82,21 +81,10 @@
     <script src="http://code.highcharts.com/highcharts-more.js"></script>
     <script type="text/javascript" src="zTree/jquery.ztree.core-3.5.js"></script>
     <script type="text/javascript" src="zTree/jquery.ztree.excheck-3.5.js"></script>
+    <script type="text/javascript" src="js/variable_dictionary.js"></script>
     <script>
-      var osm_StreetMapURL = 'http://{s}.tile.osm.org/{z}/{x}/{y}.png',
-      osm_StreetMapAttrib = '',
-      osm_SatelliteMapAttrib = '',
-      osm_StreetMap = L.tileLayer(osm_StreetMapURL, {maxZoom: 18, attribution: osm_StreetMapAttrib, id: 'examples.map-street'});
-      ggl_SatelliteHybridMap = new L.Google('HYBRID'),
-      ggl_SatelliteMap = new L.Google('SATELLITE'),
-      ggl_RoadMap = new L.Google('ROADMAP');
-
-      var map = new L.Map('map').setView(new L.LatLng(34.73, -86.585), 12);
-      
       map.addLayer(osm_StreetMap);
-  
       L.control.layers({'Google Roadmap':ggl_RoadMap,'Google Satellite':ggl_SatelliteMap,'Google Hybrid':ggl_SatelliteHybridMap,'Open Street Map':osm_StreetMap}).addTo(map);
-
       var north = L.control({position: "bottomright"});
       north.onAdd = function(map) {
           var div = L.DomUtil.create("div", "info legend");
@@ -104,7 +92,6 @@
           return div;
       }
       north.addTo(map);
-             
     </script>
     <script src="js/init_stream.js"></script>
     <script src="js/ztree_init.js"></script>
@@ -112,7 +99,6 @@
     <script src="js/weather_wind_direction.js"></script>
     <script src="js/weather_wind_speed.js"></script>
     <script src="js/swe_quaternion.js"></script>
-    
     <script>
       L.control.fullscreen().addTo(map);
       // All DIVs that need to be draggable can be placed here!
