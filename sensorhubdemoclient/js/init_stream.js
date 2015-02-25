@@ -44,9 +44,28 @@ var currentPatrolmanOrientation=0,
     currentPolicecarOrientation=0,
     currentPolicecarCameraOrientation=0;
 
+var policeCarMarker = null,
+    patrolManMarker = null,
+    liveWeatherMarker = null,
+    livePolicecarLookRaysMarker = null,
+    livePatrolmanLookRaysMarker = null;
+          
+var dataObjects = [];
 
 $( document ).ready(function() {
 
+  var policeCar = new Object();
+  policeCar.lat = 0;
+  policeCar.lon = 0;
+  policeCar.rotation = 0;
+  dataObjects[0] = policeCar;
+  
+  var patrolMan = new Object();
+  patrolMan.lat = 0;
+  patrolMan.lon = 0;
+  patrolMan.rotation = 0;
+  dataObjects[1] = patrolMan;
+  
   $('#selectObjects').click(function (e) {
     e.preventDefault();
     showMenu();
@@ -168,11 +187,11 @@ function getRTOrientationFeed(feedSource, feedType) {
     console.log ("Socket closing...");
     switch(feedType) {
       case POLICECAR_GPS_FEED:
-//        policecarOrientationSocket =null;
         console.log("Closed police orientation feed...");        
+        currentPolicecarOrientation = 0;
         break;
       case PATROLMAN_GPS_FEED:
-//        patrolmanOrientationSocket=null;          
+        currentPatrolmanOrientation = 0;
         console.log("Closed patrolman orientation feed...");        
         break;
        default:
@@ -183,7 +202,7 @@ function getRTOrientationFeed(feedSource, feedType) {
   return ws;
 }
 
-function getRTGPSFeed(feedSource) {
+function getRTGPSFeed(feedSource, buildMarker, markerType) {
   // Query SOS GPS stream
   var reader = new FileReader();
   reader.onload = function () {
@@ -191,14 +210,25 @@ function getRTGPSFeed(feedSource) {
     if (null===rec) {
       console.log("no gps data");
     } else {
+      if ("undefined" === typeof buildMarker || null === buildMarker) {
+        buildMarker = true;
+      } 
       switch(feedSource) {
         case POLICECAR_GPS_FEED:
-          processWebSocketFeed(rec, gpsFields, "GPS", "POLICECARFEED", "N/A");
+          processWebSocketFeed(rec, gpsFields, markerType, "POLICECARFEED", "N/A");
+          if ((buildMarker) && ("GPS" === markerType))
+            buildGPSMaker(dataObjects[0],"POLICECARFEED");
+          if ((buildMarker) && ("LOOKRAYS" === markerType))
+            buildGPSMaker(dataObjects[0],"POLICECARLOOKRAYFEED");
           break;
         case PATROLMAN_GPS_FEED:
-          processWebSocketFeed(rec, gpsFields, "GPS", "PATROLMANFEED", "N/A");
+          processWebSocketFeed(rec, gpsFields, markerType, "PATROLMANFEED", "N/A");
+          if ((buildMarker) && ("GPS" === markerType))
+            buildGPSMaker(dataObjects[1],"POLICECARFEED");
+          if ((buildMarker) && ("LOOKRAYS" === markerType))
+            buildGPSMaker(dataObjects[1],"POLICECARLOOKRAYFEED");
           break;
-         default:
+        default:
           throw new Error("Unknown real-time GPS feed source.");
       }
     }
@@ -214,14 +244,12 @@ function getRTGPSFeed(feedSource) {
     console.log ("Socket closing...");
     switch(feedSource) {
       case POLICECAR_GPS_FEED:
-//        policecarsocket=null;
         map.removeLayer(policeCarMarker);
         policeCarMarker.update(policeCarMarker);
         policeCarMarker=null;
         console.log("Closed police car feed...");        
         break;
       case PATROLMAN_GPS_FEED:
-//        patrolmansocket=null;
         map.removeLayer(patrolManMarker);
         patrolManMarker.update(patrolManMarker);
         patrolManMarker=null;            
@@ -318,26 +346,26 @@ function buildLookRaysMarker(locationData, rotation, markerType) {
   } /*Latitude or Longitude empty */ else {
     switch (markerType) {
       case "POLICECAR_ORIENTATION_FEED" :
-        if (livePolicecarQuaternionFeed === null) {
-          livePolicecarQuaternionFeed = L.rotatedMarker(
+        if (livePolicecarLookRaysMarker === null) {
+          livePolicecarLookRaysMarker = L.rotatedMarker(
                                 [s_lat, s_long], 
-                                {icon: L.icon({ iconUrl: 'http://54.80.60.180:6080/images/lookrays.png',
+                                {icon: L.icon({ iconUrl: 'http://54.80.60.180:6080/images/cameralookrays.png',
                                                 iconSize: [64, 64],})}).addTo(map);
         } else {
-          livePolicecarQuaternionFeed.setLatLng([s_lat, s_long]);
+          livePolicecarLookRaysMarker.setLatLng([s_lat, s_long]);
         }
-        livePolicecarQuaternionFeed.options.angle = parseFloat(rotation);                              
+        livePolicecarLookRaysMarker.options.angle = parseFloat(rotation);                              
         break;
       case "PATROLMAN_ORIENTATION_FEED" :
-        if (livePatrolmanQuaternionFeed === null) {
-          livePatrolmanQuaternionFeed = L.rotatedMarker(
+        if (livePatrolmanLookRaysMarker === null) {
+          livePatrolmanLookRaysMarker = L.rotatedMarker(
                                 [s_lat, s_long], 
-                                {icon: L.icon({ iconUrl: 'http://54.80.60.180:6080/images/lookrays.png',
+                                {icon: L.icon({ iconUrl: 'http://54.80.60.180:6080/images/cameralookrays.png',
                                                 iconSize: [64, 64],})}).addTo(map);
         } else {
-          livePatrolmanQuaternionFeed.setLatLng([s_lat, s_long]);
+          livePatrolmanLookRaysMarker.setLatLng([s_lat, s_long]);
         }
-        livePatrolmanQuaternionFeed.options.angle = parseFloat(rotation);                              
+        livePatrolmanLookRaysMarker.options.angle = parseFloat(rotation);                              
         break;
       default:
         throw new Error ("Cannot build marker.  Unknown ORIENTATION marker type.");
@@ -345,8 +373,8 @@ function buildLookRaysMarker(locationData, rotation, markerType) {
   }  // Got Latitude or Longitude 
 } // buildLookRaysMarker
 
-function buildGPSMarker(data, rotation, markerType) {
-  var s_lat = data.lat, s_long = data.long, s_alt = data.alt, s_time = data.time;
+function buildGPSMarker(data, markerType) {
+  var s_lat = data.lat, s_long = data.lon, rotation = data.rotation;
   
   if (typeof s_lat === "undefined" || typeof s_long === "undefined") {
     throw new Error ("Latitude and/or Longitude is unavailable.");
@@ -379,6 +407,28 @@ function buildGPSMarker(data, rotation, markerType) {
         }
         patrolManMarker.options.angle = parseFloat(rotation);                              
         break;
+      case "POLICECARLOOKRAYFEED" :
+        if (livePolicecarLookRaysMarker === null) {
+          livePolicecarLookRaysMarker = L.rotatedMarker(
+                                [s_lat, s_long], 
+                                {icon: L.icon({ iconUrl: 'http://54.80.60.180:6080/images/cameralookrays.png',
+                                                iconSize: [64, 64],})}).addTo(map);
+        } else {
+          livePolicecarLookRaysMarker.setLatLng([s_lat, s_long]);
+        }
+        livePolicecarLookRaysMarker.options.angle = parseFloat(rotation);                              
+        break;
+      case "PATROLMANLOOKRAYFEED" :
+        if (livePatrolmanLookRaysMarker === null) {
+          livePatrolmanLookRaysMarker = L.rotatedMarker(
+                                [s_lat, s_long], 
+                                {icon: L.icon({ iconUrl: 'http://54.80.60.180:6080/images/cameralookrays.png',
+                                                iconSize: [64, 64],})}).addTo(map);
+        } else {
+          livePatrolmanLookRaysMarker.setLatLng([s_lat, s_long]);
+        }
+        livePatrolmanLookRaysMarker.options.angle = parseFloat(rotation);                              
+        break;
       default:
         throw new Error ("Cannot build marker.  Unknown marker type.");
     } // Switching based on marker type
@@ -387,7 +437,6 @@ function buildGPSMarker(data, rotation, markerType) {
 
 function interpretFeed(data, iFields, typeofFeed, delimiter) {
   vals = data.trim().split(delimiter);
-  //console.log("Feed type: " + typeofFeed);
   switch (typeofFeed) {
     case "ORIENTATION":
       $(iFields).each(function (idx, field) {
@@ -403,7 +452,6 @@ function interpretFeed(data, iFields, typeofFeed, delimiter) {
               break;
           }
         });
-      //console.log("Rotation: " + s_rotation);        
       return { rotation: s_rotation, pitch: s_pitch, roll: s_roll };
       break;
     case "GPS":
@@ -463,19 +511,24 @@ function processWebSocketFeed(rec, recordDescriptor, typeofFeed, markerType, mar
           currentPatrolmanOrientation = response.rotation | 0;
           break;
         case "POLICECAR_ORIENTATION_FEED":
-
-
           currentPolicecarOrientation = response.rotation | 0;
           break;
       }
       break;
+    case "LOOKRAYS":
     case "GPS":
       switch (markerType) {
         case "PATROLMANFEED":
-          buildGPSMarker(response, currentPatrolmanOrientation, markerType);
+          dataObjects[1].lat = response.lat;
+          dataObjects[1].lon = response.lon;
+          dataObjects[1].rotation = currentPatrolmanOrientation;
+          //buildGPSMarker(response, currentPatrolmanOrientation, markerType);
           break;
         case "POLICECARFEED":
-          buildGPSMarker(response, currentPolicecarOrientation, markerType);
+          dataObjects[0].lat = response.lat;
+          dataObjects[0].lon = response.lon;
+          dataObjects[0].rotation = currentPolicecarOrientation;
+          //buildGPSMarker(response, currentPolicecarOrientation, markerType);
           break;
       }
       break;
