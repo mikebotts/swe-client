@@ -2,36 +2,6 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-var template = null;
-var gpsFields = [], weatherFields = [], orientationFields = [], weatherSensorLocations = [];
-var WEATHER_DESCRIPTOR = 'http://54.172.40.148:8080/sensorhub/sos?service=SOS&version=2.0&request=DescribeSensor&procedure=urn:test:sensors:fakeweather&procedureDescriptionFormat=http://www.opengis.net/sensorml/2.0',
-    GPS_DESCRIPTOR = 'http://54.172.40.148:8080/sensorhub/sos?service=SOS&version=2.0&request=GetResultTemplate&offering=urn:mysos:offering02&observedProperty=http://sensorml.com/ont/swe/property/Location',
-    CAM_DESCRIPTOR = 'http://54.172.40.148:8080/sensorhub/sos?service=SOS&version=2.0&request=DescribeSensor&procedure=urn:test:sensors:fakecam&procedureDescriptionFormat=http://www.opengis.net/sensorml/2.0',
-    ORIENTATION_DESCRIPTOR = 'http://bottsgeo.com:8181/sensorhub/sos?service=SOS&version=2.0&request=GetResultTemplate&offering=urn:android:device:FA44CWM03715-sos&observedProperty=http://sensorml.com/ont/swe/property/Orientation';
-var POLICECAR_GPS_FEED = 'ws://bottsgeo.com:8181/sensorhub/sos?service=SOS&version=2.0&request=GetResult&offering=urn:android:device:FA44CWM03715-sos&observedProperty=http://sensorml.com/ont/swe/property/Location&temporalFilter=phenomenonTime,2015-02-22T02:51:00Z/now&replaySpeed=3',
-    POLICECAR_ORIENTATION_FEED = 'ws://bottsgeo.com:8181/sensorhub/sos?service=SOS&version=2.0&request=GetResult&offering=urn:android:device:FA44CWM03715-sos&observedProperty=http://sensorml.com/ont/swe/property/Orientation&temporalFilter=phenomenonTime,2015-02-22T02:51:00Z/now&replaySpeed=3',
-    PATROLMAN_GPS_FEED = 'ws://bottsgeo.com:8181/sensorhub/sos?service=SOS&version=2.0&request=GetResult&offering=urn:android:device:04e4413b0a286002-sos&observedProperty=http://sensorml.com/ont/swe/property/Location&temporalFilter=phenomenonTime,now/2015-06-01',
-    PATROLMAN_ORIENTATION_FEED = 'ws://bottsgeo.com:8181/sensorhub/sos?service=SOS&version=2.0&request=GetResult&offering=urn:android:device:04e4413b0a286002-sos&observedProperty=http://sensorml.com/ont/swe/property/Orientation&temporalFilter=phenomenonTime,now/2015-06-01',
-    WEATHER_RT_FEED = 'ws://54.172.40.148:8080/sensorhub/sos?service=SOS&version=2.0&request=GetResult&offering=urn:mysos:offering03&observedProperty=http://sensorml.com/ont/swe/property/Weather&temporalFilter=phenomenonTime,now/2115-01-28T16:24:48Z',
-    POLICECAR_CAM_FEED = 'http://bottsgeo.com:8181/sensorhub/sos?service=SOS&version=2.0&request=GetResult&offering=d136b6ea-3951-4691-bf56-c84ec7d89d72-sos&observedProperty=http://sensorml.com/ont/swe/property/VideoFrame&temporalFilter=phenomenonTime,now/2115-01-28T16:24:48Z';
-    
-var PATROL_CAR_PTZ_CAMERA_URL="http://bottsgeo.simple-url.com:2015/sensorhub/sps?";
-
-var PTZ_TASKING_COMMAND_REPLACE_TOKEN="{SWE_PTZ_TASKING_COMMAND}"; 
-var PTZ_TASKING_COMMAND_BASE='<?xml version="1.0" encoding="UTF-8"?><sps:Submit service="SPS" version="2.0" xmlns:sps="http://www.opengis.net/sps/2.0" xmlns:swe="http://www.opengis.net/swe/2.0"><sps:procedure>d136b6ea-3951-4691-bf56-c84ec7d89d72</sps:procedure><sps:taskingParameters><sps:ParameterData><sps:encoding><swe:TextEncoding blockSeparator=" " collapseWhiteSpaces="true" decimalSeparator="." tokenSeparator=","/></sps:encoding><sps:values>' + PTZ_TASKING_COMMAND_REPLACE_TOKEN + '</sps:values></sps:ParameterData></sps:taskingParameters></sps:Submit>';
-
-var currentPatrolmanOrientation=0,
-    currentPolicecarOrientation=0,
-    currentPolicecarCameraOrientation=0;
-
-var policeCarMarker = null,
-    patrolManMarker = null,
-    liveWeatherMarker = null,
-    livePolicecarLookRaysMarker = null,
-    livePatrolmanLookRaysMarker = null;
-          
-var dataObjects = [];
-
 $( document ).ready(function() {
 
   // Police car
@@ -203,7 +173,7 @@ function getRTGPSFeed(feedSource) {
           if (dataObjects[1].buildmarker)
             buildGPSMarker(dataObjects[1],"PATROLMANFEED");
           if ((dataObjects[1].lookrayson))
-            buildGPSMarker(dataObjects[1],"POLICECARLOOKRAYFEED");
+            buildGPSMarker(dataObjects[1],"PATROLMANLOOKRAYFEED");
           break;
         default:
           throw new Error("Unknown real-time GPS feed source.");
@@ -318,7 +288,7 @@ function buildGPSMarker(data, markerType) {
           policeCarMarker = L.rotatedMarker(
                                 [s_lat, s_long], 
                                 {icon: L.icon({ iconUrl: 'http://54.80.60.180:6080/images/policecar.png',
-                                                iconSize: [35, 75],})}).addTo(map)
+                                                iconSize: [18,38],})}).addTo(map)
                               .bindPopup('<div id="pop-policeCarMarker">Latitude: ' + s_lat + '<br />Longitude: ' + s_long + '</div>', { className: 'marker-popup' , closeButton: false});
         } else {
           policeCarMarker.setLatLng([s_lat, s_long]);
@@ -337,14 +307,13 @@ function buildGPSMarker(data, markerType) {
           patrolManMarker.setLatLng([s_lat, s_long]);
           $('#pop-patrolManMarker').html('Latitude: ' + s_lat + '<br />Longitude: ' + s_long);
         }
-        patrolManMarker.options.angle = parseFloat(rotation);                              
         break;
       case "POLICECARLOOKRAYFEED" :
         if (livePolicecarLookRaysMarker === null) {
           livePolicecarLookRaysMarker = L.rotatedMarker(
                                 [s_lat, s_long], 
                                 {icon: L.icon({ iconUrl: 'http://54.80.60.180:6080/images/cameralookrays.png',
-                                                iconSize: [64, 128],})}).addTo(map);
+                                                iconSize: [26,51],})}).addTo(map);
         } else {
           livePolicecarLookRaysMarker.setLatLng([s_lat, s_long]);
         }
@@ -355,11 +324,11 @@ function buildGPSMarker(data, markerType) {
           livePatrolmanLookRaysMarker = L.rotatedMarker(
                                 [s_lat, s_long], 
                                 {icon: L.icon({ iconUrl: 'http://54.80.60.180:6080/images/cameralookrays.png',
-                                                iconSize: [64, 128],})}).addTo(map);
+                                                iconSize: [26,51],})}).addTo(map);
         } else {
           livePatrolmanLookRaysMarker.setLatLng([s_lat, s_long]);
         }
-        livePatrolmanLookRaysMarker.options.angle = parseFloat(rotation);                              
+        livePatrolmanLookRaysMarker.options.angle = parseFloat(rotation)+90;                              
         break;
       default:
         throw new Error ("Cannot build marker.  Unknown marker type.");
@@ -447,7 +416,6 @@ function processWebSocketFeed(rec, recordDescriptor, typeofFeed, markerType, mar
           break;
       }
       break;
-    case "LOOKRAYS":
     case "GPS":
       switch (markerType) {
         case "PATROLMANFEED":

@@ -2,13 +2,6 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-var menuStatus=0;
-var policecarsocket=null,
-    policecarOrientationSocket=null,
-    patrolmansocket=null,
-    patrolmanOrientationSocket=null;
-
-
 var zNodes = [
   {id:1, pId:0, name:"Patrol Car 257", open:true, icon:"ztree/img/diy/policecar.png"},
   {id:2, pId:1, name:"Location", icon:"ztree/img/diy/location.png"},
@@ -227,6 +220,7 @@ function processUnCheckedNodes(nodes) {
       // Child node
       switch (nodes[i].pId) {
         case 1:
+        //alert ("Parent: " + nodes[i].pId + ", Child: " + nodes[i].id);
           switch (nodes[i].id) {
             case 2: // Police car location information
               if (null !== policeCarMarker) policeCarMarker.closePopup();
@@ -249,7 +243,7 @@ function processUnCheckedNodes(nodes) {
               }
               break;
             case 4: // Police car live camera feed
-              document.getElementById("policecarcam").style.display="none";
+               document.getElementById("policecarcam").style.display="none";
               break;
             default:
               throw new Error("Unknown data object");
@@ -306,7 +300,7 @@ function processUnCheckedNodes(nodes) {
             default:
               throw new Error("Unknown data object");
           }
-          
+          break;
       }
     }
   }  
