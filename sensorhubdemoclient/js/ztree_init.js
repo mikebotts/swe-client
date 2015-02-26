@@ -60,9 +60,9 @@ function onCheck(e, treeId, treeNode) {
 }
 
 function processCheckedNodes(nodes) {
-  
+  log("Processing checked nodes..." + nodes.length);
   for (var i=0, l=nodes.length; i<l; i++) {
-    
+    log("Checked: " + nodes[i].name);
     if (null === nodes[i].pId) {
       // Parent node
       switch (nodes[i].id) {
@@ -91,8 +91,6 @@ function processCheckedNodes(nodes) {
         case 9: // Weather live feed
           //NOOP
           break;
-        default:
-          throw new Error("Unknown data object");
       }
     } else {
       // Child node
@@ -100,7 +98,8 @@ function processCheckedNodes(nodes) {
         case 1:
           switch (nodes[i].id) {
             case 2: // Police car location information
-              if (null !== policeCarMarker) policeCarMarker.openPopup();
+              if (null !== policeCarMarker) 
+                policeCarMarker.openPopup();
               break;
             case 3: // Police car camera look rays
               dataObjects[0].lookrayson = true;
@@ -116,14 +115,13 @@ function processCheckedNodes(nodes) {
             case 4: // Police car live camera feed
               document.getElementById("policecarcam").style.display="block";
               break;
-            default:
-              throw new Error("Unknown data object");
           }
           break;
         case 5:  
           switch (nodes[i].id) {
             case 6: // Patrolman location information
-              if (null !==  patrolManMarker) patrolManMarker.openPopup();
+              if (null !==  patrolManMarker) 
+                patrolManMarker.openPopup();
               break;
             case 7: // Patrolman camera look rays
               dataObjects[1].lookrayson = true;
@@ -139,10 +137,9 @@ function processCheckedNodes(nodes) {
             case 8: // Patrolman live camera feed
               document.getElementById("patrolmancam").style.display="block";
               break;
-            default:
-              throw new Error("Unknown data object");
           }
-        case 9: // Weather Station 1
+          break;
+        case 9:  // Weather Station 1
           //getRTWeatherFeed(WEATHER_RT_FEED,"location");
           break;
         
@@ -164,16 +161,18 @@ function processCheckedNodes(nodes) {
                 getRTWeatherFeed(WEATHER_RT_FEED,"windspeed");                
               }*/
               break;
-            default:
-              throw new Error("Unknown data object");
           }
+          break;
       }
     }
   }  
 }
 
 function processUnCheckedNodes(nodes) {
+  try {
+  log("Processing unchecked nodes..." + nodes.length);
   for (var i=0, l=nodes.length; i<l; i++) {
+    log("UnChecked: " + nodes[i].name);
     if (null === nodes[i].pId) {
       // Parent node
       switch (nodes[i].id) {
@@ -189,9 +188,11 @@ function processUnCheckedNodes(nodes) {
             }
           } else {
             // Turn off police car marker.
-            map.removeLayer(policeCarMarker);
-            policeCarMarker.update(policeCarMarker);
-            policeCarMarker=null;
+            if (null !== policeCarMarker) {
+              map.removeLayer(policeCarMarker);
+              policeCarMarker.update(policeCarMarker);
+              policeCarMarker=null;
+            }
           }
           break;
         case 5: // Patrolman live gps feed (basically phone location)
@@ -206,24 +207,24 @@ function processUnCheckedNodes(nodes) {
             }
           } else {
             // Turn off patrolman marker
-            map.removeLayer(patrolManMarker);
-            patrolManMarker.update(patrolManMarker);
-            patrolManMarker=null;
+            if (null !== patrolManMarker) {
+              map.removeLayer(patrolManMarker);
+              patrolManMarker.update(patrolManMarker);
+              patrolManMarker=null;
+            }
           }
           break;
         case 9: // Weather live feed
           break;
-        default:
-          throw new Error("Unknown data object");
       }
     } else {
       // Child node
       switch (nodes[i].pId) {
         case 1:
-        //alert ("Parent: " + nodes[i].pId + ", Child: " + nodes[i].id);
           switch (nodes[i].id) {
             case 2: // Police car location information
-              if (null !== policeCarMarker) policeCarMarker.closePopup();
+              if (null !== policeCarMarker) 
+                policeCarMarker.closePopup();
               break;
             case 3: // Police car camera look rays
               dataObjects[0].lookrayson = false;
@@ -237,22 +238,23 @@ function processUnCheckedNodes(nodes) {
                 }                
               } else {
                 // Police car socket is still alive but, we must turn off look rays
-                map.removeLayer(livePolicecarLookRaysMarker);
-                livePolicecarLookRaysMarker.update(livePolicecarLookRaysMarker);
-                livePolicecarLookRaysMarker=null;
+                if (null !== livePolicecarLookRaysMarker) {
+                  map.removeLayer(livePolicecarLookRaysMarker);
+                  livePolicecarLookRaysMarker.update(livePolicecarLookRaysMarker);
+                  livePolicecarLookRaysMarker=null;
+                }
               }
               break;
             case 4: // Police car live camera feed
                document.getElementById("policecarcam").style.display="none";
-              break;
-            default:
-              throw new Error("Unknown data object");
+               break;
           }
           break;
         case 5:  
           switch (nodes[i].id) {
             case 6: // Patrolman location information
-              if (null !== patrolManMarker) patrolManMarker.closePopup();
+              if (null !== patrolManMarker) 
+                patrolManMarker.closePopup();
               break;
             case 7: // Patrolman camera look rays
               dataObjects[1].lookrayson = false;
@@ -266,16 +268,16 @@ function processUnCheckedNodes(nodes) {
                 }
               } else {
                 // Patrolman socket is still alive but, we must turn off look rays
-                map.removeLayer(livePatrolmanLookRaysMarker);
-                livePatrolmanLookRaysMarker.update(livePatrolmanLookRaysMarker);
-                livePatrolmanLookRaysMarker=null;
+                if (null !== livePatrolmanLookRaysMarker) {
+                  map.removeLayer(livePatrolmanLookRaysMarker);
+                  livePatrolmanLookRaysMarker.update(livePatrolmanLookRaysMarker);
+                  livePatrolmanLookRaysMarker=null;
+                }
               }
               break;
             case 8: // Patrolman live camera feed
               document.getElementById("patrolmancam").style.display="none";              
               break;
-            default:
-              throw new Error("Unknown data object");
           }
           break;
         case 9: // Weather Station 1
@@ -297,13 +299,15 @@ function processUnCheckedNodes(nodes) {
               //windSpeedFeedPollTimer = 0;            
               document.getElementById("weather_windspeed").style.display = 'none';
               break;
-            default:
-              throw new Error("Unknown data object");
           }
           break;
       }
     }
   }  
+    
+  } catch (e) {
+    alert(e);
+  }
 }
 
 function showMenu() {

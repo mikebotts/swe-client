@@ -98,6 +98,11 @@ $( document ).ready(function() {
     }, 'xml');
 });
 
+function log(msg) {
+  if (DEBUG_MODE) 
+    $("<p style='padding:0;margin:0;'>" + msg + "</p>").appendTo("#dbg");
+}
+
 function send_ptz_command(ptzURL, ptzParams) {
   var http = new XMLHttpRequest();
   var params = PTZ_TASKING_COMMAND_BASE.replace(PTZ_TASKING_COMMAND_REPLACE_TOKEN,ptzParams);
@@ -444,7 +449,7 @@ function processWebSocketFeed(rec, recordDescriptor, typeofFeed, markerType, mar
       series.addPoint([Date.parse(response.time), parseInt(response.windspeed)], true, true);
       break;
     case "WEATHER_TEMPERATURE" :
-    
+      break;
     case "WEATHER_BAROMETRIC_PRESSURE":
       break;
     default:
