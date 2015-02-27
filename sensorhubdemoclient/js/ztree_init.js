@@ -158,9 +158,11 @@ function processCheckedNodes(nodes) {
               break;
             case 13:
               dataObjects[2].winddirectionon = true;
+              document.getElementById("weather_winddirection").style.display = 'block';
               break;
             case 14:
               dataObjects[2].windspeedon = true;
+              document.getElementById("weather_windspeed").style.display = 'block';
               break;
           }
           if (null === weatherStationSocket) {
