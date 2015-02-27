@@ -96,9 +96,6 @@ function processCheckedNodes(nodes) {
             patrolmanOrientationSocket = getRTOrientationFeed(PATROLMAN_ORIENTATION_FEED,PATROLMAN_GPS_FEED);
           }
           break;
-        case 9: // Weather live feed
-          //NOOP
-          break;
       }
     } else {
       // Child node
@@ -147,28 +144,27 @@ function processCheckedNodes(nodes) {
               break;
           }
           break;
-        case 9:  // Weather Station 1
-          //getRTWeatherFeed(WEATHER_RT_FEED,"location");
+        case 9:
+          dataObjects[2].locationon = true;
+          weatherStationSocket = getRTWeatherFeed(WEATHER_STATION_1_RT_FEED);
           break;
-        
-        case 10:  
+        case 10:
           switch (nodes[i].id) {
-            
             case 11:
+              dataObjects[2].pressureon = true;
+              break;
             case 12:
+              dataObjects[2].temperatureon = true;
               break;
-            case 13: // Station 1 - Wind Direction
-              /*if (0==windDirectionFeedPollTimer) {
-                document.getElementById("weather_winddirection").style.display = 'block';
-                getRTWeatherFeed(WEATHER_RT_FEED,"winddirection");                
-              }*/
+            case 13:
+              dataObjects[2].winddirectionon = true;
               break;
-            case 14: // Station 1 - Wind Speed
-              /*if (0==windSpeedFeedPollTimer) {
-                document.getElementById("weather_windspeed").style.display = 'block';
-                getRTWeatherFeed(WEATHER_RT_FEED,"windspeed");                
-              }*/
+            case 14:
+              dataObjects[2].windspeedon = true;
               break;
+          }
+          if (null === weatherStationSocket) {
+            weatherStationSocket = getRTWeatherFeed(WEATHER_STATION_1_RT_FEED);
           }
           break;
       }
@@ -197,8 +193,7 @@ function processUnCheckedNodes(nodes) {
           } else {
             // Turn off police car marker.
             if (null !== policeCarMarker) {
-              map.removeLayer(policeCarMarker);
-              policeCarMarker.update(policeCarMarker);
+              removeMarker(policeCarMarker);
               policeCarMarker=null;
             }
           }
@@ -216,13 +211,10 @@ function processUnCheckedNodes(nodes) {
           } else {
             // Turn off patrolman marker
             if (null !== patrolManMarker) {
-              map.removeLayer(patrolManMarker);
-              patrolManMarker.update(patrolManMarker);
+              removeMarker(patrolManMarker);
               patrolManMarker=null;
             }
           }
-          break;
-        case 9: // Weather live feed
           break;
       }
     } else {
@@ -246,10 +238,9 @@ function processUnCheckedNodes(nodes) {
                 }                
               } else {
                 // Police car socket is still alive but, we must turn off look rays
-                if (null !== livePolicecarLookRaysMarker) {
-                  map.removeLayer(livePolicecarLookRaysMarker);
-                  livePolicecarLookRaysMarker.update(livePolicecarLookRaysMarker);
-                  livePolicecarLookRaysMarker=null;
+                if (null !== policeCarLookRaysMarker) {
+                  removeMarker(policeCarLookRaysMarker);
+                  policeCarLookRaysMarker=null;
                 }
               }
               break;
@@ -276,10 +267,9 @@ function processUnCheckedNodes(nodes) {
                 }
               } else {
                 // Patrolman socket is still alive but, we must turn off look rays
-                if (null !== livePatrolmanLookRaysMarker) {
-                  map.removeLayer(livePatrolmanLookRaysMarker);
-                  livePatrolmanLookRaysMarker.update(livePatrolmanLookRaysMarker);
-                  livePatrolmanLookRaysMarker=null;
+                if (null !== patrolManLookRaysMarker) {
+                  removeMarker(patrolManLookRaysMarker);
+                  patrolManLookRaysMarker=null;
                 }
               }
               break;
@@ -289,24 +279,38 @@ function processUnCheckedNodes(nodes) {
           }
           break;
         case 9: // Weather Station 1
-          //clearInterval(weatherLocationPollTimer);
-          //weatherLocationPollTimer = 0;            
+          if (null !== weatherStationMarker) {
+            removeMarker(weatherStationMarker);
+            weatherStationMarker=null;
+          }
+          dataObjects[2].locationon = false;
           break;
-        case 10:  
+        case 10:
           switch (nodes[i].id) {
             case 11:
-            case 12:
+              dataObjects[2].pressureon = false;
               break;
-            case 13: // Station 1 - Wind Direction
-              //clearInterval(windDirectionFeedPollTimer);
-              //windDirectionFeedPollTimer = 0;            
+            case 12:
+              dataObjects[2].temperatureon = false;
+              break;
+            case 13:
+              dataObjects[2].winddirectionon = false;
               document.getElementById("weather_winddirection").style.display = 'none';
               break;
-            case 14: // Station 1 - Wind Speed
-              //clearInterval(windSpeedFeedPollTimer);
-              //windSpeedFeedPollTimer = 0;            
+            case 14:
+              dataObjects[2].windspeedon = false;
               document.getElementById("weather_windspeed").style.display = 'none';
               break;
+          }
+          if ((!dataObjects[2].windspeedon) && (!dataObjects[2].winddirectionon) &&
+              (!dataObjects[2].pressureon) && (!dataObjects[2].temperatureon) &&
+              (!dataObjects[2].locatioon)){
+            if (null !== weatherStationSocket) {
+              if (WebSocket.OPEN === weatherStationSocket.readyState) {
+                weatherStationSocket.close();
+                weatherStationSocket = null;
+              }
+            }    
           }
           break;
       }

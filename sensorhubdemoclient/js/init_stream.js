@@ -29,6 +29,18 @@ $( document ).ready(function() {
   patrolMan.buildmarker = false;
   patrolMan.lookrayson = false;
   dataObjects[1] = patrolMan;
+
+  // Weather Station 1
+  var weatherStation = new Object();
+  weatherStation.name = "";
+  weatherStation.lat = 0;
+  weatherStation.lon = 0;
+  weatherStation.locationon = false;
+  weatherStation.temperatureon = false;
+  weatherStation.pressureon = false;
+  weatherStation.winddirectionon = false;
+  weatherStation.windspeedon = false;
+  dataObjects[2] = weatherStation;
   
   $('#selectObjects').click(function (e) {
     e.preventDefault();
@@ -71,11 +83,9 @@ $( document ).ready(function() {
   $.get(WEATHER_DESCRIPTOR,
     function(data) {
       // TODO: We need to change the logic here to loop through resulting data and store actual locations
-      var station = new Object();
-      station.name = "Station 1";
-      station.lat = 34.73;
-      station.lon = -86.585;
-      weatherSensorLocations[0] = station;
+      dataObjects[2].name = "Station 1";
+      dataObjects[2].lat = 34.73;
+      dataObjects[2].lon = -86.585;
       }, 'xml');  
 
   // Get data descriptor for ORIENTATION feed
@@ -203,61 +213,6 @@ function getRTGPSFeed(feedSource) {
   ws.onclose = function (event) {
     switch(feedSource) {
       case POLICECAR_GPS_FEED:
-        map.removeLayer(policeCarMarker);
-        policeCarMarker.update(policeCarMarker);
-        policeCarMarker=null;
-        break;
-      case PATROLMAN_GPS_FEED:
-        map.removeLayer(patrolManMarker);
-        patrolManMarker.update(patrolManMarker);
-        patrolManMarker=null;            
-        break;
-       default:
-        throw new Error("Unknown real-time GPS feed source.");
-    }
-    
-  }
-  return ws;
-}
-
-function getRTWeatherFeed(feedSource, display) {
-  // Query SOS weather stream
-  var reader = new FileReader();
-  reader.onload = function () {
-    var rec = reader.result;
-    if (null===rec) {
-    } else {
-      switch(display) {
-        case "location" :
-          processWebSocketFeed(rec, weatherFields, "WEATHER_STATION_LOCATION", "N/A", weatherSensorLocations);
-          break;
-        case "temperature" :
-          processWebSocketFeed(rec, weatherFields, "WEATHER_TEMPERATURE", "TEMPERATURE", weatherSensorLocations);
-          break;
-        case "pressure" :
-          processWebSocketFeed(rec, weatherFields, "WEATHER_BAROMETRIC_PRESSURE", "PRESSURE", weatherSensorLocations);
-          break;
-        case "windspeed" :
-          processWebSocketFeed(rec, weatherFields, "WEATHER_WIND_SPEED", "N/A", "N/A");
-          break;
-        case "winddirection" :
-          processWebSocketFeed(rec, weatherFields, "WEATHER_WIND_DIRECTION", "N/A", "N/A");
-          break;
-         default:
-          throw new Error("Unknown weather data display type.");
-      }      
-    }
-  }
-  var ws = new WebSocket(feedSource);
-  ws.onmessage = function (event) {
-      reader.readAsText(event.data);
-  }
-  ws.onerror = function (event) {
-      ws.close();
-  }
-  ws.onclose = function (event) {
-    switch(feedSource) {
-      case POLICECAR_GPS_FEED:
         removeMarker(policeCarMarker);
         policeCarMarker=null;
         break;
@@ -273,14 +228,76 @@ function getRTWeatherFeed(feedSource, display) {
   return ws;
 }
 
+function getRTWeatherFeed(feedSource) {
+  // Query SOS weather stream
+  var reader = new FileReader();
+  reader.onload = function () {
+    var rec = reader.result;
+    if (null===rec) {
+    } else {
+      // We don't which one of the weather attributes client wants to view. Process all.
+      if (dataObjects[2].locationon) 
+        processWebSocketFeed(rec, weatherFields, "WEATHER_STATION_LOCATION", "N/A", dataObjects[2]);
+      if (dataObjects[2].temperatureon) 
+          processWebSocketFeed(rec, weatherFields, "WEATHER_TEMPERATURE", "TEMPERATURE", dataObjects[2]);
+      if (dataObjects[2].pressureon) 
+          processWebSocketFeed(rec, weatherFields, "WEATHER_BAROMETRIC_PRESSURE", "PRESSURE", dataObjects[2]);
+      if (dataObjects[2].windspeedon) 
+          processWebSocketFeed(rec, weatherFields, "WEATHER_WIND_SPEED", "N/A", "N/A");
+      if (dataObjects[2].winddirectionon) 
+          processWebSocketFeed(rec, weatherFields, "WEATHER_WIND_DIRECTION", "N/A", "N/A");
+    }
+  }
+  var ws = new WebSocket(feedSource);
+  ws.onmessage = function (event) {
+    reader.readAsText(event.data);
+  }
+  ws.onerror = function (event) {
+    ws.close();
+  }
+  ws.onclose = function (event) {
+    switch(feedSource) {
+      case WEATHER_STATION_1_RT_FEED:
+        
+        // Close direction and speed charts
+        dataObjects[2].locationon = false;
+        dataObjects[2].temperatureon = false;
+        dataObjects[2].pressureon = false;
+        dataObjects[2].windspeedon = false;
+        dataObjects[2].winddirectionon = false;
+        document.getElementById("weather_winddirection").style.display = 'none';
+        document.getElementById("weather_speed").style.display = 'none';
+        
+        // Remove station, temperature and pressure markers
+        if (null !== weatherStationMarker) {
+          removeMarker(weatherStationMarker);
+          weatherStationMarker=null;
+        }        
+        if (null !== weatherStationTemperatureMarker) {
+          removeMarker(weatherStationTemperatureMarker);
+          weatherStationTemperatureMarker=null;
+        }        
+        if (null !== weatherStationPressureMarker) {
+          removeMarker(weatherStationPressureMarker);
+          weatherStationPressureMarker=null;
+        }        
+        break;
+       default:
+        throw new Error("Unknown real-time weather feed source.");
+    }
+    
+  }
+  return ws;
+}
+
 function removeMarker(thisMarker) {
   map.removeLayer(thisMarker);
   thisMarker.update(thisMarker);
 }
 
 function buildWeatherStationMarker(sensorLocation) {
-  if (policeCarMarker === null) {
-    weatherStationMarker = L.Marker(
+  if (null === weatherStationMarker) {
+    weatherStationMarker = L.marker(
                           [sensorLocation.lat, sensorLocation.lon], 
                           {icon: L.icon({ iconUrl: 'http://54.80.60.180:6080/images/weatherstationicon.png',
                                           iconSize: [34, 77],})}).addTo(map)
@@ -322,26 +339,26 @@ function buildGPSMarker(data, markerType) {
         }
         break;
       case "POLICECARLOOKRAYFEED" :
-        if (livePolicecarLookRaysMarker === null) {
-          livePolicecarLookRaysMarker = L.rotatedMarker(
+        if (policeCarLookRaysMarker === null) {
+          policeCarLookRaysMarker = L.rotatedMarker(
                                 [s_lat, s_long], 
                                 {icon: L.icon({ iconUrl: 'http://54.80.60.180:6080/images/cameralookrays.png',
                                                 iconSize: [26,51],})}).addTo(map);
         } else {
-          livePolicecarLookRaysMarker.setLatLng([s_lat, s_long]);
+          policeCarLookRaysMarker.setLatLng([s_lat, s_long]);
         }
-        livePolicecarLookRaysMarker.options.angle = parseFloat(rotation);                              
+        policeCarLookRaysMarker.options.angle = parseFloat(rotation);                              
         break;
       case "PATROLMANLOOKRAYFEED" :
-        if (livePatrolmanLookRaysMarker === null) {
-          livePatrolmanLookRaysMarker = L.rotatedMarker(
+        if (patrolManLookRaysMarker === null) {
+          patrolManLookRaysMarker = L.rotatedMarker(
                                 [s_lat, s_long], 
                                 {icon: L.icon({ iconUrl: 'http://54.80.60.180:6080/images/cameralookrays.png',
                                                 iconSize: [26,51],})}).addTo(map);
         } else {
-          livePatrolmanLookRaysMarker.setLatLng([s_lat, s_long]);
+          patrolManLookRaysMarker.setLatLng([s_lat, s_long]);
         }
-        livePatrolmanLookRaysMarker.options.angle = parseFloat(rotation)+90;                              
+        patrolManLookRaysMarker.options.angle = parseFloat(rotation)+90;                              
         break;
       default:
         throw new Error ("Cannot build marker.  Unknown marker type.");
@@ -386,6 +403,9 @@ function interpretFeed(data, iFields, typeofFeed, delimiter) {
           }
         });
       return { lat: s_lat, long: s_long, alt: s_alt, time: s_time };
+      break;
+    case "WEATHER_STATION_LOCATION":
+      // Location has been hardwired for the demo.  Nothing to do here.
       break;
     case "WEATHER_WIND_SPEED":
     case "WEATHER_WIND_DIRECTION" :
@@ -444,7 +464,7 @@ function processWebSocketFeed(rec, recordDescriptor, typeofFeed, markerType, mar
       }
       break;
     case "WEATHER_STATION_LOCATION":
-      buildWeatherStationMarker(weatherSensorLocations[0]);
+      buildWeatherStationMarker(dataObjects[2]);
       break;
     case "WEATHER_WIND_DIRECTION" :
       var chart=$("#weather_winddirection").highcharts();
