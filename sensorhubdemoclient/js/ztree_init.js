@@ -116,6 +116,9 @@ function processCheckedNodes(nodes) {
                 // It is possible that orientation feed is on because police car is checked!
                 policecarOrientationSocket = getRTOrientationFeed(POLICECAR_ORIENTATION_FEED,POLICECAR_GPS_FEED);
               }
+              if (null === ptzSocket) {
+                ptzSocket = getPTZPanFeed(PTZ_PAN_FEED);
+              }
               break;
             case 4: // Police car live camera feed
               document.getElementById("policecarcam").style.display="block";
@@ -190,6 +193,10 @@ function processUnCheckedNodes(nodes) {
               if (WebSocket.OPEN === policecarsocket.readyState) { 
                 policecarsocket.close();
                 policecarsocket = null;
+              }
+              if (WebSocket.OPEN === ptzSocket.readyState) {
+                ptzSocket.close();
+                ptzSocket = null;
               }
             }
           } else {

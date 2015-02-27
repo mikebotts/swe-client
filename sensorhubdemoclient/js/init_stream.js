@@ -33,6 +33,8 @@ $( document ).ready(function() {
   // Weather Station 1
   var weatherStation = new Object();
   weatherStation.name = "";
+  weatherStation.temperature = 0;
+  weatherStation.pressure = 0;
   weatherStation.lat = 0;
   weatherStation.lon = 0;
   weatherStation.locationon = false;
@@ -88,6 +90,15 @@ $( document ).ready(function() {
       dataObjects[2].lon = -86.585;
       }, 'xml');  
 
+  // Get data descriptor for PTZ pan feed
+  $.get(PTZ_PAN_DESCRIPTOR,
+    function(data) {
+      template = $(data);
+      template.find('field').each(function (i, field) {
+        axisPanFields[i] = $(this);
+      });
+    }, 'xml');  
+      
   // Get data descriptor for ORIENTATION feed
   $.get(ORIENTATION_DESCRIPTOR,
     function(data) {
@@ -119,7 +130,7 @@ $( document ).ready(function() {
 function log(msg) {
   if (DEBUG_MODE) 
     $("<p style='padding:0;margin:0;'>" + msg + "</p>").appendTo("#dbg");
-}
+} // log
 
 function send_ptz_command(ptzURL, ptzParams) {
   var http = new XMLHttpRequest();
@@ -127,12 +138,12 @@ function send_ptz_command(ptzURL, ptzParams) {
   http.open("POST", ptzURL, true);
   http.setRequestHeader("Content-type", "text/xml");
   http.send(params);  
-}
+} // send_ptz_command
 
 function is(type, obj) {
   var clas = Object.prototype.toString.call(obj).slice(8, -1);
   return obj !== undefined && obj !== null && clas === type;
-}
+} // is
 
 function getRTOrientationFeed(feedSource, feedType) {
   // Query SOS Orientation stream
@@ -174,7 +185,33 @@ function getRTOrientationFeed(feedSource, feedType) {
     
   }
   return ws;
-}
+} // getRTOrientationFeed
+
+function getPTZPanFeed(feedSource) {
+  // Query SOS PTZ Pan stream
+  var reader = new FileReader();
+  reader.onload = function () {
+    var rec = reader.result;
+    if (null===rec) {
+    } else {
+      processWebSocketFeed(rec, axisPanFields, "AXIS_PAN_ANGLE", "N/A", "N/A");  
+    }
+  }
+  var ws = new WebSocket(feedSource);
+  ws.onmessage = function (event) {
+      reader.readAsText(event.data);
+  }
+  ws.onerror = function (event) {
+      ws.close();
+  }
+  ws.onclose = function (event) {
+    switch(feedSource) {
+      
+      PTZ_PAN_ANGLE = 0;
+      
+  }
+  return ws;
+} // getPTZPanFeed
 
 function getRTGPSFeed(feedSource) {
   // Query SOS GPS stream
@@ -226,8 +263,8 @@ function getRTGPSFeed(feedSource) {
     
   }
   return ws;
-}
-
+} // getRTGPSFeed
+ 
 function getRTWeatherFeed(feedSource) {
   // Query SOS weather stream
   var reader = new FileReader();
@@ -265,6 +302,8 @@ function getRTWeatherFeed(feedSource) {
         dataObjects[2].pressureon = false;
         dataObjects[2].windspeedon = false;
         dataObjects[2].winddirectionon = false;
+        dataObjects[2].temperature = 0;
+        dataObjects[2].pressure = 0;
         document.getElementById("weather_winddirection").style.display = 'none';
         document.getElementById("weather_speed").style.display = 'none';
         
@@ -288,12 +327,12 @@ function getRTWeatherFeed(feedSource) {
     
   }
   return ws;
-}
+}  // getRTWeatherFeed
 
 function removeMarker(thisMarker) {
   map.removeLayer(thisMarker);
   thisMarker.update(thisMarker);
-}
+} //removeMarker
 
 function buildWeatherStationMarker(sensorLocation) {
   if (null === weatherStationMarker) {
@@ -304,6 +343,34 @@ function buildWeatherStationMarker(sensorLocation) {
                         .bindPopup('<div id="pop-weatherStationName">Station ID: ' + sensorLocation.name + '</div>', { className: 'marker-popup' , closeButton: false});
   }
 } // buildWeatherStationMarker
+
+function buildWeatherTemperatureMarker(sensorLocation) {
+  
+  if (null === weatherStationTemperatureMarker) {
+    weatherStationTemperatureMarker = L.marker(
+                                      [sensorLocation.lat, sensorLocation.lon], 
+                                      { icon: L.divIcon({ className: 'divIcon',
+                                                         html: "Temperature: " + dataObjects[2].temperature + "\xB0",
+                                                         iconAnchor: [50,-10],
+                                                         iconSize: [100,40]
+                                                        })}).addTo(map);
+  }
+
+} //buildWeatherTemperatureMarker
+
+function buildWeatherTemperatureMarker(sensorLocation) {
+  
+  if (null === weatherStationPressureMarker) {
+    weatherStationPressureMarker = L.marker(
+                                   [sensorLocation.lat, sensorLocation.lon], 
+                                   { icon: L.divIcon({ className: 'divIcon',
+                                                       html: "Pressure: " + dataObjects[2].pressure,
+                                                       iconAnchor: [50,-10],
+                                                       iconSize: [100,40]
+                                                     })}).addTo(map);
+  }
+
+} //buildWeatherTemperatureMarker
 
 function buildGPSMarker(data, markerType) {
   var s_lat = data.lat, s_long = data.lon, rotation = data.rotation;
@@ -347,7 +414,10 @@ function buildGPSMarker(data, markerType) {
         } else {
           policeCarLookRaysMarker.setLatLng([s_lat, s_long]);
         }
-        policeCarLookRaysMarker.options.angle = parseFloat(rotation);                              
+        if (0 == currentAxisCameraPanAngle) 
+          policeCarLookRaysMarker.options.angle = parseFloat(rotation);                              
+        else
+          policeCarLookRaysMarker.options.angle = parseFloat(rotation) + currentAxisCameraPanAngle + PTZ_ADJUSTMENT_ANGLE_TO_ZERO;                              
         break;
       case "PATROLMANLOOKRAYFEED" :
         if (patrolManLookRaysMarker === null) {
@@ -407,6 +477,19 @@ function interpretFeed(data, iFields, typeofFeed, delimiter) {
     case "WEATHER_STATION_LOCATION":
       // Location has been hardwired for the demo.  Nothing to do here.
       break;
+    case "AXIS_PAN_ANGLE":
+      $(iFields).each(function (idx, field) {
+          switch($(field).attr('name')) {
+            case 'pan':
+              s_pan = vals[idx];
+              break;
+            case 'time':
+              s_time = vals[idx];
+              break;
+          }
+        });
+      return { angle: s_angle, time: s_time };
+      break;
     case "WEATHER_WIND_SPEED":
     case "WEATHER_WIND_DIRECTION" :
       $(iFields).each(function (idx, field) {
@@ -432,7 +515,7 @@ function interpretFeed(data, iFields, typeofFeed, delimiter) {
       break;
     default:
       throw new Error("Feed type unknown.  Unable to interpret feed.");
-  }
+  } // interpretFeed
 
 }
 
@@ -448,6 +531,9 @@ function processWebSocketFeed(rec, recordDescriptor, typeofFeed, markerType, mar
           currentPolicecarOrientation = response.rotation | 0;
           break;
       }
+      break;
+    case "AXIS_PAN_ANGLE":
+      currentAxisCameraPanAngle = reponse.angle | 0;
       break;
     case "GPS":
       switch (markerType) {
@@ -477,11 +563,15 @@ function processWebSocketFeed(rec, recordDescriptor, typeofFeed, markerType, mar
       series.addPoint([Date.parse(response.time), parseInt(response.windspeed)], true, true);
       break;
     case "WEATHER_TEMPERATURE" :
+      dataObjects[2].temperature = response.temperature;
+      buildWeatherTemperatureMarker(dataObjects[2]);
       break;
     case "WEATHER_BAROMETRIC_PRESSURE":
+      dataObjects[2].pressure = response.pressure;
+      buildWeatherPressureMarker(dataObjects[2]);
       break;
     default:
       throw new Error("Cannot parse feed.  Unknown feed type.");
   }
     
-}
+} // processWebSocketFeed
