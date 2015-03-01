@@ -205,8 +205,6 @@ function getPTZPanFeed(feedSource) {
       ws.close();
   }
   ws.onclose = function (event) {
-    switch(feedSource) {
-      
       PTZ_PAN_ANGLE = 0;
       
   }
@@ -218,8 +216,7 @@ function getRTGPSFeed(feedSource) {
   var reader = new FileReader();
   reader.onload = function () {
     var rec = reader.result;
-    if (null===rec) {
-    } else {
+    if (null !== rec) {
       switch(feedSource) {
         case POLICECAR_GPS_FEED:
           processWebSocketFeed(rec, gpsFields, "GPS", "POLICECARFEED", "N/A");
@@ -270,19 +267,23 @@ function getRTWeatherFeed(feedSource) {
   var reader = new FileReader();
   reader.onload = function () {
     var rec = reader.result;
-    if (null===rec) {
-    } else {
+    if (null !== rec) {
       // We don't which one of the weather attributes client wants to view. Process all.
-      if (dataObjects[2].locationon) 
+      if (dataObjects[2].locationon) {
         processWebSocketFeed(rec, weatherFields, "WEATHER_STATION_LOCATION", "N/A", dataObjects[2]);
-      if (dataObjects[2].temperatureon) 
-          processWebSocketFeed(rec, weatherFields, "WEATHER_TEMPERATURE", "TEMPERATURE", dataObjects[2]);
-      if (dataObjects[2].pressureon) 
-          processWebSocketFeed(rec, weatherFields, "WEATHER_BAROMETRIC_PRESSURE", "PRESSURE", dataObjects[2]);
-      if (dataObjects[2].windspeedon) 
-          processWebSocketFeed(rec, weatherFields, "WEATHER_WIND_SPEED", "N/A", "N/A");
-      if (dataObjects[2].winddirectionon) 
-          processWebSocketFeed(rec, weatherFields, "WEATHER_WIND_DIRECTION", "N/A", "N/A");
+      }
+      if (dataObjects[2].temperatureon) { 
+        processWebSocketFeed(rec, weatherFields, "WEATHER_TEMPERATURE", "TEMPERATURE", dataObjects[2]);
+      }
+      if (dataObjects[2].pressureon) { 
+        processWebSocketFeed(rec, weatherFields, "WEATHER_BAROMETRIC_PRESSURE", "PRESSURE", dataObjects[2]);
+      }
+      if (dataObjects[2].windspeedon) {
+        processWebSocketFeed(rec, weatherFields, "WEATHER_WIND_SPEED", "N/A", "N/A");
+      }
+      if (dataObjects[2].winddirectionon) {
+        processWebSocketFeed(rec, weatherFields, "WEATHER_WIND_DIRECTION", "N/A", "N/A");
+      }
     }
   }
   var ws = new WebSocket(feedSource);
@@ -295,7 +296,6 @@ function getRTWeatherFeed(feedSource) {
   ws.onclose = function (event) {
     switch(feedSource) {
       case WEATHER_STATION_1_RT_FEED:
-        
         // Close direction and speed charts
         dataObjects[2].locationon = false;
         dataObjects[2].temperatureon = false;
@@ -350,27 +350,45 @@ function buildWeatherTemperatureMarker(sensorLocation) {
     weatherStationTemperatureMarker = L.marker(
                                       [sensorLocation.lat, sensorLocation.lon], 
                                       { icon: L.divIcon({ className: 'divIcon',
-                                                         html: "Temperature: " + dataObjects[2].temperature + "\xB0",
-                                                         iconAnchor: [50,-10],
-                                                         iconSize: [100,40]
+                                                         html: "Temperature: " + parseFloat(dataObjects[2].temperature).toFixed(2) + "\xB0",
+                                                         iconAnchor: [70,-40],
+                                                         iconSize: [200,40]
                                                         })}).addTo(map);
+  } else {
+    var icon = L.divIcon({
+               html: "Temperature: " + parseFloat(dataObjects[2].temperature).toFixed(2) + "\xB0",
+               className: 'divIcon',
+               iconAnchor: [70,-40],
+               iconSize: [200,40]
+            });
+    weatherStationTemperatureMarker.setIcon(icon);
+    weatherStationTemperatureMarker.update(weatherStationTemperatureMarker);
   }
 
 } //buildWeatherTemperatureMarker
 
-function buildWeatherTemperatureMarker(sensorLocation) {
-  
+function buildWeatherPressureMarker(sensorLocation) {
+
   if (null === weatherStationPressureMarker) {
     weatherStationPressureMarker = L.marker(
                                    [sensorLocation.lat, sensorLocation.lon], 
                                    { icon: L.divIcon({ className: 'divIcon',
-                                                       html: "Pressure: " + dataObjects[2].pressure,
-                                                       iconAnchor: [50,-10],
-                                                       iconSize: [100,40]
+                                                       html: "Pressure: " + parseFloat(dataObjects[2].pressure).toFixed(2) + " hPa",
+                                                       iconAnchor: [70,-60],
+                                                       iconSize: [200,40]
                                                      })}).addTo(map);
+  } else {
+    var icon = L.divIcon({
+               html: "Pressure: " + parseFloat(dataObjects[2].pressure).toFixed(2) + " hPa",
+               className: 'divIcon',
+               iconAnchor: [70,-60],
+               iconSize: [200,40]
+            });
+    weatherStationPressureMarker.setIcon(icon);
+    weatherStationPressureMarker.update(weatherStationPressureMarker);
   }
 
-} //buildWeatherTemperatureMarker
+} //buildWeatherPressureMarker
 
 function buildGPSMarker(data, markerType) {
   var s_lat = data.lat, s_long = data.lon, rotation = data.rotation;
@@ -490,6 +508,8 @@ function interpretFeed(data, iFields, typeofFeed, delimiter) {
         });
       return { angle: s_angle, time: s_time };
       break;
+    case "WEATHER_BAROMETRIC_PRESSURE":
+    case "WEATHER_TEMPERATURE":
     case "WEATHER_WIND_SPEED":
     case "WEATHER_WIND_DIRECTION" :
       $(iFields).each(function (idx, field) {
@@ -511,7 +531,7 @@ function interpretFeed(data, iFields, typeofFeed, delimiter) {
               break;
           }
         });
-      return { time: s_time, temperature: s_temperature, pressure: s_pressure, windspeed: s_windspeed, winddirection: s_winddirection };      
+      return { time: s_time, temperature: s_temperature, pressure: s_pressure, windspeed: s_windspeed, winddirection: s_winddirection };         
       break;
     default:
       throw new Error("Feed type unknown.  Unable to interpret feed.");
@@ -520,6 +540,7 @@ function interpretFeed(data, iFields, typeofFeed, delimiter) {
 }
 
 function processWebSocketFeed(rec, recordDescriptor, typeofFeed, markerType, markerLocations) {
+  //log (dataObjects[2].locationon + ", " + dataObjects[2].temperatureon + ", " + dataObjects[2].pressureon);
   response = interpretFeed(rec, recordDescriptor, typeofFeed, ',');
   switch (typeofFeed) {
     case "ORIENTATION":

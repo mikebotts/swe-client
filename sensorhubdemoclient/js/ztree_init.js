@@ -68,9 +68,7 @@ function onCheck(e, treeId, treeNode) {
 }
 
 function processCheckedNodes(nodes) {
-  log("Processing checked nodes..." + nodes.length);
   for (var i=0, l=nodes.length; i<l; i++) {
-    log("Checked: " + nodes[i].name);
     if (null === nodes[i].pId) {
       // Parent node
       switch (nodes[i].id) {
@@ -179,9 +177,7 @@ function processCheckedNodes(nodes) {
 
 function processUnCheckedNodes(nodes) {
   try {
-  log("Processing unchecked nodes..." + nodes.length);
   for (var i=0, l=nodes.length; i<l; i++) {
-    log("UnChecked: " + nodes[i].name);
     if (null === nodes[i].pId) {
       // Parent node
       switch (nodes[i].id) {
@@ -298,9 +294,17 @@ function processUnCheckedNodes(nodes) {
           switch (nodes[i].id) {
             case 11:
               dataObjects[2].pressureon = false;
+              if (null !== weatherStationPressureMarker) {
+                removeMarker(weatherStationPressureMarker);
+                weatherStationPressureMarker=null;
+              }
               break;
             case 12:
               dataObjects[2].temperatureon = false;
+              if (null !== weatherStationTemperatureMarker) {
+                removeMarker(weatherStationTemperatureMarker);
+                weatherStationTemperatureMarker=null;
+              }
               break;
             case 13:
               dataObjects[2].winddirectionon = false;
