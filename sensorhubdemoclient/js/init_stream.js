@@ -137,7 +137,7 @@ function send_ptz_command(ptzURL, ptzParams) {
     var http = new XMLHttpRequest();
     var params = PTZ_TASKING_COMMAND_BASE.replace(PTZ_TASKING_COMMAND_REPLACE_TOKEN,ptzParams);
     http.open("POST", ptzURL, true);
-    http.setRequestHeader("Content-Type", "text/xml")
+    http.setRequestHeader("Content-Type", "text/xml");
     http.send(params);  
   } catch (e) {
     log(e);
