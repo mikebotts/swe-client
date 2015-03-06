@@ -133,11 +133,15 @@ function log(msg) {
 } // log
 
 function send_ptz_command(ptzURL, ptzParams) {
-  var http = new XMLHttpRequest();
-  var params = PTZ_TASKING_COMMAND_BASE.replace(PTZ_TASKING_COMMAND_REPLACE_TOKEN,ptzParams);
-  http.open("POST", ptzURL, true);
-  http.setRequestHeader("Content-type", "text/xml");
-  http.send(params);  
+  try {
+    var http = new XMLHttpRequest();
+    var params = PTZ_TASKING_COMMAND_BASE.replace(PTZ_TASKING_COMMAND_REPLACE_TOKEN,ptzParams);
+    http.open("POST", ptzURL, true);
+    http.setRequestHeader("Content-Type", "text/xml")
+    http.send(params);  
+  } catch (e) {
+    log(e);
+  }
 } // send_ptz_command
 
 function is(type, obj) {
@@ -213,53 +217,58 @@ function getPTZPanFeed(feedSource) {
 
 function getRTGPSFeed(feedSource) {
   // Query SOS GPS stream
-  var reader = new FileReader();
-  reader.onload = function () {
-    var rec = reader.result;
-    if (null !== rec) {
+  try {
+    var reader = new FileReader();
+    reader.onload = function () {
+      var rec = reader.result;
+      if (null !== rec) {
       switch(feedSource) {
-        case POLICECAR_GPS_FEED:
-          processWebSocketFeed(rec, gpsFields, "GPS", "POLICECARFEED", "N/A");
-          if (dataObjects[0].buildmarker)
-            buildGPSMarker(dataObjects[0],"POLICECARFEED");
-          if ((dataObjects[0].lookrayson))
-            buildGPSMarker(dataObjects[0],"POLICECARLOOKRAYFEED");
-          break;
-        case PATROLMAN_GPS_FEED:
-          processWebSocketFeed(rec, gpsFields, "GPS", "PATROLMANFEED", "N/A");
-          if (dataObjects[1].buildmarker)
-            buildGPSMarker(dataObjects[1],"PATROLMANFEED");
-          if ((dataObjects[1].lookrayson))
-            buildGPSMarker(dataObjects[1],"PATROLMANLOOKRAYFEED");
-          break;
-        default:
-          throw new Error("Unknown real-time GPS feed source.");
+          case POLICECAR_GPS_FEED:
+            processWebSocketFeed(rec, gpsFields, "GPS", "POLICECARFEED", "N/A");
+            if (dataObjects[0].buildmarker)
+              buildGPSMarker(dataObjects[0],"POLICECARFEED");
+            if ((dataObjects[0].lookrayson))
+              buildGPSMarker(dataObjects[0],"POLICECARLOOKRAYFEED");
+            break;
+          case PATROLMAN_GPS_FEED:
+            processWebSocketFeed(rec, gpsFields, "GPS", "PATROLMANFEED", "N/A");
+            if (dataObjects[1].buildmarker)
+              buildGPSMarker(dataObjects[1],"PATROLMANFEED");
+            if ((dataObjects[1].lookrayson))
+              buildGPSMarker(dataObjects[1],"PATROLMANLOOKRAYFEED");
+            break;
+          default:
+            throw new Error("Unknown real-time GPS feed source.");
+        }
       }
     }
-  }
-  var ws = new WebSocket(feedSource);
-  ws.onmessage = function (event) {
-      reader.readAsText(event.data);
-  }
-  ws.onerror = function (event) {
-      ws.close();
-  }
-  ws.onclose = function (event) {
-    switch(feedSource) {
-      case POLICECAR_GPS_FEED:
-        removeMarker(policeCarMarker);
-        policeCarMarker=null;
-        break;
-      case PATROLMAN_GPS_FEED:
-        removeMarker(patrolManMarker);
-        patrolManMarker=null;            
-        break;
-       default:
-        throw new Error("Unknown real-time GPS feed source.");
+    var ws = new WebSocket(feedSource);
+    ws.onmessage = function (event) {
+        reader.readAsText(event.data);
     }
-    
+    ws.onerror = function (event) {
+        ws.close();
+    }
+    ws.onclose = function (event) {
+      switch(feedSource) {
+        case POLICECAR_GPS_FEED:
+          removeMarker(policeCarMarker);
+          policeCarMarker=null;
+          break;
+        case PATROLMAN_GPS_FEED:
+          removeMarker(patrolManMarker);
+          patrolManMarker=null;            
+          break;
+         default:
+          throw new Error("Unknown real-time GPS feed source.");
+      }
+      
+    }
+    return ws;    
+  } catch (e) {
+    alert (e);
   }
-  return ws;
+
 } // getRTGPSFeed
  
 function getRTWeatherFeed(feedSource) {
@@ -432,10 +441,7 @@ function buildGPSMarker(data, markerType) {
         } else {
           policeCarLookRaysMarker.setLatLng([s_lat, s_long]);
         }
-        if (0 == currentAxisCameraPanAngle) 
-          policeCarLookRaysMarker.options.angle = parseFloat(rotation);                              
-        else
-          policeCarLookRaysMarker.options.angle = parseFloat(rotation) + currentAxisCameraPanAngle + PTZ_ADJUSTMENT_ANGLE_TO_ZERO;                              
+        policeCarLookRaysMarker.options.angle = parseFloat(rotation) + currentAxisCameraPanAngle + PTZ_ADJUSTMENT_ANGLE_TO_ZERO;                              
         break;
       case "PATROLMANLOOKRAYFEED" :
         if (patrolManLookRaysMarker === null) {
@@ -471,6 +477,7 @@ function interpretFeed(data, iFields, typeofFeed, delimiter) {
               break;
           }
         });
+        log(s_rotation);
       return { rotation: s_rotation, pitch: s_pitch, roll: s_roll };
       break;
     case "GPS":
@@ -506,7 +513,7 @@ function interpretFeed(data, iFields, typeofFeed, delimiter) {
               break;
           }
         });
-      return { angle: s_angle, time: s_time };
+      return { angle: s_pan, time: s_time };
       break;
     case "WEATHER_BAROMETRIC_PRESSURE":
     case "WEATHER_TEMPERATURE":
@@ -554,7 +561,7 @@ function processWebSocketFeed(rec, recordDescriptor, typeofFeed, markerType, mar
       }
       break;
     case "AXIS_PAN_ANGLE":
-      currentAxisCameraPanAngle = reponse.angle | 0;
+      currentAxisCameraPanAngle = response.angle | 0;
       break;
     case "GPS":
       switch (markerType) {
