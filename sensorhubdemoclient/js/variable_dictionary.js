@@ -22,12 +22,12 @@ var gpsFields         = [],
     axisPanFields     = [];
 
 var SENSORHUB_SERVER_1 = 'bottsgeo.com:8181',
-    SENSORHUB_SERVER_2 = '54.172.40.148:8080',
+    SENSORHUB_SERVER_2 = 'ec2-52-16-177-252.eu-west-1.compute.amazonaws.com:8181',
     SEBSORHUB_SERVER_2 = 'bottsgeo.simple-url.com:2015';
     
-var WEATHER_DESCRIPTOR_BASE_URL               =  'http://' + SENSORHUB_SERVER_1 + '/sensorhub/sos?service=SOS&version=2.0',
-    GPS_DESCRIPTOR_BASE_URL                   =  'http://' + SENSORHUB_SERVER_1 + '/sensorhub/sos?service=SOS&version=2.0',
-    CAM_DESCRIPTOR_BASE_URL                   =  'http://' + SENSORHUB_SERVER_1 + '/sensorhub/sos?service=SOS&version=2.0',
+var WEATHER_DESCRIPTOR_BASE_URL               =  'http://' + SENSORHUB_SERVER_2 + '/sensorhub/sos?service=SOS&version=2.0',
+    GPS_DESCRIPTOR_BASE_URL                   =  'http://' + SENSORHUB_SERVER_2 + '/sensorhub/sos?service=SOS&version=2.0',
+    CAM_DESCRIPTOR_BASE_URL                   =  'http://' + SENSORHUB_SERVER_2 + '/sensorhub/sos?service=SOS&version=2.0',
     ORIENTATION_DESCRIPTOR_BASE_URL           =  'http://' + SENSORHUB_SERVER_1 + '/sensorhub/sos?service=SOS&version=2.0',
     PTZ_PAN_DESCRIPTOR_BASE_URL               =  'http://' + SENSORHUB_SERVER_1 + '/sensorhub/sos?service=SOS&version=2.0',
     WEATHER_DESCRIPTOR_REQUEST                =  '&request=DescribeSensor',
@@ -96,9 +96,9 @@ var policecarsocket             = null,
     weatherStationSocket        = null,
     ptzSocket                   = null;
 
-var currentPatrolmanOrientation       = 0,
-    currentPolicecarOrientation       = 0,
-    currentAxisCameraPanAngle         = 0;
+var currentPatrolmanOrientation = 0,
+    currentPolicecarOrientation = 0,
+    currentAxisCameraPanAngle   = 0;
 
 var policeCarMarker                 = null,
     patrolManMarker                 = null,
