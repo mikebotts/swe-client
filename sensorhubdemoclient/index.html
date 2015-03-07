@@ -43,15 +43,15 @@
         </div>
         <div id="policecarcam_video_right">
           <div id="ptz_container">
-            <div id="pan_nw" class="box"><img src="images/ptz_blank.png" border:0/></div>
-            <div id="pan_n"  class="box" onclick='send_ptz_command(PATROL_CAR_PTZ_CAMERA_URL,"rtilt,2"); return false;'><img src="images/ptz_n.png" border:0/></div>
-            <div id="pan_ne" class="box"><img src="images/ptz_blank.png" border:0/></div>
-            <div id="pan_w"  class="box" onclick='send_ptz_command(PATROL_CAR_PTZ_CAMERA_URL,"rpan,-5"); return false;'><img src="images/ptz_w.png" border:0/></div>
-            <div id="pan_c"  class="box" onclick='send_ptz_command(PATROL_CAR_PTZ_CAMERA_URL,"zoom 1"); return false;'><img src="images/ptz_blank.png" border:0/></div>
-            <div id="pan_e"  class="box" onclick='send_ptz_command(PATROL_CAR_PTZ_CAMERA_URL,"rpan,5"); return false;'><img src="images/ptz_e.png" border:0/></div>
-            <div id="pan_sw" class="box" onclick='send_ptz_command(PATROL_CAR_PTZ_CAMERA_URL,"rzoom,200"); return false;'><img src="images/ptz_zoomin.png" border:0/></div>
-            <div id="pan_s"  class="box" onclick='send_ptz_command(PATROL_CAR_PTZ_CAMERA_URL,"rtilt,-2"); return false;'><img src="images/ptz_s.png" border:0/></div>
-            <div id="pan_se" class="box" onclick='send_ptz_command(PATROL_CAR_PTZ_CAMERA_URL,"rzoom,-200"); return false;'><img src="images/ptz_zoomout.png" border:0/></div>
+            <div id="pan_nw" class="box" title="For future use"><img src="images/ptz_blank.png" border:0/></div>
+            <div id="pan_n"  class="box" title="Tilt up 2 deg." onclick='send_ptz_command(PATROL_CAR_PTZ_CAMERA_URL,"rtilt,2"); return false;'><img src="images/ptz_n.png" border:0/></div>
+            <div id="pan_ne" class="box" title="For future use" ><img src="images/ptz_blank.png" border:0/></div>
+            <div id="pan_w"  class="box" title="Pan left 5 deg."  onclick='send_ptz_command(PATROL_CAR_PTZ_CAMERA_URL,"rpan,-5"); return false;'><img src="images/ptz_w.png" border:0/></div>
+            <div id="pan_c"  class="box" title="For future use"><img src="images/ptz_blank.png" border:0/></div>
+            <div id="pan_e"  class="box" title="Pan right 5 deg." onclick='send_ptz_command(PATROL_CAR_PTZ_CAMERA_URL,"rpan,5"); return false;'><img src="images/ptz_e.png" border:0/></div>
+            <div id="pan_sw" class="box" title="Zoom in"  onclick='send_ptz_command(PATROL_CAR_PTZ_CAMERA_URL,"rzoom,200"); return false;'><img src="images/ptz_zoomin.png" border:0/></div>
+            <div id="pan_s"  class="box" title="Tilt down 2 deg." onclick='send_ptz_command(PATROL_CAR_PTZ_CAMERA_URL,"rtilt,-2"); return false;'><img src="images/ptz_s.png" border:0/></div>
+            <div id="pan_se" class="box" title="Zoom out" onclick='send_ptz_command(PATROL_CAR_PTZ_CAMERA_URL,"rzoom,-200"); return false;'><img src="images/ptz_zoomout.png" border:0/></div>
           </div>
           <ul class="navigation">
             <a class="main" href="#url">Presets</a>

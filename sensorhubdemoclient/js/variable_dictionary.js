@@ -23,7 +23,7 @@ var gpsFields         = [],
 
 var SENSORHUB_SERVER_1 = 'bottsgeo.com:8181',
     SENSORHUB_SERVER_2 = 'ec2-52-16-177-252.eu-west-1.compute.amazonaws.com:8181',
-    SEBSORHUB_SERVER_2 = 'bottsgeo.simple-url.com:2015';
+    SENSORHUB_SERVER_3 = 'bottsgeo.simple-url.com:2015';
     
 var WEATHER_DESCRIPTOR_BASE_URL               =  'http://' + SENSORHUB_SERVER_2 + '/sensorhub/sos?service=SOS&version=2.0',
     GPS_DESCRIPTOR_BASE_URL                   =  'http://' + SENSORHUB_SERVER_2 + '/sensorhub/sos?service=SOS&version=2.0',
@@ -60,7 +60,7 @@ var POLICECAR_BASE_URL                      = 'ws://' + SENSORHUB_SERVER_1 + '/s
     PATROLMAN_GPS_OBSERVED_PROPERTY         = '&observedProperty=http://sensorml.com/ont/swe/property/Location',
     POLICECAR_ORIENTATION_OBSERVED_PROPERTY = '&observedProperty=http://sensorml.com/ont/swe/property/Orientation',
     PATROLMAN_ORIENTATION_OBSERVED_PROPERTY = '&observedProperty=http://sensorml.com/ont/swe/property/Orientation',
-    WEATHERSTATION_1_BASE_URL               = 'ws://' + SENSORHUB_SERVER_1 + '/sensorhOb/sos?service=SOS&version=2.0&request=GetResult',
+    WEATHERSTATION_1_BASE_URL               = 'ws://' + SENSORHUB_SERVER_2 + '/sensorhub/sos?service=SOS&version=2.0&request=GetResult',
     WEATHERSTATION_1_OFFERING               = '&offering=urn:mysos:offering03',
     WEATHERSTATION_1_OBSERVED_PROPERTY      = '&observedProperty=http://sensorml.com/ont/swe/property/Weather',
     // Change temporal filter a little so that each GetResults URL is slightly different.
@@ -82,7 +82,7 @@ var POLICECAR_GPS_FEED          = POLICECAR_BASE_URL + POLICECAR_OFFERING + POLI
     PTZ_PAN_FEED                = PTZ_PAN_BASE_URL + PTZ_PAN_OFFERING + PTZ_PAN_OBSERVED_PROPERTY + TEMPORAL_FILTER,
     WEATHER_STATION_1_RT_FEED   = WEATHERSTATION_1_BASE_URL + WEATHERSTATION_1_OFFERING + WEATHERSTATION_1_OBSERVED_PROPERTY + TEMPORAL_FILTER;
     
-var PATROL_CAR_PTZ_CAMERA_URL         = "http://' + SENSORHUB_SERVER_3 + '/sensorhub/sps?",
+var PATROL_CAR_PTZ_CAMERA_URL         = "http://" + SENSORHUB_SERVER_3 + "/sensorhub/sps?",
     PTZ_TASKING_COMMAND_REPLACE_TOKEN = "{SWE_PTZ_TASKING_COMMAND}",
     PTZ_TASKING_COMMAND_BASE          = '<?xml version="1.0" encoding="UTF-8"?><sps:Submit service="SPS" version="2.0" xmlns:sps="http://www.opengis.net/sps/2.0" xmlns:swe="http://www.opengis.net/swe/2.0"><sps:procedure>d136b6ea-3951-4691-bf56-c84ec7d89d72</sps:procedure><sps:taskingParameters><sps:ParameterData><sps:encoding><swe:TextEncoding blockSeparator=" " collapseWhiteSpaces="true" decimalSeparator="." tokenSeparator=","/></sps:encoding><sps:values>' + PTZ_TASKING_COMMAND_REPLACE_TOKEN + '</sps:values></sps:ParameterData></sps:taskingParameters></sps:Submit>';
 

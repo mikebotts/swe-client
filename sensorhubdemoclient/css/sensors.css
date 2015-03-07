@@ -205,6 +205,9 @@
   margin-bottom:1px;
   padding:0px;
 }
+
+.box:hover { cursor: pointer;}
+
 .marker-popup { width: 150px;  }
 
 .navigation {

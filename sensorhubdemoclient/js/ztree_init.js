@@ -190,9 +190,11 @@ function processUnCheckedNodes(nodes) {
                 policecarsocket.close();
                 policecarsocket = null;
               }
-              if (WebSocket.OPEN === ptzSocket.readyState) {
-                ptzSocket.close();
-                ptzSocket = null;
+              if (null !== ptzSocket) {
+                if (WebSocket.OPEN === ptzSocket.readyState) {
+                  ptzSocket.close();
+                  ptzSocket = null;
+                }
               }
             }
           } else {

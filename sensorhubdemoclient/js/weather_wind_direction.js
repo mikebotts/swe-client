@@ -90,7 +90,7 @@
       }
     },
     title: {
-      text: 'Wind Direction'
+      text: ''
     }},
 
   series: [{
