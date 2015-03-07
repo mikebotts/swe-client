@@ -23,10 +23,11 @@ var gpsFields         = [],
 
 var SENSORHUB_SERVER_1 = 'bottsgeo.com:8181',
     SENSORHUB_SERVER_2 = 'ec2-52-16-177-252.eu-west-1.compute.amazonaws.com:8181',
-    SENSORHUB_SERVER_3 = 'bottsgeo.simple-url.com:2015';
+    //SENSORHUB_SERVER_3 = 'bottsgeo.simple-url.com:2015';
+    SENSORHUB_SERVER_3 = '192.168.1.105:2015';
     
 var WEATHER_DESCRIPTOR_BASE_URL               =  'http://' + SENSORHUB_SERVER_2 + '/sensorhub/sos?service=SOS&version=2.0',
-    GPS_DESCRIPTOR_BASE_URL                   =  'http://' + SENSORHUB_SERVER_2 + '/sensorhub/sos?service=SOS&version=2.0',
+    GPS_DESCRIPTOR_BASE_URL                   =  'http://' + SENSORHUB_SERVER_1 + '/sensorhub/sos?service=SOS&version=2.0',
     CAM_DESCRIPTOR_BASE_URL                   =  'http://' + SENSORHUB_SERVER_2 + '/sensorhub/sos?service=SOS&version=2.0',
     ORIENTATION_DESCRIPTOR_BASE_URL           =  'http://' + SENSORHUB_SERVER_1 + '/sensorhub/sos?service=SOS&version=2.0',
     PTZ_PAN_DESCRIPTOR_BASE_URL               =  'http://' + SENSORHUB_SERVER_1 + '/sensorhub/sos?service=SOS&version=2.0',
@@ -36,7 +37,7 @@ var WEATHER_DESCRIPTOR_BASE_URL               =  'http://' + SENSORHUB_SERVER_2 
     ORIENTATION_DESCRIPTOR_REQUEST            =  '&request=GetResultTemplate',
     PTZ_PAN_DESCRIPTOR_REQUEST                =  '&request=GetResultTemplate',
     WEATHER_DESCRIPTOR_PROCEDURE              =  '&procedure=urn:test:sensors:fakeweather',
-    GPS_DESCRIPTOR_DESCRIPTOR_OFFERING        =  '&offering=urn:mysos:offering02',
+    GPS_DESCRIPTOR_DESCRIPTOR_OFFERING        =  '&offering=urn:android:device:FA44CWM03715-sos',
     CAM_DESCRIPTOR_PROCEDURE                  =  '&procedure=urn:test:sensors:fakecam',
     ORIENTATION_DESRIPTOR_OFFERING            =  '&offering=urn:android:device:04e4413b0a286002-sos',
     PTZ_PAN_DESCRIPTOR_OFFERING               =  '&offering=d136b6ea-3951-4691-bf56-c84ec7d89d72-sos',
@@ -54,7 +55,8 @@ var WEATHER_DESCRIPTOR      =  WEATHER_DESCRIPTOR_BASE_URL + WEATHER_DESCRIPTOR_
 
 var POLICECAR_BASE_URL                      = 'ws://' + SENSORHUB_SERVER_1 + '/sensorhub/sos?service=SOS&version=2.0&request=GetResult',
     PATROLMAN_BASE_URL                      = 'ws://' + SENSORHUB_SERVER_1 + '/sensorhub/sos?service=SOS&version=2.0&request=GetResult',
-    POLICECAR_OFFERING                      = '&offering=urn:android:device:04e4413b0a286002-sos',
+    //POLICECAR_OFFERING                      = '&offering=urn:android:device:04e4413b0a286002-sos',urn:android:device:FA44CWM03715
+    POLICECAR_OFFERING                      = '&offering=urn:android:device:FA44CWM03715-sos',
     PATROLMAN_OFFERING                      = '&offering=urn:android:device:04e4413b0a286002-sos',
     POLICECAR_GPS_OBSERVED_PROPERTY         = '&observedProperty=http://sensorml.com/ont/swe/property/Location',
     PATROLMAN_GPS_OBSERVED_PROPERTY         = '&observedProperty=http://sensorml.com/ont/swe/property/Location',

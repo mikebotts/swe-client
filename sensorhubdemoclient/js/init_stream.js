@@ -121,7 +121,7 @@ $( document ).ready(function() {
   $.get(GPS_DESCRIPTOR,
     function(data) {
       template = $(data);
-      template.find('field').each(function (i, field) {
+      template.find('coordinate').each(function (i, coordinate) {
         gpsFields[i] = $(this);
       });
     }, 'xml');
@@ -484,20 +484,20 @@ function interpretFeed(data, iFields, typeofFeed, delimiter) {
       $(iFields).each(function (idx, field) {
           switch($(field).attr('name')) {
             case 'lat':
-              s_lat = vals[idx];
+              s_lat = vals[idx+1];
               break;
             case 'lon':
-              s_long = vals[idx];
+              s_long = vals[idx+1];
               break;
             case 'alt':
-              s_alt = vals[idx];
+              s_alt = vals[idx+1];
               break;
             case 'time':
-              s_time = vals[idx];
+              s_time = vals[idx+1];
               break;
           }
         });
-      return { lat: s_lat, long: s_long, alt: s_alt, time: s_time };
+      return { lat: s_lat, long: s_long, alt: s_alt };
       break;
     case "WEATHER_STATION_LOCATION":
       // Location has been hardwired for the demo.  Nothing to do here.
@@ -513,7 +513,7 @@ function interpretFeed(data, iFields, typeofFeed, delimiter) {
               break;
           }
         });
-      return { angle: s_pan, time: s_time };
+      return { angle: s_pan };
       break;
     case "WEATHER_BAROMETRIC_PRESSURE":
     case "WEATHER_TEMPERATURE":
