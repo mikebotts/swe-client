@@ -115,6 +115,7 @@ function processCheckedNodes(nodes) {
                 policecarOrientationSocket = getRTOrientationFeed(POLICECAR_ORIENTATION_FEED,POLICECAR_GPS_FEED);
               }
               if (null === ptzSocket) {
+                //log ("getPTZPanFeed:: " + PTZ_PAN_FEED);
                 ptzSocket = getPTZPanFeed(PTZ_PAN_FEED);
               }
               break;

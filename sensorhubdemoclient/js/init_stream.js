@@ -64,6 +64,7 @@ $( document ).ready(function() {
       if (L.DomUtil.TRANSFORM) {
         // use the CSS transform rule if available
         this._icon.style[L.DomUtil.TRANSFORM] += ' rotate(' + this.options.angle + 'deg)';
+        log("Rotation transform - > " + this._icon.style[L.DomUtil.TRANSFORM]);
       } else if (L.Browser.ie) {
         // fallback for IE6, IE7, IE8
         var rad = this.options.angle * L.LatLng.DEG_TO_RAD,
@@ -130,6 +131,10 @@ $( document ).ready(function() {
 function log(msg) {
   if (DEBUG_MODE) 
     $("<p style='padding:0;margin:0;'>" + msg + "</p>").appendTo("#dbg");
+    //var objDiv = document.getElementById("dbg");
+    //objDiv.scrollTop = objDiv.scrollHeight;
+    var d = $('#dbg');
+    d.scrollTop(d.prop("scrollHeight"));    
 } // log
 
 function send_ptz_command(ptzURL, ptzParams) {
@@ -418,7 +423,9 @@ function buildGPSMarker(data, markerType) {
           policeCarMarker.setLatLng([s_lat, s_long]);
           $('#pop-policeCarMarker').html('Latitude: ' + s_lat + '<br />Longitude: ' + s_long);
         }
+        //log("Police car rotation->" + parseFloat(rotation));
         policeCarMarker.options.angle = parseFloat(rotation);                              
+        //policeCarMarker.options.angle = -45;                              
         break;
       case "PATROLMANFEED" :
         if (patrolManMarker === null) {
@@ -441,6 +448,7 @@ function buildGPSMarker(data, markerType) {
         } else {
           policeCarLookRaysMarker.setLatLng([s_lat, s_long]);
         }
+        //log("Police car look ray marker rotation->" + parseFloat(rotation) + " currentAxisCameraPanAngle->" + currentAxisCameraPanAngle + " PTZ_ADJUSTMENT_ANGLE_TO_ZERO->" + PTZ_ADJUSTMENT_ANGLE_TO_ZERO);
         policeCarLookRaysMarker.options.angle = parseFloat(rotation) + currentAxisCameraPanAngle + PTZ_ADJUSTMENT_ANGLE_TO_ZERO;                              
         break;
       case "PATROLMANLOOKRAYFEED" :
@@ -461,6 +469,8 @@ function buildGPSMarker(data, markerType) {
 } // buildGPSMarker
 
 function interpretFeed(data, iFields, typeofFeed, delimiter) {
+  var tmpStr = "";
+  
   vals = data.trim().split(delimiter);
   switch (typeofFeed) {
     case "ORIENTATION":
@@ -477,7 +487,10 @@ function interpretFeed(data, iFields, typeofFeed, delimiter) {
               break;
           }
         });
-        log(s_rotation);
+      tmpStr = s_rotation;
+      if (0 > parseFloat(s_rotation)) 
+        s_rotation = 360 + parseFloat(s_rotation);
+      log("Raw rotation->" + tmpStr + ", Negative corrected rotation->" + s_rotation);
       return { rotation: s_rotation, pitch: s_pitch, roll: s_roll };
       break;
     case "GPS":
@@ -561,6 +574,7 @@ function processWebSocketFeed(rec, recordDescriptor, typeofFeed, markerType, mar
       }
       break;
     case "AXIS_PAN_ANGLE":
+      log ("AXIS Pan angle: " + response.angle);
       currentAxisCameraPanAngle = response.angle | 0;
       break;
     case "GPS":

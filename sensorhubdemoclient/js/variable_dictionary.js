@@ -10,7 +10,7 @@
  * Developer are Copyright (C) 2014-2015 the Initial Developer. All Rights Reserved.
  */
 
-var DEBUG_MODE = false;
+var DEBUG_MODE = true;
 
 var PTZ_ADJUSTMENT_ANGLE_TO_ZERO = -67.25;
 
@@ -24,7 +24,7 @@ var gpsFields         = [],
 var SENSORHUB_SERVER_1 = 'bottsgeo.com:8181',
     SENSORHUB_SERVER_2 = 'ec2-52-16-177-252.eu-west-1.compute.amazonaws.com:8181',
     //SENSORHUB_SERVER_3 = 'bottsgeo.simple-url.com:2015';
-    SENSORHUB_SERVER_3 = '192.168.1.105:2015';
+    SENSORHUB_SERVER_3 = '172.20.10.7:2015';
     
 var WEATHER_DESCRIPTOR_BASE_URL               =  'http://' + SENSORHUB_SERVER_2 + '/sensorhub/sos?service=SOS&version=2.0',
     GPS_DESCRIPTOR_BASE_URL                   =  'http://' + SENSORHUB_SERVER_1 + '/sensorhub/sos?service=SOS&version=2.0',
@@ -57,6 +57,7 @@ var POLICECAR_BASE_URL                      = 'ws://' + SENSORHUB_SERVER_1 + '/s
     PATROLMAN_BASE_URL                      = 'ws://' + SENSORHUB_SERVER_1 + '/sensorhub/sos?service=SOS&version=2.0&request=GetResult',
     //POLICECAR_OFFERING                      = '&offering=urn:android:device:04e4413b0a286002-sos',urn:android:device:FA44CWM03715
     POLICECAR_OFFERING                      = '&offering=urn:android:device:FA44CWM03715-sos',
+    //POLICECAR_OFFERING                      = '&offering=urn:android:device:04e4413b0a286002-sos',
     PATROLMAN_OFFERING                      = '&offering=urn:android:device:04e4413b0a286002-sos',
     POLICECAR_GPS_OBSERVED_PROPERTY         = '&observedProperty=http://sensorml.com/ont/swe/property/Location',
     PATROLMAN_GPS_OBSERVED_PROPERTY         = '&observedProperty=http://sensorml.com/ont/swe/property/Location',
@@ -71,17 +72,20 @@ var POLICECAR_BASE_URL                      = 'ws://' + SENSORHUB_SERVER_1 + '/s
     // and patrol man feed use the same device.
     POLICECAR_TEMPORAL_FILTER               = '&temporalFilter=phenomenonTime,now/2015-06-01',
     PATROLMAN_TEMPORAL_FILTER               = '&temporalFilter=phenomenonTime,now/2016-06-01',
-    TEMPORAL_FILTER                         = '&temporalFilter=phenomenonTime,now/2017-06-01';
+    TEMPORAL_FILTER                         = '&temporalFilter=phenomenonTime,now/2017-06-01',
+    TEMPRORAL_FILTER_PLAYBACK_1             = '&temporalFilter=phenomenonTime,2015-03-10T20:00:00Z/now&replaySpeed=8',
+    TEMPRORAL_FILTER_PLAYBACK_2             = '&temporalFilter=phenomenonTime,2015-03-10T20:00:01Z/now&replaySpeed=8';
+
 
 var PTZ_PAN_BASE_URL           = 'ws://' + SENSORHUB_SERVER_1 + '/sensorhub/sos?service=SOS&version=2.0&request=GetResult',
     PTZ_PAN_OFFERING           = '&offering=d136b6ea-3951-4691-bf56-c84ec7d89d72-sos',
     PTZ_PAN_OBSERVED_PROPERTY  = '&observedProperty=http://sensorml.com/ont/swe/property/Pan';
     
-var POLICECAR_GPS_FEED          = POLICECAR_BASE_URL + POLICECAR_OFFERING + POLICECAR_GPS_OBSERVED_PROPERTY + POLICECAR_TEMPORAL_FILTER,
-    POLICECAR_ORIENTATION_FEED  = POLICECAR_BASE_URL + POLICECAR_OFFERING + POLICECAR_ORIENTATION_OBSERVED_PROPERTY + POLICECAR_TEMPORAL_FILTER,
-    PATROLMAN_GPS_FEED          = PATROLMAN_BASE_URL + PATROLMAN_OFFERING + PATROLMAN_GPS_OBSERVED_PROPERTY + PATROLMAN_TEMPORAL_FILTER,
-    PATROLMAN_ORIENTATION_FEED  = PATROLMAN_BASE_URL + PATROLMAN_OFFERING + PATROLMAN_ORIENTATION_OBSERVED_PROPERTY + PATROLMAN_TEMPORAL_FILTER,
-    PTZ_PAN_FEED                = PTZ_PAN_BASE_URL + PTZ_PAN_OFFERING + PTZ_PAN_OBSERVED_PROPERTY + TEMPORAL_FILTER,
+var POLICECAR_GPS_FEED          = POLICECAR_BASE_URL + POLICECAR_OFFERING + POLICECAR_GPS_OBSERVED_PROPERTY + TEMPRORAL_FILTER_PLAYBACK_1,
+    POLICECAR_ORIENTATION_FEED  = POLICECAR_BASE_URL + POLICECAR_OFFERING + POLICECAR_ORIENTATION_OBSERVED_PROPERTY + TEMPRORAL_FILTER_PLAYBACK_1,
+    PATROLMAN_GPS_FEED          = PATROLMAN_BASE_URL + PATROLMAN_OFFERING + PATROLMAN_GPS_OBSERVED_PROPERTY + TEMPRORAL_FILTER_PLAYBACK_2,
+    PATROLMAN_ORIENTATION_FEED  = PATROLMAN_BASE_URL + PATROLMAN_OFFERING + PATROLMAN_ORIENTATION_OBSERVED_PROPERTY + TEMPRORAL_FILTER_PLAYBACK_2,
+    PTZ_PAN_FEED                = PTZ_PAN_BASE_URL + PTZ_PAN_OFFERING + PTZ_PAN_OBSERVED_PROPERTY + TEMPRORAL_FILTER_PLAYBACK_1,
     WEATHER_STATION_1_RT_FEED   = WEATHERSTATION_1_BASE_URL + WEATHERSTATION_1_OFFERING + WEATHERSTATION_1_OBSERVED_PROPERTY + TEMPORAL_FILTER;
     
 var PATROL_CAR_PTZ_CAMERA_URL         = "http://" + SENSORHUB_SERVER_3 + "/sensorhub/sps?",
