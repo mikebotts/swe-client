@@ -55,6 +55,9 @@
       
       /** @private */
       _getCapabilitiesBase = '/sos?service=SOS&version=2.0&request=GetCapabilities',
+
+      /** @private */
+      _getResultTemplateBase = '/sos?service=SOS&version=2.0&request=GetResultTemplate',
       
       /** @private */      
       sQuery = function( baseurl ) {
@@ -89,6 +92,7 @@
          *       then strip it because we add it later.          
          *   
          */ 
+         
         this.baseurl = baseurl;
         
         return this;
@@ -111,7 +115,7 @@
         // TODO: Check that baseurl is also valid http syntax
         if ((undefined === this.baseurl) || !this.baseurl.trim()) 
           throw new Error("Service URL was not provided.");
-              
+        
         if ("function" === typeof callback ) {
 
           // Request is asynchronous; callback function must be provided
@@ -308,7 +312,21 @@
           throw new Error("getofferings() :: No capabilities document provided.");
         
         }
-      } // getofferings      
+      }, // getofferings
+
+      /**
+       * @param {string} offeringidentifier - The identifier of the offering from the capabilities
+       * @param {string} observedproperty - The observable property from the the capabilities
+       * @returns {string} - The fully qualified url to get the details of the observable
+       * @public
+       */
+      
+      getresulttemplateurl: function (offeringidentifier, observedproperty) {
+        
+        return this.baseurl + _getResultTemplateBase + '&offering=' + offeringidentifier + '&observedProperty=' + observedproperty;
+        
+      } // getresulttemplateurl
+      
       
     } // sQuery.fn = sQuery.prototype = {}
 
