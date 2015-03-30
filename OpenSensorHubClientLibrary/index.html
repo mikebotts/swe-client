@@ -7,7 +7,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <script src="//code.jquery.com/jquery-1.11.2.min.js"></script>
   <script src="sQuery.js"></script>
-  <script src="sQueryGetResultTemplate.js"></script>
+  <script src="sQueryGetLocationDescriptor.js"></script>
 </head>
 <body>
 <H1>Welcome to SensorHub Tutorials!</H1>
@@ -27,8 +27,11 @@
     console.log($om);
     var $off =S().getofferings(c);
     console.log($off);
-    S().test();
-    
+    var url = S(mikesServer).getresulttemplateurl('urn:android:device:FA44CWM03715-sos', 'http://sensorml.com/ont/swe/property/Location');
+    console.log(url);
+    S().getlocationdescriptor(url, function(t) {
+     console.log(t);
+    });
   } catch (e) {
     console.log(e);
   }
