@@ -107,7 +107,11 @@
        * @public
        */
       getcapabilities: function(callback) {
-        
+
+        // TODO: Check that baseurl is also valid http syntax
+        if ((undefined === this.baseurl) || !this.baseurl.trim()) 
+          throw new Error("Service URL was not provided.");
+              
         if ("function" === typeof callback ) {
 
           // Request is asynchronous; callback function must be provided
