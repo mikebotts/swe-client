@@ -75,6 +75,7 @@ S.fn.getlocationdetails = function (xmllocationdescriptor) {
     var objToken = new Object();
     objToken.name = 'time';
     objToken.zone = $xmlTime.find('Time').attr('referenceFrame');
+    objToken.uom = $xmlTime.find('Time').find('uom').attr('xlink:href');
     objLocationDetails.tokens[0] = objToken;    
 
     for (var i = 0, l = $xmlLocationCoordinates.length; l > i; ++i) {
