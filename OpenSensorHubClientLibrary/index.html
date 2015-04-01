@@ -31,7 +31,9 @@
     console.log(url);
     S().getlocationdescriptor(url, function(t) {
      console.log(t);
-    });
+     var $locDetails = S().getlocationdetails(t);
+     console.log($locDetails);
+     });
   } catch (e) {
     console.log(e);
   }

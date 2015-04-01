@@ -151,7 +151,7 @@
        */
       getserviceidentification: function (xmlCapabilities) {
         
-        if (is("XMLDocument",xmlCapabilities)) {
+        if (this.is("XMLDocument",xmlCapabilities)) {
           
           var $xmlCapabilities = $( xmlCapabilities ); 
           
@@ -189,7 +189,7 @@
        */
       getserviceprovider: function (xmlCapabilities) {
         
-        if (is("XMLDocument",xmlCapabilities)) {
+        if (this.is("XMLDocument",xmlCapabilities)) {
           
           var $xmlCapabilities = $( xmlCapabilities ); 
           
@@ -223,7 +223,7 @@
       
       getoperationsmetadata: function (xmlCapabilities) {
 
-        if (is("XMLDocument",xmlCapabilities)) {
+        if (this.is("XMLDocument",xmlCapabilities)) {
           
           var $xmlCapabilities = $( xmlCapabilities ); 
           
@@ -260,7 +260,7 @@
       
       getofferings: function (xmlCapabilities) {
 
-        if (is("XMLDocument",xmlCapabilities)) {
+        if (this.is("XMLDocument",xmlCapabilities)) {
             
           var $xmlCapabilities = $( xmlCapabilities ); 
           
@@ -325,18 +325,17 @@
         
         return this.baseurl + _getResultTemplateBase + '&offering=' + offeringidentifier + '&observedProperty=' + observedproperty;
         
-      } // getresulttemplateurl
+      }, // getresulttemplateurl
       
+      is: function (type, obj) {
+      
+        var clas = Object.prototype.toString.call(obj).slice(8, -1);
+        
+        return obj !== undefined && obj !== null && clas === type;
+        
+      } // is
       
     } // sQuery.fn = sQuery.prototype = {}
-
-    function is(type, obj) {
-      
-      var clas = Object.prototype.toString.call(obj).slice(8, -1);
-      
-      return obj !== undefined && obj !== null && clas === type;
-    
-    } // is
     
     sQuery.fn.init.prototype = sQuery.fn;
 
