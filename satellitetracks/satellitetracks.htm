@@ -21,7 +21,9 @@
   <body style="margin: 0;">
     <div id="map"></div>
     <div id="dbg"></div>
-
+    <div id="dataObjectSelector">
+      <button id="playSatTrack">Play Sat Track</button>
+    </div>
     <script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
     <script type='text/javascript' src="http://cdn.leafletjs.com/leaflet-0.6.4/leaflet.js"></script>
     <script type='text/javascript' src="https://rawgithub.com/shramov/leaflet-plugins/master/layer/tile/Google.js"></script>    
@@ -45,8 +47,7 @@
       }
       north.addTo(map);
       L.control.fullscreen().addTo(map);
-      var polyline = L.polyline([]).addTo(map);
-      var satSocket = getSatelliteTrackFeed(SAT_FEED);
+
     </script>
   </body>
 </html>

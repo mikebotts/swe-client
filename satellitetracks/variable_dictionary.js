@@ -26,11 +26,13 @@ var SAT_FEED_DESCRIPTOR =  SAT_FEED_DESCRIPTOR_BASE_URL + SAT_FEED_DESCRIPTOR_RE
 var SAT_FEED_BASE_URL            = 'ws://' + SENSORHUB_SERVER + '/sensorhub/sos?service=SOS&version=2.0&request=GetResult',
     SAT_FEED_OFFERING            = '&offering=urn:mysos:offering:predictedState',
     SAT_FEED_OBSERVED_PROPERTY   = '&observedProperty=http://www.opengis.net/def/property/OGC/0/PlatformState',
-    SAT_FEED_TEMPORAL_FILTER     = '&temporalFilter=phenomenonTime,2015-04-06/2015-04-07';
+    SAT_FEED_TEMPORAL_FILTER     = '&temporalFilter=phenomenonTime,2015-04-06/2015-04-07&replaySpeed=1';
 
 var SAT_FEED = SAT_FEED_BASE_URL + SAT_FEED_OFFERING + SAT_FEED_OBSERVED_PROPERTY + SAT_FEED_TEMPORAL_FILTER;
     
 var ecef = [];
+
+var satMarker = null;
           
 var osm_StreetMapURL        = 'http://{s}.tile.osm.org/{z}/{x}/{y}.png',
     osm_StreetMapAttrib     = '',

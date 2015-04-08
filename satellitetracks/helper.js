@@ -11,8 +11,13 @@
  *
  * Date: 2015-04-07T00:00Z
  */
+$('#playSatTrack').click(function (e) {
+  e.preventDefault();
+  var polyline = L.polyline([]).addTo(map);
+  var satSocket = getSatelliteTrackFeed(SAT_FEED);
+});
 
- function log(msg) {
+function log(msg) {
   if (DEBUG_MODE) 
     $("<p style='padding:0;margin:0;'>" + msg + "</p>").appendTo("#dbg");
     var d = $('#dbg');
@@ -22,25 +27,16 @@
 function getSatelliteTrackFeed(feedSource) {
   // Query SOS Satellite Track Stream
   try {
-    var reader = new FileReader();
-    reader.onload = function () {
-      var rec = reader.result;
-      counter++;
-      if (null !== rec) {
-        processWebSocketFeed(rec);
-        var lla = ecef2lla(ecef);
-        buildSatMarker(lla);
-      }
-    }
     var ws = new WebSocket(feedSource);
     ws.onmessage = function (event) {
-      reader.readAsText(event.data);
+      processSocketOnMessage(event);
     }
     ws.onerror = function (event) {
       ws.close();
     }
     ws.onclose = function (event) {
-      log("Number of data points received: " + counter);
+      log("Number of data points received: " + --counter);
+      counter=0;
       satSocket = null;
     }
     return ws;    
@@ -48,6 +44,20 @@ function getSatelliteTrackFeed(feedSource) {
     alert (e);
   }
 } // getSatelliteTrackFeed
+
+function processSocketOnMessage(e) {
+  var reader = new FileReader();
+  reader.readAsBinaryString(e.data);
+  reader.onload = function () {
+    var rec = reader.result;
+    if (null !== rec) {
+      processWebSocketFeed(rec);
+      var lla = ecef2lla(ecef);
+      buildSatMarker(lla);
+      counter++;
+    }
+  }
+} //processSocketOnMessage()
 
 function removeMarker(thisMarker) {
   map.removeLayer(thisMarker);
@@ -73,16 +83,28 @@ function interpretFeed(data, delimiter) {
 
 function buildSatMarker(data) {
   var s_lat = data[0], s_long = data[1], s_alt = data[2], s_time = data[3];
-  
   if (typeof s_lat === "undefined" || typeof s_long === "undefined") {
     throw new Error ("Latitude and/or Longitude is unavailable.");
     return;
   } /*Latitude or Longitude empty */ else {
-    var   satMarker = L.marker([s_lat, s_long], 
-                                {icon: L.icon({ iconUrl: 'satellite.png',
-                                                iconSize: [16,16],})}).addTo(map)
-                              .bindPopup('<div id="pop-satMarker' + counter + '">Time: ' + formatDateTime(s_time) + '<br/>Latitude: ' + s_lat + '<br />Longitude: ' + s_long + '</div>', { className: 'marker-popup' , closeButton: true});
-    polyline.addLatLng(L.latLng(s_lat, s_long));
+    if (!isNaN(s_lat) && !isNaN(s_long)) {
+      /*
+      var   satMarker = L.marker([s_lat, s_long], 
+                                  {icon: L.icon({ iconUrl: 'satellite.png',
+                                                  iconSize: [16,16],})}).addTo(map)
+                                .bindPopup('<div id="pop-satMarker' + counter + '">Time: ' + formatDateTime(s_time) + '<br/>Latitude: ' + s_lat + '<br />Longitude: ' + s_long + '</div>', { className: 'marker-popup' , closeButton: true});
+      polyline.addLatLng(L.latLng(s_lat, s_long));
+      */
+      if (satMarker === null) {
+        satMarker = L.marker([s_lat, s_long], 
+                              {icon: L.icon({ iconUrl: 'satellite.png',
+                                              iconSize: [16,16],})}).addTo(map)
+                            .bindPopup('<div id="pop-satMarker">Time: ' + formatDateTime(s_time) + '<br/>Latitude: ' + s_lat + '<br />Longitude: ' + s_long + '</div>', { className: 'marker-popup' , closeButton: true});
+      } else {
+        satMarker.setLatLng([s_lat, s_long]);
+        $('#pop-satMarker').html('Time: ' + formatDateTime(s_time) + '<br/>Latitude: ' + s_lat + '<br />Longitude: ' + s_long);
+      }      
+    }
   }  // Got Latitude or Longitude 
 } // buildSatMarker
 
