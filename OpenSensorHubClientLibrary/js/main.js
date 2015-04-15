@@ -11,10 +11,14 @@
  */
 
  $(function() {
+  
+  var $offerings = null;
+  
   $( "#siTabs").tabs();
   $( "#gcTabs").tabs();
   $( "#spTabs").tabs();
   $( "#omTabs").tabs();
+  $( "#offTabs").tabs();
 
   $( "#gcServers").change(function() {
     if (this.value === "")  {
@@ -131,6 +135,99 @@
       var vals = this.value.trim().split("|");
       $("#omOperationsPost").val(vals[1]);
       $("#omOperationsGet").val(vals[2]);
+     } catch (e) {
+       alert(e);
+     }
+    }
+  });
+  
+  $( "#offServers").change(function() {
+    if (this.value === "")  {
+      $("#offIdentifier").val("");
+      $("#offDescription").val("");
+      $("#offProcedure").val("");
+      $("#offerings").empty();
+      $("#offObservables").empty();
+      $("#offPhenonmenonTime").empty();
+      $("#offPhenonmenonTimeBegin").val("");
+      $("#offPhenomenonIndeterminateTime").val("");
+      $("#offPhenomenonEndBegin").val("");
+    } else {
+     try {
+       S(this.value).getcapabilities(function(c) {
+        console.log("Got a " + Object.prototype.toString.call(c).slice(8, -1));
+        console.log(c);
+        try {
+          $offerings = S().getofferings(c);
+          console.log($offerings);
+          $("#offerings").empty();
+          $("#offIdentifier").val("");
+          $("#offDescription").val("");
+          $("#offProcedure").val("");
+          $("#offObservables").empty();
+          $("#offPhenonmenonTime").empty();
+          $("#offPhenonmenonTimeBegin").val("");
+          $("#offPhenomenonIndeterminateTime").val("");
+          $("#offPhenomenonEndBegin").val("");
+    
+          $("#offerings").append("<option value=''>Select an Offering</option>");
+          $.each($offerings, function( index, offering) {
+            $("#offerings").append("<option value='" + index + "'>" + offering.name + "</option>");
+          });    
+        } catch (e) {
+          console.log(e);
+        }
+       });
+     } catch (e) {
+       alert(e);
+     }
+    }
+  });
+
+  $( "#offerings").change(function() {
+    if (this.value === "")  {
+      $("#offName").val();
+      $("#offIdentifier").val("");
+      $("#offDescription").val("");
+      $("#offProcedure").val("");
+      $("#offObservables").empty();
+      $("#offPhenonmenonTime").empty();
+      $("#offPhenonmenonTimeBegin").val("");
+      $("#offPhenomenonIndeterminateTime").val("");
+      $("#offPhenomenonEndBegin").val("");
+    } else {
+      try {
+        $("#offIdentifier").val($offerings[parseInt(this.value)].identifier);
+        $("#offDescription").val($offerings[parseInt(this.value)].description);
+        $("#offProcedure").val($offerings[parseInt(this.value)].procedure);
+        $("#offObservables").empty();
+        $.each($offerings[parseInt(this.value)].observableproperties, function( index, observableproperty) {
+          $("#offObservables").append("<option value='" + index + "'>" + observableproperty + "</option>");
+        });
+        $("#offPhenonmenonTime").empty();
+        $("#offPhenonmenonTimeBegin").val("");
+        $("#offPhenomenonIndeterminateTime").val("");
+        $("#offPhenomenonEndBegin").val("");        
+        $("#offPhenonmenonTime").append("<option value=''>Select a Time</option>");
+        $.each($offerings[parseInt(this.value)].phenomenontime, function( index, pTime) {
+          $("#offPhenonmenonTime").append("<option value='" + index + "'>" + pTime.identifier + "</option>");
+        });      
+     } catch (e) {
+       alert(e);
+     }
+    }
+  });
+  
+  $( "#offPhenonmenonTime").change(function() {
+    if (this.value === "")  {
+      $("#offPhenonmenonTimeBegin").val("");
+      $("#offPhenomenonIndeterminateTime").val("");
+      $("#offPhenomenonEndBegin").val("");
+    } else {
+     try {
+      $("#offPhenonmenonTimeBegin").val($offerings[parseInt(this.value)].phenomenontime[parseInt(this.value)].begin);
+      $("#offPhenomenonIndeterminateTime").val($offerings[parseInt(this.value)].phenomenontime[parseInt(this.value)].indeterminatePosition);
+      $("#offPhenomenonEndBegin").val($offerings[parseInt(this.value)].phenomenontime[parseInt(this.value)].end);  
      } catch (e) {
        alert(e);
      }

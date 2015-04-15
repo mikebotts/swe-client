@@ -462,6 +462,146 @@ $( "#omOperations").change(function() {
 });</pre>
               </div>
           </div>
+
+              <h2>sQuery.getofferings</h2>
+              <div class="row-fluid">
+                  <p class="docs-lead">
+                  Thus far we have reviewed how to access SOS server capabilities, which includes service identification, 
+                  provider information and operations metadata.  The last, and one of the most important, elements of the SOS 
+                  server capabilities, is it's offerings.
+                  </p>
+                  <p class="docs-lead">
+                  Offerings tell us about what the observables that a SOS server is hosting. In the SOS, observations are grouped 
+                  into layers per each sensor system. These layers are called ObservationOffering (or short: offering). 
+                  A sensor system can be a simple thermometer, but can also consist of several sensors or even sub-(sensor)systems. 
+                  For example, a valid sensor system can be a system of sensors attached to a weather station, or it can be 
+                  a network of spatially distributed sensors.  
+                  </p>
+                  <p class="docs-lead">
+                  You may use the getofferings method of the client library to review the offerings of a given SOS server.  Much like
+                  it's siblings, this method requires the capabilities XML as an input from which to extract the offerings.  It returns 
+                  an Array of offerings.  Each offering within the returned Array contains six attributes of the offering.  Certain 
+                  attributes are themselves returned as nested Arrays due to one-to-many relationships between the offering and such
+                  attributes.
+                  </p>
+              </div>
+              <div class="alert alert-info">
+                  <span class="icon-info-sign"></span> You must call sQuery.getCapabilities before calling sQuery.getofferings.
+              </div>              
+<pre class="prettyprint linenums">
+var mikesServer = "http://bottsgeo.com:8181/sensorhub";
+var alexsServer = "http://ec2-52-16-177-252.eu-west-1.compute.amazonaws.com:8181/sensorhub";
+try {
+ S(alexsServer).getcapabilities(function(c) {
+  try {
+    var $off = S().getofferings(c)  // Returns Array of Offerings
+    // Do something with the metadata returned
+  } catch (e) {
+    console.log(e);
+  }
+ });
+} catch (e) {
+ alert(e);
+}</pre>
+          <h2>sQuery.getofferings In Action</h2>
+          <div id="offTabs">
+              <ul>
+                  <li><a href="#offTabs-Demo">Demo</a></li>
+                  <li><a href="#offTabs-Code">Code</a></li>
+              </ul>
+              <div id="offTabs-Demo">
+                <p class="docs-lead">
+                  <select id = "offServers" class="baseurl">
+                   <option value = "">Select a SOS Server</option>
+                   <option value = "http://bottsgeo.com:8181/sensorhub">Mike's Server [http://bottsgeo.com:8181/sensorhub] </option>
+                   <option value = "http://ec2-52-16-177-252.eu-west-1.compute.amazonaws.com:8181/sensorhub">Alex's Server [http://ec2-52-16-177-252.eu-west-1.compute.amazonaws.com:8181/sensorhub]</option>
+                  </select>
+                </p>
+                <p class="docs-lead">
+                  <label for="offerings">Offerings: </label>
+                  <select id="offerings" class="serviceident"></select>
+                  <label for="offIdentifier">Identifier: </label>
+                  <input type="text" id="offIdentifier" class="serviceident">
+                  <label for="offDescription">Description: </label>
+                  <input type="text" id="offDescription" class="serviceident">
+                  <label for="offProcedure">Procedure: </label>
+                  <input type="text" id="offProcedure" class="serviceident">
+                  <label for="offObservables">Observables: </label>
+                  <select id="offObservables" class="serviceident"></select>
+                  <label for="offPhenonmenonTime">Phenomenon Time: </label>
+                  <select id="offPhenonmenonTime" class="serviceident"></select>          
+                  <label for="offPhenonmenonTimeBegin">Begin Time: </label>
+                  <input type="text" id="offPhenonmenonTimeBegin" class="serviceident">
+                  <label for="offPhenomenonIndeterminateTime">Indeterminate Time: </label>
+                  <input type="text" id="offPhenomenonIndeterminateTime" class="serviceident">
+                  <label for="offPhenomenonEndBegin">End Time: </label>
+                  <input type="text" id="offPhenomenonEndBegin" class="serviceident">
+                </p>
+              </div>
+              <div id="offTabs-Code">
+<pre class="prettyprint linenums">              
+$( "#offServers").change(function() {
+  if (this.value === "")  {
+    $("#offName").val("");
+    $("#offIdentifier").val("");
+    $("#offDescription").val("");
+    $("#offProcedure").val("");
+    $("#offerings").empty();
+    $("#offObservables").empty();
+    $("#offPhenonmenonTime").empty();
+    $("#offPhenonmenonTimeBegin").val("");
+    $("#offPhenomenonIndeterminateTime").val("");
+    $("#offPhenomenonEndBegin").val("");
+  } else {
+   try {
+     S(this.value).getcapabilities(function(c) {
+      console.log("Got a " + Object.prototype.toString.call(c).slice(8, -1));
+      console.log(c);
+      try {
+        var $offerings = S().getofferings(c);
+        console.log($off);
+        $("#offerings").empty();
+        $("#offName").val();
+        $("#offIdentifier").val("");
+        $("#offDescription").val("");
+        $("#offProcedure").val("");
+        $("#offObservables").empty();
+        $("#offPhenonmenonTime").empty();
+        $("#offPhenonmenonTimeBegin").val("");
+        $("#offPhenomenonIndeterminateTime").val("");
+        $("#offPhenomenonEndBegin").val("");
+  
+        $("#offerings").append("&lt;option value=''&gt;Select an Offering&lt;/option&gt;");
+        $.each($om, function( index, offering) {
+          $("#offerings").append("&lt;option value='" + offering.name "'&gt;" + offering.name + "&lt;/option&gt;");
+        });    
+      } catch (e) {
+        console.log(e);
+      }
+     });
+   } catch (e) {
+     alert(e);
+   }
+  }
+});
+
+$( "#omOperations").change(function() {
+  if (this.value === "")  {
+    $("#omOperationsPost").val("");
+    $("#omOperationsGet").val("");
+  } else {
+   try {
+    var vals = this.value.trim().split("|");
+    $("#omOperationsPost").val(vals[1]);
+    $("#omOperationsGet").val(vals[2]);
+   } catch (e) {
+     alert(e);
+   }
+  }
+});</pre>
+              </div>
+          </div>
+          
           
         </section>
 
