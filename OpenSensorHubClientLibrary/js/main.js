@@ -225,9 +225,9 @@
       $("#offPhenomenonEndBegin").val("");
     } else {
      try {
-      $("#offPhenonmenonTimeBegin").val($offerings[parseInt(this.value)].phenomenontime[parseInt(this.value)].begin);
-      $("#offPhenomenonIndeterminateTime").val($offerings[parseInt(this.value)].phenomenontime[parseInt(this.value)].indeterminatePosition);
-      $("#offPhenomenonEndBegin").val($offerings[parseInt(this.value)].phenomenontime[parseInt(this.value)].end);  
+      $("#offPhenonmenonTimeBegin").val($offerings[parseInt($("#offerings").val())].phenomenontime[parseInt(this.value)].begin);
+      $("#offPhenomenonIndeterminateTime").val($offerings[parseInt($("#offerings").val())].phenomenontime[parseInt(this.value)].indeterminatePosition);
+      $("#offPhenomenonEndBegin").val($offerings[parseInt($("#offerings").val())].phenomenontime[parseInt(this.value)].end);  
      } catch (e) {
        alert(e);
      }

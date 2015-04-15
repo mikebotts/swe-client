@@ -77,7 +77,7 @@
         </div>
         <div class="span9">
           <!-- Capabilities -->
-          <section id="capabilities">
+          <section id="overview">
               <div class="page-header">
                   <h1>1. Overview</h1>
               </div>
@@ -94,6 +94,8 @@
                    </select>
                   </p>
               </div>
+          </section>
+          <section id="capabilities">
               <div class="page-header">
                   <h1>2. Capabilities</h1>
               </div>
@@ -254,8 +256,6 @@ $( "#oshServers").change(function() {
   } else {
    try {
      S(this.value).getcapabilities(function(c) {
-      console.log("Got a " + Object.prototype.toString.call(c).slice(8, -1));
-      console.log(c);
       try {
         var $si = S().getserviceidentification(c);
         console.log($si);
@@ -345,11 +345,8 @@ $( "#spServers").change(function() {
   } else {
    try {
      S(this.value).getcapabilities(function(c) {
-      console.log("Got a " + Object.prototype.toString.call(c).slice(8, -1));
-      console.log(c);
       try {
         var $sp = S().getserviceprovider(c);
-        console.log($sp);
         $("#spName").val($sp.name);
         $("#spContactName").val($sp.contactname);
         $("#spContactPosition").val($sp.contactposition);
@@ -424,11 +421,8 @@ $( "#omServers").change(function() {
   } else {
    try {
      S(this.value).getcapabilities(function(c) {
-      console.log("Got a " + Object.prototype.toString.call(c).slice(8, -1));
-      console.log(c);
       try {
         var $om = S().getoperationsmetadata(c);
-        console.log($om);
         $("#omOperations").empty();
         $("#omOperationsPost").val("");
         $("#omOperationsGet").val("");          
@@ -542,7 +536,6 @@ try {
 <pre class="prettyprint linenums">              
 $( "#offServers").change(function() {
   if (this.value === "")  {
-    $("#offName").val("");
     $("#offIdentifier").val("");
     $("#offDescription").val("");
     $("#offProcedure").val("");
@@ -555,13 +548,9 @@ $( "#offServers").change(function() {
   } else {
    try {
      S(this.value).getcapabilities(function(c) {
-      console.log("Got a " + Object.prototype.toString.call(c).slice(8, -1));
-      console.log(c);
       try {
-        var $offerings = S().getofferings(c);
-        console.log($off);
+        $offerings = S().getofferings(c);
         $("#offerings").empty();
-        $("#offName").val();
         $("#offIdentifier").val("");
         $("#offDescription").val("");
         $("#offProcedure").val("");
@@ -571,9 +560,9 @@ $( "#offServers").change(function() {
         $("#offPhenomenonIndeterminateTime").val("");
         $("#offPhenomenonEndBegin").val("");
   
-        $("#offerings").append("&lt;option value=''&gt;Select an Offering&lt;/option&gt;");
-        $.each($om, function( index, offering) {
-          $("#offerings").append("&lt;option value='" + offering.name "'&gt;" + offering.name + "&lt;/option&gt;");
+        $("#offerings").append("<option value=''>Select an Offering</option>");
+        $.each($offerings, function( index, offering) {
+          $("#offerings").append("<option value='" + index + "'>" + offering.name + "</option>");
         });    
       } catch (e) {
         console.log(e);
@@ -585,29 +574,61 @@ $( "#offServers").change(function() {
   }
 });
 
-$( "#omOperations").change(function() {
-  if (this.value === "")  {
-    $("#omOperationsPost").val("");
-    $("#omOperationsGet").val("");
-  } else {
-   try {
-    var vals = this.value.trim().split("|");
-    $("#omOperationsPost").val(vals[1]);
-    $("#omOperationsGet").val(vals[2]);
-   } catch (e) {
-     alert(e);
-   }
-  }
-});</pre>
+  $( "#offerings").change(function() {
+    if (this.value === "")  {
+      $("#offName").val();
+      $("#offIdentifier").val("");
+      $("#offDescription").val("");
+      $("#offProcedure").val("");
+      $("#offObservables").empty();
+      $("#offPhenonmenonTime").empty();
+      $("#offPhenonmenonTimeBegin").val("");
+      $("#offPhenomenonIndeterminateTime").val("");
+      $("#offPhenomenonEndBegin").val("");
+    } else {
+      try {
+        $("#offIdentifier").val($offerings[parseInt(this.value)].identifier);
+        $("#offDescription").val($offerings[parseInt(this.value)].description);
+        $("#offProcedure").val($offerings[parseInt(this.value)].procedure);
+        $("#offObservables").empty();
+        $.each($offerings[parseInt(this.value)].observableproperties, function( index, observableproperty) {
+          $("#offObservables").append("<option value='" + index + "'>" + observableproperty + "</option>");
+        });
+        $("#offPhenonmenonTime").empty();
+        $("#offPhenonmenonTimeBegin").val("");
+        $("#offPhenomenonIndeterminateTime").val("");
+        $("#offPhenomenonEndBegin").val("");        
+        $("#offPhenonmenonTime").append("<option value=''>Select a Time</option>");
+        $.each($offerings[parseInt(this.value)].phenomenontime, function( index, pTime) {
+          $("#offPhenonmenonTime").append("<option value='" + index + "'>" + pTime.identifier + "</option>");
+        });      
+     } catch (e) {
+       alert(e);
+     }
+    }
+  });
+  
+  $( "#offPhenonmenonTime").change(function() {
+    if (this.value === "")  {
+      $("#offPhenonmenonTimeBegin").val("");
+      $("#offPhenomenonIndeterminateTime").val("");
+      $("#offPhenomenonEndBegin").val("");
+    } else {
+     try {
+      $("#offPhenonmenonTimeBegin").val($offerings[parseInt($("#offerings").val())].phenomenontime[parseInt(this.value)].begin);
+      $("#offPhenomenonIndeterminateTime").val($offerings[parseInt($("#offerings").val())].phenomenontime[parseInt(this.value)].indeterminatePosition);
+      $("#offPhenomenonEndBegin").val($offerings[parseInt($("#offerings").val())].phenomenontime[parseInt(this.value)].end);  
+     } catch (e) {
+       alert(e);
+     }
+    }
+  });</pre>
               </div>
           </div>
           
           
         </section>
 
-        <!--
-          <button id ="displayMessage" name="submitButton">Show message</button>
-        -->
       </div>
     </div>
   </div>

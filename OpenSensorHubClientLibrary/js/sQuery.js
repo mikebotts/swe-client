@@ -306,6 +306,11 @@
             
             var $phenomenonTime = $observationOffering.find('phenomenonTime');
             
+            var timePeriod = $phenomenonTime.find('TimePeriod');
+            
+            var timeInstant = $phenomenonTime.find('TimeInstant');
+            
+            
             // phenonmenonTime can have multiple time periods
             $phenomenonTime.find('TimePeriod').each(function(i,timeperiod) {
               var objTimePeriod = new Object();
@@ -316,6 +321,16 @@
               objOffering.phenomenontime[i] = objTimePeriod;
             });
             
+            // phenonmenonTime may also have a TimeInstant.  Typically one or the other (TimePeriod or TimeInstant)
+            $phenomenonTime.find('TimeInstant').each(function(i,timeinstant) {
+              var objTimePeriod = new Object();
+              objTimePeriod.identifier = $(this).attr('gml:id');
+              objTimePeriod.begin = "";
+              objTimePeriod.indeterminatePosition = $(this).find('timePosition').attr('indeterminatePosition'); 
+              objTimePeriod.end = "";
+              objOffering.phenomenontime[i] = objTimePeriod;
+            });
+
             objOfferings[i] = objOffering;
             
           });
