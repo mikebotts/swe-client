@@ -1,45 +1,269 @@
+<!-- This Source Code Form is subject to the terms of the Mozilla Public
+   - License, v. 2.0. If a copy of the MPL was not distributed with this
+   - file, You can obtain one at http://mozilla.org/MPL/2.0/. 
+   -
+   - Software distributed under the License is distributed on an "AS IS" basis,
+   - WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
+   - for the specific language governing rights and limitations under the License.
+   -
+   - The Initial Developer is Terravolv, Inc. Portions created by the Initial
+   - Developer are Copyright (C) 2014-2015 the Initial Developer. All Rights Reserved. -->
 <!DOCTYPE html>
 <html lang="en" >
 <head>
   <meta charset="utf-8" />
-  <meta name="author" content="SensorHub Tutorials" />
-  <title>SensorHub Tutorials</title>
+  <meta name="author" content="Open Sensor Hub" />
+  <title>Open Sensor Hub</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <link rel="resource" type="application/l10n" href="locales/locales.ini" />
+  <script src="js/l10n.js"></script>
+  <link href="assets/css/bootstrap.min.css" rel="stylesheet">
+  <link type="text/css" href="css/custom-theme/jquery-ui-1.10.0.custom.css" rel="stylesheet" />
+  <link type="text/css" href="assets/css/font-awesome.min.css" rel="stylesheet" />
+  <link href="assets/css/docs.css" rel="stylesheet">
+  <link href="assets/js/google-code-prettify/prettify.css" rel="stylesheet">
+
   <script src="//code.jquery.com/jquery-1.11.2.min.js"></script>
-  <script src="sQuery.js"></script>
-  <script src="sQueryGetLocationDescriptor.js"></script>
-</head>
-<body>
-<H1>Welcome to SensorHub Tutorials!</H1>
-<script>
- var mikesServer = "http://bottsgeo.com:8181/sensorhub";
- var alexsServer = "http://ec2-52-16-177-252.eu-west-1.compute.amazonaws.com:8181/sensorhub";
+  <!--  <script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script> -->
+
+  <script src="js/sQuery.js"></script>
+  <script src="js/sQueryGetLocationDescriptor.js"></script>
+  <script src="js/main.js"></script>
  
- S(mikesServer).getcapabilities(function(c) {
-  console.log("Got a " + Object.prototype.toString.call(c).slice(8, -1));
-  console.log(c);
+</head>
+<body data-spy="scroll" data-target=".bs-docs-sidebar" data-twttr-rendered="true">
+  <!-- Navbar -->
+  <div class="navbar navbar-inverse navbar-fixed-top">
+      <div class="navbar-inner">
+          <div class="container">
+              <button type="button" class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                  <span class="icon-bar"></span>
+                  <span class="icon-bar"></span>
+                  <span class="icon-bar"></span>
+              </button>
+              <a class="brand" href="http://github.com/addyosmani/jquery-ui-bootstrap">Open SensorHub Client Library</a>
+              <div class="nav-collapse collapse">
+                  <ul class="nav">
+                      <li class="active">
+                          <a href="./index.html">Home</a>
+                      </li>
+                      <li>
+                          <a href="http://github.com/addyosmani/jquery-ui-bootstrap/issues">Feedback/Issues</a>
+                      </li>
+                      <li>
+                          <a href="http://twitter.com/addyosmani">Contact</a>
+                      </li>
+                  </ul>
+              </div>
+          </div>
+      </div>
+  </div>
+  <!-- Subhead -->
+  <header class="jumbotron subhead" id="overview">
+      <div class="container">
+          <h1>Open SensorHub Client Library</h1>
+          <p class="lead">A kickstart for SOS Javascript Client.</p>
+      </div>
+  </header>
+  <div class="container">
+    <div class="row">
+        <div class="span3 bs-docs-sidebar">
+            <ul class="nav nav-list bs-docs-sidenav">
+                <li><a href="#overview"><i class="icon-chevron-right"></i> Overview</a></li>
+                <li><a href="#capabilities"><i class="icon-chevron-right"></i> Capabilities</a></li>
+                <li><a href="#button"><i class="icon-chevron-right"></i> Result Template</a></li>
+                <li><a href="#accordion"><i class="icon-chevron-right"></i> Results</a></li>
+            </ul>
+        </div>
+        <div class="span9">
+          <!-- Capabilities -->
+          <section id="capabilities">
+              <div class="page-header">
+                  <h1>1. Overview</h1>
+              </div>
+              <div class="row-fluid">
+                  <p class="docs-lead">
+                    Welcome! Here you will find information about how to use JavaScript to communicate with the SOS/SensorHub server.  
+                    First, to communicate with the server you just need to know the base URL of the SOS server.
+                  </p>
+                  <p>
+                   <label for="oshServers">For example:</label><br/>
+                   <select class="baseurl">
+                     <option value = "http://bottsgeo.com:8181/sensorhub">Mike's Server [http://bottsgeo.com:8181/sensorhub] </option>
+                     <option value = "http://ec2-52-16-177-252.eu-west-1.compute.amazonaws.com:8181/sensorhub">Alex's Server [http://ec2-52-16-177-252.eu-west-1.compute.amazonaws.com:8181/sensorhub]</option>
+                   </select>
+                  </p>
+              </div>
+              <div class="page-header">
+                  <h1>2. Capabilities</h1>
+              </div>
+              <div class="row-fluid">
+                  <p class="docs-lead">
+                  Second, using the base URL of the SOS server, you must first determine the capabilities of the server.  This can be done using the 
+                  Open SensorHub client library (sQuery.js).  This library is modelled after jQuery and is therefore very easy to comprehend and utilize. 
+                  Much like jQuery is aliased to "$", sQuery is aliased to "S" and can be referenced using it's alias.  To get the capabilities of a 
+                  SOS server you simply call it's getcapabilities method by passing in the base URL to sQuery, and a callback method that accepts the 
+                  returned capabilities.  The capabilities are returned as XML.  But first let's see how to call getCapabilities.
+                  </p>
+              </div>
+              <div class="alert alert-info">
+                  <span class="icon-info-sign"></span> You must reference sQuery.js in order to use it.
+              </div>              
+              <p>
+                  <a class="download-btn ui-button-primary"href="https://github.com/mikebotts/swe-client/tree/master/OpenSensorHubClientLibrary">Download sQuery.js</a>
+              </p>
+              <p>
+              <h2>sQuery.getCapabilities</h2>
+<pre class="prettyprint linenums">
+var mikesServer = "http://bottsgeo.com:8181/sensorhub";
+var alexsServer = "http://ec2-52-16-177-252.eu-west-1.compute.amazonaws.com:8181/sensorhub";
+try {
+ S(alexsServer).getcapabilities(function(c) {
   try {
-    var $si = S().getserviceidentification(c);
-    console.log($si);
-    var $sp = S().getserviceprovider(c);
-    console.log($sp);
-    var $om = S().getoperationsmetadata(c);
-    console.log($om);
-    var $off =S().getofferings(c);
-    console.log($off);
-    var url = S(mikesServer).getresulttemplateurl('urn:android:device:FA44CWM03715-sos', 'http://sensorml.com/ont/swe/property/Location');
-    console.log(url);
-    S().getlocationdescriptor(url, function(t) {
-     console.log(t);
-     var $locDetails = S().getlocationdetails(t);
-     console.log($locDetails);
-     });
+    // Do something with the returned capabilities (c)
   } catch (e) {
     console.log(e);
   }
-  
  });
- //alert(S().version);
-</script>
+} catch (e) {
+ alert(e);
+}</pre>
+              <h2>Contents of the capabilities XML</h2>
+              <div class="row-fluid">
+                  <p class="docs-lead">
+                    The capabilities XML contains four elements.
+                    <ul>
+                      <li>Service Indentification</li>
+                      <li>Service Provider Information</li>
+                      <li>Operations Metadata </li>
+                      <li>Offerings Information</li>
+                    </ul>
+                  </p>
+              </div>
+              <h2>sQuery.getserviceidentification</h2>
+              <div class="row-fluid">
+                  <p class="docs-lead">
+                  You can call the getserviceidentification method to retrieve the service indentification information from the returned capabilities.
+                  This method returns an Object that contains six properties.
+                  </p>
+              </div>
+              <div class="alert alert-info">
+                  <span class="icon-info-sign"></span> You must call sQuery.getCapabilities before calling sQuery.getserviceidentification.
+              </div>              
+<pre class="prettyprint linenums">
+var mikesServer = "http://bottsgeo.com:8181/sensorhub";
+var alexsServer = "http://ec2-52-16-177-252.eu-west-1.compute.amazonaws.com:8181/sensorhub";
+try {
+ S(alexsServer).getcapabilities(function(c) {
+  try {
+    var $si = S().getserviceidentification(c)
+    var title = $si.title;  // string
+    var abstract = $si.abstract; // string
+    var type = $si.type; // string 
+    var fees = $si.fees; // string 
+    var accesscontraints = $si.accessconstraints; // string
+    var profiles = $si.profiles; // string[]
+  } catch (e) {
+    console.log(e);
+  }
+ });
+} catch (e) {
+ alert(e);
+}</pre>
+          <h2>Let's see sQuery.getserviceidentification In Action</h2>
+          <div id="siTabs">
+              <ul>
+                  <li><a href="#siTabs-Demo">Demo</a></li>
+                  <li><a href="#siTabs-Code">Code</a></li>
+              </ul>
+              <div id="siTabs-Demo">
+                <p class="docs-lead">
+                  <select id = "oshServers" class="baseurl">
+                   <option value = "">Select a SOS Server</option>
+                   <option value = "http://bottsgeo.com:8181/sensorhub">Mike's Server [http://bottsgeo.com:8181/sensorhub] </option>
+                   <option value = "http://ec2-52-16-177-252.eu-west-1.compute.amazonaws.com:8181/sensorhub">Alex's Server [http://ec2-52-16-177-252.eu-west-1.compute.amazonaws.com:8181/sensorhub]</option>
+                  </select>
+                </p>
+                <p class="docs-lead">
+                  <label for="siTitle">Title: </label>
+                  <input type="text" id="siTitle" class="serviceident">
+                  <label for="siAbstract">Abstract: </label>
+                  <input type="text" id="siAbstract" class="serviceident">
+                  <label for="siType">Type: </label>
+                  <input type="text" id="siType" class="serviceident">
+                  <label for="siFees">Fees: </label>
+                  <input type="text" id="siFees" class="serviceident">
+                  <label for="siAC">Access Constraints: </label>
+                  <input type="text" id="siAC" class="serviceident">
+                  <label for="siProfiles">Profiles: </label>
+                  <select id="siProfiles" class="serviceident"></select>
+                </p>
+              </div>
+              <div id="siTabs-Code">
+<pre class="prettyprint linenums">              
+$( "#oshServers").change(function() {
+  if (this.value === "")  {
+    $("#siTitle").val("");
+    $("#siAbstract").val("");
+    $("#siType").val("");
+    $("#siFees").val("");
+    $("#siAC").val("");
+    $("#siProfiles").empty()
+  } else {
+   try {
+     S(this.value).getcapabilities(function(c) {
+      console.log("Got a " + Object.prototype.toString.call(c).slice(8, -1));
+      console.log(c);
+      try {
+        var $si = S().getserviceidentification(c);
+        console.log($si);
+        $("#siTitle").val($si.title);
+        $("#siAbstract").val($si.abstract);
+        $("#siType").val($si.type);
+        $("#siFees").val($si.fees);
+        $("#siAC").val($si.accessconstraints);
+        $("#siProfiles").empty()
+        $.each($si.profiles, function( index, value ) {
+          $("#siProfiles").append("&lt;option value='" + value + "'&gt;" + value + "&lt;/option&gt;");
+        });
+        
+      } catch (e) {
+        console.log(e);
+      }
+     });
+   } catch (e) {
+     alert(e);
+   }
+  }
+});</pre>
+              </div>
+          </div>
+          
+          
+        </section>
+
+        <!--
+          <button id ="displayMessage" name="submitButton">Show message</button>
+        -->
+      </div>
+    </div>
+  </div>
+<!-- Footer -->
+<footer class="footer">
+  <div class="container">
+    <p>
+        Open Sensorhub Client Library &copy; 2014 - 2015.
+    </p>
+    <ul class="footer-links">
+        <li><a href="http://addyosmani.com/blog/">GitHub</a></li>
+        <li class="muted">&middot;</li>
+        <li><a href="https://github.com/addyosmani/jquery-ui-bootstrap/issues?state=open">Issues</a></li>
+    </ul>
+  </div>
+</footer>  
+<script src="assets/js/bootstrap.min.js" type="text/javascript"></script>
+<script src="assets/js/jquery-ui-1.10.0.custom.min.js" type="text/javascript"></script>
+<script src="assets/js/google-code-prettify/prettify.js" type="text/javascript"></script>
+<script src="assets/js/docs.js" type="text/javascript"></script>
 </body>
 </html>

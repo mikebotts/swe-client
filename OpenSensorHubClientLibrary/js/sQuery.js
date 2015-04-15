@@ -76,7 +76,7 @@
       
       /** @public */
       baseurl: "",
-
+      
       /**
        * @param {string} baseurl - The base URL of the SOS service
        * @returns {Object} sQuery - Returns the sQuery object
@@ -114,7 +114,7 @@
 
         // TODO: Check that baseurl is also valid http syntax
         if ((undefined === this.baseurl) || !this.baseurl.trim()) 
-          throw new Error("Service URL was not provided.");
+          throw new Error( _("service_url_not_provided", {"function" : "getcapabilities"} ) );
         
         if ("function" === typeof callback ) {
 
@@ -132,7 +132,7 @@
         
         } else {
         
-          throw new Error("getcapabilities() :: Callback function must be provided.");
+          throw new Error( _("callback_function_not_provided", {"function" : "getcapabilities"} ) );
 
         }        
         
@@ -173,7 +173,7 @@
           
         } else {
         
-          throw new Error("getserviceidentification() :: No capabilities document provided.");
+          throw new Error( _("no_capabilities_document_provided", {"function" : "getserviceidentification"} ) );
         } 
       
       }, // getserviceidentification()
@@ -215,7 +215,7 @@
           
         } else {
         
-          throw new Error("getserviceprovider() :: No capabilities document provided.");
+          throw new Error( _("no_capabilities_document_provided", {"function" : "getserviceprovider"} ) );
         
         } 
       
@@ -253,7 +253,7 @@
           
         } else {
 
-          throw new Error("getoperationsmetadata() :: No capabilities document provided.");
+          throw new Error( _("no_capabilities_document_provided", {"function" : "getoperationsmetadata"} ) );
         
         }
       }, // getoperationsmetadata
@@ -309,7 +309,7 @@
           
         } else {
 
-          throw new Error("getofferings() :: No capabilities document provided.");
+          throw new Error( _("no_capabilities_document_provided", {"function" : "getofferings"} ) );
         
         }
       }, // getofferings
