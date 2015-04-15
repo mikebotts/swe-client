@@ -9,10 +9,24 @@
  * The Initial Developer is Terravolv, Inc. Portions created by the Initial
  * Developer are Copyright (C) 2014-2015 the Initial Developer. All Rights Reserved.
  */
-$(function() {
-  $( "#siTabs").tabs();
 
-  $( "#oshServers").change(function() {
+ $(function() {
+  $( "#siTabs").tabs();
+  $( "#gcTabs").tabs();
+
+  $( "#gcServers").change(function() {
+    if (this.value === "")  {
+      $("#gcURL").val("");
+    } else {
+     try {
+       $("#gcURL").val(S(this.value).getcapabilitiesurl());
+     } catch (e) {
+       alert(e);
+     }
+    }
+  });
+  
+  $( "#siServers").change(function() {
     if (this.value === "")  {
       $("#siTitle").val("");
       $("#siAbstract").val("");
@@ -47,5 +61,6 @@ $(function() {
      }
     }
   });
+
 });
 

@@ -113,7 +113,49 @@
                   <a class="download-btn ui-button-primary"href="https://github.com/mikebotts/swe-client/tree/master/OpenSensorHubClientLibrary">Download sQuery.js</a>
               </p>
               <p>
-              <h2>sQuery.getCapabilities</h2>
+              <h2>sQuery.getCapabilitiesURL</h2>
+              <div class="row-fluid">
+                  <p class="docs-lead">
+                  Before we review how to call getCapabilities, let us see the fully qualified URL that this method issues to retrieve the 
+                  capabilities of the selected SOS server.  This can be done using the sQuery.getcapabilitiesurl method.  You may cut & paste the 
+                  provided URL in the browser's address bar to review the XML document returned by the SOS server.
+                  </p>
+              </div>              
+              <div id="gcTabs">
+                <ul>
+                    <li><a href="#gcTabs-Demo">Demo</a></li>
+                    <li><a href="#gcTabs-Code">Code</a></li>
+                </ul>
+                <div id="gcTabs-Demo">
+                  <p class="docs-lead">
+                    <select id = "gcServers" class="baseurl">
+                     <option value = "">Select a SOS Server</option>
+                     <option value = "http://bottsgeo.com:8181/sensorhub">Mike's Server [http://bottsgeo.com:8181/sensorhub] </option>
+                     <option value = "http://ec2-52-16-177-252.eu-west-1.compute.amazonaws.com:8181/sensorhub">Alex's Server [http://ec2-52-16-177-252.eu-west-1.compute.amazonaws.com:8181/sensorhub]</option>
+                    </select>
+                  </p>
+                  <p class="docs-lead">
+                    <label for="gcURL">Capabilities URL: </label>
+                    <input type="text" id="gcURL" class="capabilitiesurl">
+                  </p>
+                </div>
+                <div id="gcTabs-Code">
+<pre class="prettyprint linenums">     
+$( "#gcServers").change(function() {
+  if (this.value === "")  {
+    $("#gcURL").val("");
+  } else {
+   try {
+     $("#gcURL").val(S(this.value).getcapabilitiesurl());
+   } catch (e) {
+     alert(e);
+   }
+  }
+});         
+</pre>
+                </div>
+            </div>
+          <h2>sQuery.getCapabilities</h2>
 <pre class="prettyprint linenums">
 var mikesServer = "http://bottsgeo.com:8181/sensorhub";
 var alexsServer = "http://ec2-52-16-177-252.eu-west-1.compute.amazonaws.com:8181/sensorhub";
@@ -178,7 +220,7 @@ try {
               </ul>
               <div id="siTabs-Demo">
                 <p class="docs-lead">
-                  <select id = "oshServers" class="baseurl">
+                  <select id = "siServers" class="baseurl">
                    <option value = "">Select a SOS Server</option>
                    <option value = "http://bottsgeo.com:8181/sensorhub">Mike's Server [http://bottsgeo.com:8181/sensorhub] </option>
                    <option value = "http://ec2-52-16-177-252.eu-west-1.compute.amazonaws.com:8181/sensorhub">Alex's Server [http://ec2-52-16-177-252.eu-west-1.compute.amazonaws.com:8181/sensorhub]</option>

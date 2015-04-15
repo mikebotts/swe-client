@@ -97,6 +97,21 @@
         
         return this;
       },
+      
+       /**
+       * @returns {String} sCapabilitiesURL - Returns the fully qualified capabilities URL 
+       * @public
+       */
+      getcapabilitiesurl: function() {
+        
+        // TODO: Check that baseurl is also valid http syntax
+        if ((undefined === this.baseurl) || !this.baseurl.trim()) 
+          throw new Error( _("service_url_not_provided", {"function" : "getcapabilitiesurl"} ) );
+        
+        return (this.baseurl + _getCapabilitiesBase);
+        
+      }, // getcapabilitiesurl()
+      
 
       /**
        * This is the callback supplied by the consumer that handles the returned capabilities XML.
