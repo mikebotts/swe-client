@@ -13,6 +13,7 @@
  $(function() {
   $( "#siTabs").tabs();
   $( "#gcTabs").tabs();
+  $( "#spTabs").tabs();
 
   $( "#gcServers").change(function() {
     if (this.value === "")  {
@@ -52,6 +53,34 @@
             $("#siProfiles").append("<option value='" + value + "'>" + value + "</option>");
           });
           
+        } catch (e) {
+          console.log(e);
+        }
+       });
+     } catch (e) {
+       alert(e);
+     }
+    }
+  });
+
+  $( "#spServers").change(function() {
+    if (this.value === "")  {
+      $("#spName").val("");
+      $("#spContactName").val("");
+      $("#spContactPosition").val("");
+      $("#spContactAddress").val("");
+    } else {
+     try {
+       S(this.value).getcapabilities(function(c) {
+        console.log("Got a " + Object.prototype.toString.call(c).slice(8, -1));
+        console.log(c);
+        try {
+          var $sp = S().getserviceprovider(c);
+          console.log($sp);
+          $("#spName").val($sp.name);
+          $("#spContactName").val($sp.contactname);
+          $("#spContactPosition").val($sp.contactposition);
+          $("#spContactAddress").val($sp.contactaddress);        
         } catch (e) {
           console.log(e);
         }

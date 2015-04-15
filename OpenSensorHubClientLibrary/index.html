@@ -41,17 +41,17 @@
                   <span class="icon-bar"></span>
                   <span class="icon-bar"></span>
               </button>
-              <a class="brand" href="http://github.com/addyosmani/jquery-ui-bootstrap">Open SensorHub Client Library</a>
+              <a class="brand" href="https://github.com/mikebotts/swe-client/tree/master/OpenSensorHubClientLibrary">Open SensorHub Client Library</a>
               <div class="nav-collapse collapse">
                   <ul class="nav">
                       <li class="active">
                           <a href="./index.html">Home</a>
                       </li>
                       <li>
-                          <a href="http://github.com/addyosmani/jquery-ui-bootstrap/issues">Feedback/Issues</a>
+                          <a href="https://github.com/mikebotts/swe-client">Feedback/Issues</a>
                       </li>
                       <li>
-                          <a href="http://twitter.com/addyosmani">Contact</a>
+                          <a href="https://github.com/mikebotts">Contact</a>
                       </li>
                   </ul>
               </div>
@@ -281,6 +281,90 @@ $( "#oshServers").change(function() {
               </div>
           </div>
           
+              <h2>sQuery.getserviceprovider</h2>
+              <div class="row-fluid">
+                  <p class="docs-lead">
+                  This method returns the SOS service provider details.  The method requires the capabilities XML as input and returns an 
+                  Object that contains four properties.
+                  </p>
+              </div>
+              <div class="alert alert-info">
+                  <span class="icon-info-sign"></span> You must call sQuery.getCapabilities before calling sQuery.getserviceprovider.
+              </div>              
+<pre class="prettyprint linenums">
+var mikesServer = "http://bottsgeo.com:8181/sensorhub";
+var alexsServer = "http://ec2-52-16-177-252.eu-west-1.compute.amazonaws.com:8181/sensorhub";
+try {
+ S(alexsServer).getcapabilities(function(c) {
+  try {
+    var $sp = S().getserviceprovider(c)
+    var name = $sp.name;  // string
+    var contactname = $sp.contactname; // string
+    var contactposition = $sp.contactposition; // string 
+    var contactaddress = $sp.contactaddress; // string 
+  } catch (e) {
+    console.log(e);
+  }
+ });
+} catch (e) {
+ alert(e);
+}</pre>
+          <h2>sQuery.getserviceprovider In Action</h2>
+          <div id="spTabs">
+              <ul>
+                  <li><a href="#spTabs-Demo">Demo</a></li>
+                  <li><a href="#spTabs-Code">Code</a></li>
+              </ul>
+              <div id="spTabs-Demo">
+                <p class="docs-lead">
+                  <select id = "spServers" class="baseurl">
+                   <option value = "">Select a SOS Server</option>
+                   <option value = "http://bottsgeo.com:8181/sensorhub">Mike's Server [http://bottsgeo.com:8181/sensorhub] </option>
+                   <option value = "http://ec2-52-16-177-252.eu-west-1.compute.amazonaws.com:8181/sensorhub">Alex's Server [http://ec2-52-16-177-252.eu-west-1.compute.amazonaws.com:8181/sensorhub]</option>
+                  </select>
+                </p>
+                <p class="docs-lead">
+                  <label for="spName">Name: </label>
+                  <input type="text" id="spName" class="serviceident">
+                  <label for="spContactName">Contact Name: </label>
+                  <input type="text" id="spContactName" class="serviceident">
+                  <label for="spContactPosition">Contact Position: </label>
+                  <input type="text" id="spContactPosition" class="serviceident">
+                  <label for="spContactAddress">Contact Address: </label>
+                  <input type="text" id="spContactAddress" class="serviceident">
+                </p>
+              </div>
+              <div id="spTabs-Code">
+<pre class="prettyprint linenums">              
+$( "#spServers").change(function() {
+  if (this.value === "")  {
+    $("#spName").val("");
+    $("#spContactName").val("");
+    $("#spContactPosition").val("");
+    $("#spContactAddress").val("");
+  } else {
+   try {
+     S(this.value).getcapabilities(function(c) {
+      console.log("Got a " + Object.prototype.toString.call(c).slice(8, -1));
+      console.log(c);
+      try {
+        var $sp = S().getserviceprovider(c);
+        console.log($sp);
+        $("#spName").val($sp.name);
+        $("#spContactName").val($sp.contactname);
+        $("#spContactPosition").val($sp.contactposition);
+        $("#spContactAddress").val($sp.contactaddress);        
+      } catch (e) {
+        console.log(e);
+      }
+     });
+   } catch (e) {
+     alert(e);
+   }
+  }
+});</pre>
+              </div>
+          </div>
           
         </section>
 
@@ -297,9 +381,9 @@ $( "#oshServers").change(function() {
         Open Sensorhub Client Library &copy; 2014 - 2015.
     </p>
     <ul class="footer-links">
-        <li><a href="http://addyosmani.com/blog/">GitHub</a></li>
+        <li><a href="https://github.com/mikebotts/swe-client/tree/master/OpenSensorHubClientLibrary">GitHub</a></li>
         <li class="muted">&middot;</li>
-        <li><a href="https://github.com/addyosmani/jquery-ui-bootstrap/issues?state=open">Issues</a></li>
+        <li><a href="https://github.com/mikebotts/swe-client">Issues</a></li>
     </ul>
   </div>
 </footer>  
