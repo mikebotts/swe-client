@@ -14,6 +14,7 @@
   $( "#siTabs").tabs();
   $( "#gcTabs").tabs();
   $( "#spTabs").tabs();
+  $( "#omTabs").tabs();
 
   $( "#gcServers").change(function() {
     if (this.value === "")  {
@@ -91,5 +92,50 @@
     }
   });
 
+  $( "#omServers").change(function() {
+    if (this.value === "")  {
+      $("#omOperations").empty();
+      $("#omOperationsPost").val("");
+      $("#omOperationsGet").val("");
+    } else {
+     try {
+       S(this.value).getcapabilities(function(c) {
+        console.log("Got a " + Object.prototype.toString.call(c).slice(8, -1));
+        console.log(c);
+        try {
+          var $om = S().getoperationsmetadata(c);
+          console.log($om);
+          $("#omOperations").empty();
+          $("#omOperationsPost").val("");
+          $("#omOperationsGet").val("");          
+          $("#omOperations").append("<option value=''>Select an Operation</option>");
+          $.each($om, function( index, operation) {
+            $("#omOperations").append("<option value='" + operation.name + "|" + operation.postbaseurl + "|" + operation.getbaseurl + "'>" + operation.name + "</option>");
+          });    
+        } catch (e) {
+          console.log(e);
+        }
+       });
+     } catch (e) {
+       alert(e);
+     }
+    }
+  });
+
+  $( "#omOperations").change(function() {
+    if (this.value === "")  {
+      $("#omOperationsPost").val("");
+      $("#omOperationsGet").val("");
+    } else {
+     try {
+      var vals = this.value.trim().split("|");
+      $("#omOperationsPost").val(vals[1]);
+      $("#omOperationsGet").val(vals[2]);
+     } catch (e) {
+       alert(e);
+     }
+    }
+  });
+  
 });
 
