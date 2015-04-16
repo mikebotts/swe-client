@@ -13,12 +13,14 @@
  $(function() {
   
   var $offerings = null;
-  
+  var $grtofferings = null;
+    
   $( "#siTabs").tabs();
   $( "#gcTabs").tabs();
   $( "#spTabs").tabs();
   $( "#omTabs").tabs();
   $( "#offTabs").tabs();
+  $( "#grtTabs").tabs();
 
   $( "#gcServers").change(function() {
     if (this.value === "")  {
@@ -233,6 +235,71 @@
      }
     }
   });
+
+  $( "#grtoffServers").change(function() {
+    if (this.value === "")  {
+      $("#grtoffIdentifier").val("");
+      $("#grtofferings").empty();
+      $("#grtoffObservables").empty();
+      $("#grtURL").val("");
+    } else {
+     try {
+       S(this.value).getcapabilities(function(c) {
+        console.log("Got a " + Object.prototype.toString.call(c).slice(8, -1));
+        console.log(c);
+        try {
+          $grtofferings = S().getofferings(c);
+          console.log($offerings);
+          $("#grtofferings").empty();
+          $("#grtoffIdentifier").val("");
+          $("#grtoffObservables").empty();
+          $("#grtURL").val("");
+
+          $("#grtofferings").append("<option value=''>Select an Offering</option>");
+          $.each($grtofferings, function( index, offering) {
+            $("#grtofferings").append("<option value='" + index + "'>" + offering.name + "</option>");
+          });    
+
+        } catch (e) {
+          console.log(e);
+        }
+       });
+     } catch (e) {
+       alert(e);
+     }
+    }
+  });
+
+  $( "#grtofferings").change(function() {
+    if (this.value === "")  {
+      $("#grtoffIdentifier").val("");
+      $("#grtoffObservables").empty();
+      $("#grtURL").val("");
+    } else {
+      try {
+        $("#grtoffIdentifier").val($grtofferings[parseInt(this.value)].identifier);
+        $("#grtoffObservables").empty();
+        $("#grtURL").val("");
+        $.each($grtofferings[parseInt(this.value)].observableproperties, function( index, observableproperty) {
+          $("#grtoffObservables").append("<option value='" + index + "'>" + observableproperty + "</option>");
+        });
+     } catch (e) {
+       alert(e);
+     }
+    }
+  });
+  
+  $( "#btnGetTemplateURL").button().click(function(){
+    if (undefined === $("#grtoffIdentifier").val().trim() || !$("#grtoffIdentifier").val().trim()) {
+      alert( _("identifier_must_be_set", {"function" : "btnGetTemplateURL"} ) );
+      return;
+    }
+    var url = S($("#grtoffServers option:selected").val())
+              .getresulttemplateurl($("#grtoffIdentifier").val(), 
+                                    $("#grtoffObservables option:selected").text());
+    $("#grtURL").val(url);
+
+  });  
   
 });
 

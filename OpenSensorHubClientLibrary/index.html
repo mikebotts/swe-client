@@ -71,12 +71,11 @@
             <ul class="nav nav-list bs-docs-sidenav">
                 <li><a href="#overview"><i class="icon-chevron-right"></i> Overview</a></li>
                 <li><a href="#capabilities"><i class="icon-chevron-right"></i> Capabilities</a></li>
-                <li><a href="#button"><i class="icon-chevron-right"></i> Result Template</a></li>
-                <li><a href="#accordion"><i class="icon-chevron-right"></i> Results</a></li>
+                <li><a href="#resulttemplates"><i class="icon-chevron-right"></i> Result Templates</a></li>
             </ul>
         </div>
         <div class="span9">
-          <!-- Capabilities -->
+          <!-- Overview -->
           <section id="overview">
               <div class="page-header">
                   <h1>1. Overview</h1>
@@ -95,6 +94,7 @@
                   </p>
               </div>
           </section>
+          <!-- Capabilities -->
           <section id="capabilities">
               <div class="page-header">
                   <h1>2. Capabilities</h1>
@@ -112,7 +112,7 @@
                   <span class="icon-info-sign"></span> You must reference sQuery.js in order to use it.
               </div>              
               <p>
-                  <a class="download-btn ui-button-primary"href="https://github.com/mikebotts/swe-client/tree/master/OpenSensorHubClientLibrary">Download sQuery.js</a>
+                  <a class="download-btn ui-button-primary" href="https://github.com/mikebotts/swe-client/tree/master/OpenSensorHubClientLibrary">Download sQuery.js</a>
               </p>
               <p>
               <h2>sQuery.getCapabilitiesURL</h2>
@@ -629,6 +629,155 @@ $( "#offServers").change(function() {
           
         </section>
 
+          <!-- Result Template -->
+          <section id="resulttemplates">
+              <div class="page-header">
+                  <h1>3. Result Templates</h1>
+              </div>
+              <div class="row-fluid">
+                  <p class="docs-lead">
+                  Now that we have the SOS server's capabilities, we need to determine how to consume the data served from the server.  
+                  To do so, we must understand the format of the incoming data.  This is done using the SOS result template.  The template
+                  describes the format of the data that will be served by the SOS server. So, how do we do this?
+                  </p>
+                  <p class="docs-lead">
+                  The SOS server supports a GET request to return the description of the data that will be served for a particular 
+                  observable.  What is implied is that the description of each observable will be different.  To fetch that data record 
+                  description (format of the incoming data) we need to construct the proper GET request.  This is handled by the sQuery
+                  library's getresulttemplateurl method.  
+                  </p>
+              </div>
+              <div class="alert alert-info">
+                  <span class="icon-info-sign"></span> You must reference sQuery.js in order to use it.
+              </div>              
+              <p>
+              <h2>sQuery.getresulttemplateurl</h2>
+              <div class="row-fluid">
+                  <p class="docs-lead">
+                  The sQUery.getresulttemplateurl method accepts two parameters, the offering identifier and the observed property, and 
+                  returns the fully qualified URL to fetch the data record description in XML format.  
+                  
+                  The offering identifier and observed property list are returned by the sQuery getofferings method as described the previous
+                  section.  Let's see how the fully qualified URL looks to get the result template.  You may cut & paste the 
+                  provided URL in the browser's address bar to review the XML document (template) returned by the SOS server.
+                  </p>
+              </div>              
+              <div class="alert alert-info">
+                  <span class="icon-info-sign"></span> You must pass in the base SOS URL when calling sQuery.getresulttemplateurl.
+              </div>              
+<pre class="prettyprint linenums">
+var mikesServer = "http://bottsgeo.com:8181/sensorhub";
+var alexsServer = "http://ec2-52-16-177-252.eu-west-1.compute.amazonaws.com:8181/sensorhub";
+try {
+  var resultTemplateURL = S(mikesServer).getresulttemplateurl('urn:android:device:FA44CWM03715-sos', 'http://sensorml.com/ont/swe/property/Location');
+  console.log(resultTemplateURL);
+} catch (e) {
+ alert(e);
+}</pre>
+          <h2>sQuery.getresulttemplateurl In Action</h2>
+          <div class="row-fluid">
+              <p class="docs-lead">
+              Select an identifier and an observable, and click the Get Result Template URL button.
+              </p>
+          </div>
+          <button id="btnGetTemplateURL" class="ui-button-primary">Get Result Template URL</button>
+          
+         <div id="grtTabs">
+              <ul>
+                  <li><a href="#grtTabs-Demo">Demo</a></li>
+                  <li><a href="#grtTabs-Code">Code</a></li>
+              </ul>
+              <div id="grtTabs-Demo">
+                <p class="docs-lead">
+                  <select id = "grtoffServers" class="baseurl">
+                   <option value = "">Select a SOS Server</option>
+                   <option value = "http://bottsgeo.com:8181/sensorhub">Mike's Server [http://bottsgeo.com:8181/sensorhub] </option>
+                   <option value = "http://ec2-52-16-177-252.eu-west-1.compute.amazonaws.com:8181/sensorhub">Alex's Server [http://ec2-52-16-177-252.eu-west-1.compute.amazonaws.com:8181/sensorhub]</option>
+                  </select>
+                </p>
+                <p class="docs-lead">
+                  <label for="grtofferings">Offerings: </label>
+                  <select id="grtofferings" class="serviceident"></select>
+                  <label for="gftoffIdentifier">Identifier: </label>
+                  <input type="text" id="grtoffIdentifier" class="serviceident">
+                  <label for="grtoffObservables">Observables: </label>
+                  <select id="grtoffObservables" class="serviceident"></select>
+                  <label for="grtURL">Result Template URL: </label>
+                  <input type="text" id="grtURL" class="serviceident">
+                </p>
+              </div>
+              <div id="grtTabs-Code">
+<pre class="prettyprint linenums">
+$( "#grtoffServers").change(function() {
+  if (this.value === "")  {
+    $("#grtoffIdentifier").val("");
+    $("#grtofferings").empty();
+    $("#grtoffObservables").empty();
+    $("#grtURL").val("");
+  } else {
+   try {
+     S(this.value).getcapabilities(function(c) {
+      console.log("Got a " + Object.prototype.toString.call(c).slice(8, -1));
+      console.log(c);
+      try {
+        $grtofferings = S().getofferings(c);
+        console.log($offerings);
+        $("#grtofferings").empty();
+        $("#grtoffIdentifier").val("");
+        $("#grtoffObservables").empty();
+        $("#grtURL").val("");
+
+        $("#grtofferings").append("<option value=''>Select an Offering</option>");
+        $.each($grtofferings, function( index, offering) {
+          $("#grtofferings").append("<option value='" + index + "'>" + offering.name + "</option>");
+        });    
+
+      } catch (e) {
+        console.log(e);
+      }
+     });
+   } catch (e) {
+     alert(e);
+   }
+  }
+});
+
+$( "#grtofferings").change(function() {
+  if (this.value === "")  {
+    $("#grtoffIdentifier").val("");
+    $("#grtoffObservables").empty();
+    $("#grtURL").val("");
+  } else {
+    try {
+      $("#grtoffIdentifier").val($grtofferings[parseInt(this.value)].identifier);
+      $("#grtoffObservables").empty();
+      $("#grtURL").val("");
+      $.each($grtofferings[parseInt(this.value)].observableproperties, function( index, observableproperty) {
+        $("#grtoffObservables").append("<option value='" + index + "'>" + observableproperty + "</option>");
+      });
+   } catch (e) {
+     alert(e);
+   }
+  }
+});
+
+$( "#btnGetTemplateURL").click(function(){
+  if (undefined === $("#grtoffIdentifier").val().trim() || !$("#grtoffIdentifier").val().trim()) {
+    alert("Identifier must be set.");
+    return;
+  }
+  var url = S($("#grtoffServers option:selected").val())
+            .getresulttemplateurl($("#grtoffIdentifier").val(), 
+                                  $("#grtoffObservables option:selected").text());
+  $("#grtURL").val(url);
+
+});</pre>
+              </div>
+          </div>
+
+          </section>
+        
+        
       </div>
     </div>
   </div>
@@ -649,5 +798,6 @@ $( "#offServers").change(function() {
 <script src="assets/js/jquery-ui-1.10.0.custom.min.js" type="text/javascript"></script>
 <script src="assets/js/google-code-prettify/prettify.js" type="text/javascript"></script>
 <script src="assets/js/docs.js" type="text/javascript"></script>
+<script src="assets/js/demo.js" type="text/javascript"></script>
 </body>
 </html>

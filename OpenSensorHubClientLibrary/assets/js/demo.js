@@ -211,13 +211,13 @@ $(function () {
     $( "#tooltip" ).tooltip();
 
     // File input (using http://filamentgroup.com/lab/jquery_custom_file_input_book_designing_with_progressive_enhancement/)
-    $('#file').customFileInput({
-        button_position : 'right'
-    });
+    //$('#file').customFileInput({
+    //    button_position : 'right'
+    //});
 
     //####### Wijmo
 
-    $("#menu1").wijmenu({ trigger: ".wijmo-wijmenu-item", triggerEvent: "click" });
+    //$("#menu1").wijmenu({ trigger: ".wijmo-wijmenu-item", triggerEvent: "click" });
 
     // Select a Date Range with datepicker
     $( "#rangeBa" ).datepicker({
