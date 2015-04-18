@@ -13,14 +13,14 @@
  $(function() {
   
   var $offerings = null;
-  var $grtofferings = null;
+  var $grturlofferings = null;
     
   $( "#siTabs").tabs();
   $( "#gcTabs").tabs();
   $( "#spTabs").tabs();
   $( "#omTabs").tabs();
   $( "#offTabs").tabs();
-  $( "#grtTabs").tabs();
+  $( "#grturlTabs").tabs();
 
   $( "#gcServers").change(function() {
     if (this.value === "")  {
@@ -236,28 +236,28 @@
     }
   });
 
-  $( "#grtoffServers").change(function() {
+  $( "#grturloffServers").change(function() {
     if (this.value === "")  {
-      $("#grtoffIdentifier").val("");
-      $("#grtofferings").empty();
-      $("#grtoffObservables").empty();
-      $("#grtURL").val("");
+      $("#grturloffIdentifier").val("");
+      $("#grturlofferings").empty();
+      $("#grturloffObservables").empty();
+      $("#grturlURL").val("");
     } else {
      try {
        S(this.value).getcapabilities(function(c) {
         console.log("Got a " + Object.prototype.toString.call(c).slice(8, -1));
         console.log(c);
         try {
-          $grtofferings = S().getofferings(c);
+          $grturlofferings = S().getofferings(c);
           console.log($offerings);
-          $("#grtofferings").empty();
-          $("#grtoffIdentifier").val("");
-          $("#grtoffObservables").empty();
-          $("#grtURL").val("");
+          $("#grturlofferings").empty();
+          $("#grturloffIdentifier").val("");
+          $("#grturloffObservables").empty();
+          $("#grturlURL").val("");
 
-          $("#grtofferings").append("<option value=''>Select an Offering</option>");
-          $.each($grtofferings, function( index, offering) {
-            $("#grtofferings").append("<option value='" + index + "'>" + offering.name + "</option>");
+          $("#grturlofferings").append("<option value=''>Select an Offering</option>");
+          $.each($grturlofferings, function( index, offering) {
+            $("#grturlofferings").append("<option value='" + index + "'>" + offering.name + "</option>");
           });    
 
         } catch (e) {
@@ -270,18 +270,18 @@
     }
   });
 
-  $( "#grtofferings").change(function() {
+  $( "#grturlofferings").change(function() {
     if (this.value === "")  {
-      $("#grtoffIdentifier").val("");
-      $("#grtoffObservables").empty();
-      $("#grtURL").val("");
+      $("#grturloffIdentifier").val("");
+      $("#grturloffObservables").empty();
+      $("#grturlURL").val("");
     } else {
       try {
-        $("#grtoffIdentifier").val($grtofferings[parseInt(this.value)].identifier);
-        $("#grtoffObservables").empty();
-        $("#grtURL").val("");
-        $.each($grtofferings[parseInt(this.value)].observableproperties, function( index, observableproperty) {
-          $("#grtoffObservables").append("<option value='" + index + "'>" + observableproperty + "</option>");
+        $("#grturloffIdentifier").val($grturlofferings[parseInt(this.value)].identifier);
+        $("#grturloffObservables").empty();
+        $("#grturlURL").val("");
+        $.each($grturlofferings[parseInt(this.value)].observableproperties, function( index, observableproperty) {
+          $("#grturloffObservables").append("<option value='" + index + "'>" + observableproperty + "</option>");
         });
      } catch (e) {
        alert(e);
@@ -290,14 +290,14 @@
   });
   
   $( "#btnGetTemplateURL").button().click(function(){
-    if (undefined === $("#grtoffIdentifier").val().trim() || !$("#grtoffIdentifier").val().trim()) {
+    if (undefined === $("#grturloffIdentifier").val().trim() || !$("#grturloffIdentifier").val().trim()) {
       alert( _("identifier_must_be_set", {"function" : "btnGetTemplateURL"} ) );
       return;
     }
-    var url = S($("#grtoffServers option:selected").val())
-              .getresulttemplateurl($("#grtoffIdentifier").val(), 
-                                    $("#grtoffObservables option:selected").text());
-    $("#grtURL").val(url);
+    var url = S($("#grturloffServers option:selected").val())
+              .getresulttemplateurl($("#grturloffIdentifier").val(), 
+                                    $("#grturloffObservables option:selected").text());
+    $("#grturlURL").val(url);
 
   });  
   
