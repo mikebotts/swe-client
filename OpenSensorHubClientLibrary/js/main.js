@@ -14,13 +14,16 @@
   
   var $offerings = null;
   var $grturlofferings = null;
-    
+  var $locDetails = null;
+  
   $( "#siTabs").tabs();
   $( "#gcTabs").tabs();
   $( "#spTabs").tabs();
   $( "#omTabs").tabs();
   $( "#offTabs").tabs();
   $( "#grturlTabs").tabs();
+  $( "#gldTabs").tabs();
+  $( "#grTabs").tabs();
 
   $( "#gcServers").change(function() {
     if (this.value === "")  {
@@ -300,6 +303,118 @@
     $("#grturlURL").val(url);
 
   });  
+
+  $( "#btnGetLocationTemplate").button().click(function(){
+    // The URL is hardcoded for the sake of demonstration. It was produced using the sQuery.getresulttemplateurl() as illustrated in above.
+    var url = "http://bottsgeo.com:8181/sensorhub/sos?service=SOS&version=2.0&request=GetResultTemplate&offering=urn:android:device:FA44CWM03715-sos&observedProperty=http://sensorml.com/ont/swe/property/Location";
+    S().getlocationdescriptor(url, function(t) {
+       $locDetails = S().getlocationdetails(t);
+       console.log($locDetails);
+       $("#gldTokenSeparator").val($locDetails.tokenseparator);
+       $("#gldDecimalSeparator").val($locDetails.decimalseparator);
+       $("#gldCS").val($locDetails.coordinatesystem);
+
+      $.each($locDetails.tokens, function( index, token) {
+        $("#gldTokens").append("<option value='" + index + "'>" + token.name + "</option>");
+      });    
+      
+      $("#gldTokens").change();
+      
+    });
+  });
+
+  $( "#gldTokens").change(function() {
+    
+    if ($("#gldTokens option:selected").text() === "time") {
+      $("#gldTokenZone").val($locDetails.tokens[this.value].zone);
+      $("#gldTokenCS").val("");
+      $("#gldTokenDefinition").val("");      
+    } else {
+      $("#gldTokenZone").val("");
+      $("#gldTokenCS").val($locDetails.tokens[this.value].coordinatesystem);
+      $("#gldTokenDefinition").val($locDetails.tokens[this.value].definition);      
+    }
+    $("#gldTokenUOM").val($locDetails.tokens[this.value].uom);
+
+  });
+
+  $( "#grurloffServers").change(function() {
+    if (this.value === "")  {
+      $("#grurloffIdentifier").val("");
+      $("#grurlofferings").empty();
+      $("#grurloffObservables").empty();
+      $("#grurlhttpURL").val("");
+      $("#grurlwsURL").val("");
+    } else {
+     try {
+       S(this.value).getcapabilities(function(c) {
+        try {
+          $grurlofferings = S().getofferings(c);
+          $("#grurlofferings").empty();
+          $("#grurloffIdentifier").val("");
+          $("#grurloffObservables").empty();
+          $("#grurlhttpURL").val("");
+          $("#grurlwsURL").val("");
+
+          $("#grurlofferings").append("<option value=''>Select an Offering</option>");
+          $.each($grurlofferings, function( index, offering) {
+            $("#grurlofferings").append("<option value='" + index + "'>" + offering.name + "</option>");
+          });    
+
+        } catch (e) {
+          console.log(e);
+        }
+       });
+     } catch (e) {
+       alert(e);
+     }
+    }
+  });
+
+  $( "#grurlofferings").change(function() {
+    if (this.value === "")  {
+      $("#grurloffIdentifier").val("");
+      $("#grurloffObservables").empty();
+      $("#grurlhttpURL").val("");
+      $("#grurlwsURL").val("");
+    } else {
+      try {
+        $("#grurloffIdentifier").val($grurlofferings[parseInt(this.value)].identifier);
+        $("#grurloffObservables").empty();
+        $("#grurlhttpURL").val("");
+        $("#grurlwsURL").val("");
+        $.each($grurlofferings[parseInt(this.value)].observableproperties, function( index, observableproperty) {
+          $("#grurloffObservables").append("<option value='" + index + "'>" + observableproperty + "</option>");
+        });
+     } catch (e) {
+       alert(e);
+     }
+    }
+  });
   
+  $( "#btnGetResultURL").button().click(function(){
+    if (undefined === $("#grurloffIdentifier").val().trim() || !$("#grurloffIdentifier").val().trim()) {
+      alert( _("identifier_must_be_set", {"function" : "btnGetResultURL"} ) );
+      return;
+    }
+    if (undefined === $("#grtemporalfilter").val().trim() || !$("#grtemporalfilter").val().trim()) {
+      alert( "Time filter must be supplied." );
+      return;
+    }
+    var httpurl = S($("#grurloffServers option:selected").val())
+              .getresulthttpurl($("#grurloffIdentifier").val(), 
+                                $("#grurloffObservables option:selected").text(),
+                                $("#grtemporalfilter").val());
+    var wsurl = S($("#grurloffServers option:selected").val())
+              .getresultwsurl($("#grurloffIdentifier").val(), 
+                              $("#grurloffObservables option:selected").text(),
+                              $("#grtemporalfilter").val());
+    $("#grurlhttpURL").val(httpurl);
+    $("#grurlwsURL").val(wsurl);
+
+  });  
+
+  
+
 });
 

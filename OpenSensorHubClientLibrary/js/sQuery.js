@@ -59,6 +59,9 @@
       /** @private */
       _getResultTemplateBase = '/sos?service=SOS&version=2.0&request=GetResultTemplate',
       
+      /** @private */
+      _getResultBase = '/sos?service=SOS&version=2.0&request=GetResult',
+      
       /** @private */      
       sQuery = function( baseurl ) {
 
@@ -356,6 +359,18 @@
         return this.baseurl + _getResultTemplateBase + '&offering=' + offeringidentifier + '&observedProperty=' + observedproperty;
         
       }, // getresulttemplateurl
+
+      getresulthttpurl: function (offeringidentifier, observedproperty, ptime) {
+        
+        return this.baseurl + _getResultBase + '&offering=' + offeringidentifier + '&observedProperty=' + observedproperty + '&temporalFilter=phenomenonTime,' + ptime;
+        
+      }, // getresulthttpurl
+
+      getresultwsurl: function (offeringidentifier, observedproperty, ptime) {
+        
+        return this.baseurl.replace('http:', 'ws:') + _getResultBase + '&offering=' + offeringidentifier + '&observedProperty=' + observedproperty + '&temporalFilter=phenomenonTime,' + ptime;
+        
+      }, // getresultwsurl
       
       is: function (type, obj) {
       

@@ -74,7 +74,7 @@ S.fn.getlocationdetails = function (xmllocationdescriptor) {
         objLocationDetails = new Object();
     
     objLocationDetails.tokenseparator = $xmlResultEncoding.find("TextEncoding").attr("tokenSeparator");
-    objLocationDetails.decimalsepartor = $xmlResultEncoding.find("TextEncoding").attr("decimalSeparator");
+    objLocationDetails.decimalseparator = $xmlResultEncoding.find("TextEncoding").attr("decimalSeparator");
     objLocationDetails.coordinatesystem = vectorCoordinateSystem;
 
     // Save coordinates

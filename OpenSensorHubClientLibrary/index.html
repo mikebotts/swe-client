@@ -849,14 +849,12 @@ try {
           </p>
           <div class="alert alert-info">
             <span class="icon-info-sign"></span> For the sake of this exercise we will restrict gathering location details from a specific template!
-            The URL for this tempate is: http://ec2-52-16-177-252.eu-west-1.compute.amazonaws.com:8181/sensorhub/sos?service=SOS&version=2.0&request=
-            GetResultTemplate&offering=urn:mysos:offering02&observedProperty=http://sensorml.com/ont/swe/property/Location
-            
+            The URL for this tempate is: http://bottsgeo.com:8181/sensorhub/sos?service=SOS&version=2.0&request=GetResultTemplate&offering=urn:android:device:FA44CWM03715-sos&observedProperty=http://sensorml.com/ont/swe/property/Location
           </div>              
-          <p class="docs-lead">
-          
-          </p>
           <h2>sQuery.getlocationdetails In Action</h2>
+  
+          <button id="btnGetLocationTemplate" class="ui-button-primary">Get Location Template Details</button>
+
           <div id="gldTabs">
               <ul>
                   <li><a href="#gldTabs-Demo">Demo</a></li>
@@ -864,34 +862,68 @@ try {
               </ul>
               <div id="gldTabs-Demo">
                 <p class="docs-lead">
-                  <select id = "gldoffServers" class="baseurl">
-                   <option value = "">Select a SOS Server</option>
-                   <option value = "http://bottsgeo.com:8181/sensorhub">Mike's Server [http://bottsgeo.com:8181/sensorhub] </option>
-                   <option value = "http://ec2-52-16-177-252.eu-west-1.compute.amazonaws.com:8181/sensorhub">Alex's Server [http://ec2-52-16-177-252.eu-west-1.compute.amazonaws.com:8181/sensorhub]</option>
-                  </select>
+                  <label for="gldURL">Fake GPS Template URL: </label>
+                  <input type="text" id="gldURL" class="serviceident" value="http://bottsgeo.com:8181/sensorhub/sos?service=SOS&version=2.0&request=GetResultTemplate&offering=urn:android:device:FA44CWM03715-sos&observedProperty=http://sensorml.com/ont/swe/property/Location">
                 </p>
                 <p class="docs-lead">
-                  <label for="gldofferings">Offerings: </label>
-                  <select id="gldofferings" class="serviceident"></select>
-                  <label for="gldoffIdentifier">Identifier: </label>
-                  <input type="text" id="gldoffIdentifier" class="serviceident">
-                  <label for="gldoffObservables">Observables: </label>
-                  <select id="gldoffObservables" class="serviceident"></select>
-                  <label for="gldURL">Result Template URL: </label>
-                  <input type="text" id="gldURL" class="serviceident">
+                  <label for="gldTokenSeparator">Token Separator: </label>
+                  <input type="text" id="gldTokenSeparator" class="serviceident">
+                  <label for="gldDecimalSeparator">Decimal Separator: </label>
+                  <input type="text" id="gldDecimalSeparator" class="serviceident">
+                  <label for="gldCS">Coordinate System: </label>
+                  <input type="text" id="gldCS" class="serviceident">
+                  <label for="gldTokens">Tokens: </label>
+                  <select id="gldTokens" class="serviceident"></select>
+                  <label for="gldTokenZone">Token Zone (applies only for time): </label>
+                  <input type="text" id="gldTokenZone" class="serviceident">
+                  <label for="gldTokenUOM">Token Unit of Measure: </label>
+                  <input type="text" id="gldTokenUOM" class="serviceident">
+                  <label for="gldTokenCS">Token Coordinate System: </label>
+                  <input type="text" id="gldTokenCS" class="serviceident">
+                  <label for="gldTokenDefinition">Token Definition: </label>
+                  <input type="text" id="gldTokenDefinition" class="serviceident">
                 </p>
               </div>
               <div id="gldTabs-Code">
 <pre class="prettyprint linenums">
-</pre>
+$( "#btnGetLocationTemplate").button().click(function(){
+  // The URL is hardcoded for the sake of demonstration. It was produced using the sQuery.getresulttemplateurl() as illustrated in above.
+  var url = "http://bottsgeo.com:8181/sensorhub/sos?service=SOS&version=2.0&request=GetResultTemplate&offering=urn:android:device:FA44CWM03715-sos&observedProperty=http://sensorml.com/ont/swe/property/Location";
+  S().getlocationdescriptor(url, function(t) {
+     $locDetails = S().getlocationdetails(t);
+     console.log($locDetails);
+     $("#gldTokenSeparator").val($locDetails.tokenseparator);
+     $("#gldDecimalSeparator").val($locDetails.decimalseparator);
+     $("#gldCS").val($locDetails.coordinatesystem);
+
+    $.each($locDetails.tokens, function( index, token) {
+      $("#gldTokens").append("<option value='" + index + "'>" + token.name + "</option>");
+    });    
+    
+    $("#gldTokens").change();
+    
+  });
+});
+
+$( "#gldTokens").change(function() {
+  
+  if ($("#gldTokens option:selected").text() === "time") {
+    $("#gldTokenZone").val($locDetails.tokens[this.value].zone);
+    $("#gldTokenCS").val("");
+    $("#gldTokenDefinition").val("");      
+  } else {
+    $("#gldTokenZone").val("");
+    $("#gldTokenCS").val($locDetails.tokens[this.value].coordinatesystem);
+    $("#gldTokenDefinition").val($locDetails.tokens[this.value].definition);      
+  }
+  $("#gldTokenUOM").val($locDetails.tokens[this.value].uom);
+
+});</pre>
               </div>
           </div>
-
-            
               
           </section>
         
-
           <!-- Results -->
           <section id="results">
               <div class="page-header">
@@ -899,42 +931,167 @@ try {
               </div>
               <div class="row-fluid">
                   <p class="docs-lead">
+                  We are now ready to get the results (data feed), and using the description of the data via the template, we can
+                  interpret the results.  First, how do we retrieve the data?
+                  </p>
+                  <p class="docs-lead">
+                  Data can be retrieved using a GET request via XMLHttp or using a websocket.  It is recommended to use websockets
+                  when retrieving live data streams, or when playing back recorded streams, so as to avoid setting up timers and polling
+                  intervals.  
+                  </p>
+                  <p class="docs-lead">
+                  The URL for retrieving data is very similar to getting the result template, with two key differences.  The request 
+                  parameter must be "GetResult" rather than "GetResultTemplate", and a time filter must be applied.
                   </p>
               </div>
               <div class="alert alert-info">
-                  <span class="icon-info-sign"></span> You must reference sQuery.js in order to use it.
+                <span class="icon-info-sign"></span> The time filter is of the format &lt;starttime&gt;/&lt;endtime&gt;
               </div>              
-              <p>
-              <h2>sQuery.getresulttemplateurl</h2>
+              <div class="alert alert-info">
+                <span class="icon-info-sign"></span> All times must be provided in UTC (http://www.opengis.net/def/trs/BIPM/0/UTC).  
+              </div>              
               <div class="row-fluid">
                   <p class="docs-lead">
+                  So, how do we know what time range is available for a particular observable on the server?  This is determined by reviewing
+                  the offerings of the SOS server as illustrated in the capabilities section above.  The server advertises all the start 
+                  and ending times available for a particular offering.  If the observable is feeding live data, then a start time is 
+                  set, the end time is empty and indeterminate time will be "Now" indicating that the feed is live.  
                   </p>
-              </div>              
+                  <p class="docs-lead">
+                  Any time range within the stored time range can be requested.  When requesting results for live feeds, the start time of the
+                  filter must be set to Now and the end time must be set to some date in the very distant future.
+                  </p>
+              </div>
               <div class="alert alert-info">
-                  <span class="icon-info-sign"></span> You must pass in the base SOS URL when calling sQuery.getresulttemplateurl.
+                <span class="icon-info-sign"></span> Following are examples of time formats:<br/>
+                1: Now/2020-01-01 <br/>
+                2: Now/2100-03-10T20:00:00Z <br/>
+                3: 2015-03-07/2015-04-20<br/>
+                4: 2015-03-07T08:00:00Z/2015-04-20T13:15:00Z
               </div>              
-<pre class="prettyprint linenums">
-</pre>
-          <h2>sQuery.getresulttemplateurl In Action</h2>
-          <div class="row-fluid">
-              <p class="docs-lead">
-              Select an identifier and an observable, and click the Get Result Template URL button.
-              </p>
-          </div>
-          <button id="btnGetTemplateURL" class="ui-button-primary">Get Result Template URL</button>
+              <div class="row-fluid">
+                <p class="docs-lead">
+                There are two sQuery core methods, getresulthttpurl and getresultwsurl, that generate the desired URLs to get results.
+                Let see them in action below.
+                </p>
+              </div>
+              <h2>sQuery.getresulthttpurl & sQuery.getresultwsurl in Action</h2>
+              <div class="row-fluid">
+                  <p class="docs-lead">
+                  Select an identifier and an observable, and click the Get Result Template URL button.
+                  </p>
+              </div>
+              <button id="btnGetResultURL" class="ui-button-primary">Get Result URL</button>
           
-         <div id="grTabs">
-              <ul>
-                  <li><a href="#grTabs-Demo">Demo</a></li>
-                  <li><a href="#grTabs-Code">Code</a></li>
-              </ul>
-              <div id="grTabs-Demo">
-              </div>
-              <div id="grTabs-Code">
+             <div id="grTabs">
+                  <ul>
+                      <li><a href="#grTabs-Demo">Demo</a></li>
+                      <li><a href="#grTabs-Code">Code</a></li>
+                  </ul>
+                  <div id="grTabs-Demo">
+
+                    <p class="docs-lead">
+                      <select id = "grurloffServers" class="baseurl">
+                       <option value = "">Select a SOS Server</option>
+                       <option value = "http://bottsgeo.com:8181/sensorhub">Mike's Server [http://bottsgeo.com:8181/sensorhub] </option>
+                       <option value = "http://ec2-52-16-177-252.eu-west-1.compute.amazonaws.com:8181/sensorhub">Alex's Server [http://ec2-52-16-177-252.eu-west-1.compute.amazonaws.com:8181/sensorhub]</option>
+                      </select>
+                    </p>
+                    <p class="docs-lead">
+                      <label for="grtemporalfilter">Time filter: </label>
+                      <input type="text" id="grtemporalfilter" placeholder="Now/2020-01-01" class="serviceident">
+                      <label for="grurlofferings">Offerings: </label>
+                      <select id="grurlofferings" class="serviceident"></select>
+                      <label for="grurloffIdentifier">Identifier: </label>
+                      <input type="text" id="grurloffIdentifier" class="serviceident">
+                      <label for="grurloffObservables">Observables: </label>
+                      <select id="grurloffObservables" class="serviceident"></select>
+                      <label for="grurlhttpURL">Http URL: </label>
+                      <input type="text" id="grurlhttpURL" class="serviceident">
+                      <label for="grurlwsURL">Websocket URL: </label>
+                      <input type="text" id="grurlwsURL" class="serviceident">
+                    </p>                  
+
+                  </div>
+                  <div id="grTabs-Code">
 <pre class="prettyprint linenums">
-</pre>
+$( "#grurloffServers").change(function() {
+  if (this.value === "")  {
+    $("#grurloffIdentifier").val("");
+    $("#grurlofferings").empty();
+    $("#grurloffObservables").empty();
+    $("#grurlhttpURL").val("");
+    $("#grurlwsURL").val("");
+  } else {
+   try {
+     S(this.value).getcapabilities(function(c) {
+      try {
+        $grurlofferings = S().getofferings(c);
+        $("#grurlofferings").empty();
+        $("#grurloffIdentifier").val("");
+        $("#grurloffObservables").empty();
+        $("#grurlhttpURL").val("");
+        $("#grurlwsURL").val("");
+
+        $("#grurlofferings").append("<option value=''>Select an Offering</option>");
+        $.each($grurlofferings, function( index, offering) {
+          $("#grurlofferings").append("<option value='" + index + "'>" + offering.name + "</option>");
+        });    
+
+      } catch (e) {
+        console.log(e);
+      }
+     });
+   } catch (e) {
+     alert(e);
+   }
+  }
+});
+
+$( "#grurlofferings").change(function() {
+  if (this.value === "")  {
+    $("#grurloffIdentifier").val("");
+    $("#grurloffObservables").empty();
+    $("#grurlhttpURL").val("");
+    $("#grurlwsURL").val("");
+  } else {
+    try {
+      $("#grurloffIdentifier").val($grurlofferings[parseInt(this.value)].identifier);
+      $("#grurloffObservables").empty();
+      $("#grurlhttpURL").val("");
+      $("#grurlwsURL").val("");
+      $.each($grurlofferings[parseInt(this.value)].observableproperties, function( index, observableproperty) {
+        $("#grurloffObservables").append("<option value='" + index + "'>" + observableproperty + "</option>");
+      });
+   } catch (e) {
+     alert(e);
+   }
+  }
+});
+
+$( "#btnGetResultURL").button().click(function(){
+  if (undefined === $("#grurloffIdentifier").val().trim() || !$("#grurloffIdentifier").val().trim()) {
+    alert( _("identifier_must_be_set", {"function" : "btnGetResultURL"} ) );
+    return;
+  }
+  if (undefined === $("#grtemporalfilter").val().trim() || !$("#grtemporalfilter").val().trim()) {
+    alert( "Time filter must be supplied." );
+    return;
+  }
+  var httpurl = S($("#grurloffServers option:selected").val())
+            .getresulthttpurl($("#grurloffIdentifier").val(), 
+                              $("#grurloffObservables option:selected").text(),
+                              $("#grtemporalfilter").val());
+  var wsurl = S($("#grurloffServers option:selected").val())
+            .getresultwsurl($("#grurloffIdentifier").val(), 
+                            $("#grurloffObservables option:selected").text(),
+                            $("#grtemporalfilter").val());
+  $("#grurlhttpURL").val(httpurl);
+  $("#grurlwsURL").val(wsurl);
+
+});</pre>
+                  </div>
               </div>
-          </div>
 
           </section>
         
