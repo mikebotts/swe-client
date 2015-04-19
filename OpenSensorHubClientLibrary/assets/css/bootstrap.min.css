@@ -232,6 +232,7 @@ legend{display:block;width:100%;padding:0;margin-bottom:20px;font-size:21px;line
 label,input,button,select,textarea{font-size:14px;font-weight:normal;line-height:20px;}
 input,button,select,textarea{font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;}
 input.serviceident{font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;width:550px;}
+input.serviceident1{font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;width:950px;}
 input.capabilitiesurl{font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;width:800px;}
 label{display:block;margin-bottom:5px;}
 select,textarea,input[type="text"],input[type="password"],input[type="datetime"],input[type="datetime-local"],input[type="date"],input[type="month"],input[type="time"],input[type="week"],input[type="number"],input[type="email"],input[type="url"],input[type="search"],input[type="tel"],input[type="color"],.uneditable-input{display:inline-block;height:20px;padding:4px 6px;margin-bottom:10px;font-size:14px;line-height:20px;color:#555555;-webkit-border-radius:4px;-moz-border-radius:4px;border-radius:4px;vertical-align:middle;}
@@ -243,7 +244,9 @@ input[type="file"],input[type="image"],input[type="submit"],input[type="reset"],
 select,input[type="file"]{height:30px;*margin-top:4px;line-height:30px;}
 select{width:220px;border:1px solid #cccccc;background-color:#ffffff;}
 select.baseurl{width:520px;border:1px solid #cccccc;background-color:#ffffff;}
+select.baseurl1{width:950px;border:1px solid #cccccc;background-color:#ffffff;}
 select.serviceident{width:420px;border:1px solid #cccccc;background-color:#ffffff;}
+select.serviceident1{width:950px;border:1px solid #cccccc;background-color:#ffffff;}
 select[multiple],select[size]{height:auto;}
 select:focus,input[type="file"]:focus,input[type="radio"]:focus,input[type="checkbox"]:focus{outline:thin dotted #333;outline:5px auto -webkit-focus-ring-color;outline-offset:-2px;}
 .uneditable-input,.uneditable-textarea{color:#999999;background-color:#fcfcfc;border-color:#cccccc;-webkit-box-shadow:inset 0 1px 2px rgba(0, 0, 0, 0.025);-moz-box-shadow:inset 0 1px 2px rgba(0, 0, 0, 0.025);box-shadow:inset 0 1px 2px rgba(0, 0, 0, 0.025);cursor:not-allowed;}

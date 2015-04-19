@@ -412,9 +412,7 @@
     $("#grurlhttpURL").val(httpurl);
     $("#grurlwsURL").val(wsurl);
 
-  });  
-
-  
+  });    
 
 });
 

@@ -1,0 +1,141 @@
+<!-- This Source Code Form is subject to the terms of the Mozilla Public
+   - License, v. 2.0. If a copy of the MPL was not distributed with this
+   - file, You can obtain one at http://mozilla.org/MPL/2.0/. 
+   -
+   - Software distributed under the License is distributed on an "AS IS" basis,
+   - WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
+   - for the specific language governing rights and limitations under the License.
+   -
+   - The Initial Developer is Terravolv, Inc. Portions created by the Initial
+   - Developer are Copyright (C) 2014-2015 the Initial Developer. All Rights Reserved. -->
+<!DOCTYPE html>
+<html lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="author" content="Open Sensor Hub" />
+  <title>Open Sensor Hub</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <link rel="resource" type="application/l10n" href="locales/locales.ini" />
+  <script src="js/l10n.js"></script>
+  <link href="assets/css/bootstrap.min.css" rel="stylesheet">
+  <link type="text/css" href="css/custom-theme/jquery-ui-1.10.0.custom.css" rel="stylesheet" />
+  <link type="text/css" href="assets/css/font-awesome.min.css" rel="stylesheet" />
+  <link href="assets/css/docs.css" rel="stylesheet">
+  <link href="assets/js/google-code-prettify/prettify.css" rel="stylesheet">
+
+  <script src="//code.jquery.com/jquery-1.11.2.min.js"></script>
+  <!--  <script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script> -->
+
+  <script src="js/sQuery.js"></script>
+  <script src="js/capabilities.js"></script>
+ 
+</head>
+<body data-spy="scroll" data-target=".bs-docs-sidebar" data-twttr-rendered="true">
+  <!-- Navbar -->
+  <div class="navbar navbar-inverse navbar-fixed-top">
+      <div class="navbar-inner">
+          <div class="container">
+              <button type="button" class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                  <span class="icon-bar"></span>
+                  <span class="icon-bar"></span>
+                  <span class="icon-bar"></span>
+              </button>
+              <a class="brand" href="#">Open Sensor Hub</a>
+              <div class="nav-collapse collapse">
+                  <ul class="nav">
+                      <li class="active">
+                          <a href="./capabilities.html">Home</a>
+                      </li>
+                      <li>
+                          <a href="./index.html">Open SensorHub Client Library</a>
+                      </li>
+                      <li>
+                          <a href="https://github.com/mikebotts">Contact</a>
+                      </li>
+                  </ul>
+              </div>
+          </div>
+      </div>
+  </div>
+  <!-- Subhead -->
+  <header class="jumbotron subhead" id="overview">
+      <div class="container">
+          <h1>SOS Server Capabilities</h1>
+          <p class="lead">Review the capabilities of a SOS server</p>
+      </div>
+  </header>
+  <div class="container">
+    <div class="row">
+      <div class="span12">
+        <div class="row-fluid">
+            <p class="docs-lead">
+              <p class="docs-lead">
+                <select id = "offServers" class="baseurl1">
+                 <option value = "">Select a SOS Server</option>
+                 <option value = "http://bottsgeo.com:8181/sensorhub">Mike's Server [http://bottsgeo.com:8181/sensorhub] </option>
+                 <option value = "http://ec2-52-16-177-252.eu-west-1.compute.amazonaws.com:8181/sensorhub">Alex's Server [http://ec2-52-16-177-252.eu-west-1.compute.amazonaws.com:8181/sensorhub]</option>
+                </select>
+                <button id="btnAddSOSServer" class="ui-button-primary">Add Server</button>
+              </p>
+              <p class="docs-lead">
+                <label for="offerings">Offerings: </label>
+                <select id="offerings" class="serviceident1"></select>
+                <label for="offIdentifier">Identifier: </label>
+                <input type="text" id="offIdentifier" class="serviceident1">
+                <label for="offDescription">Description: </label>
+                <input type="text" id="offDescription" class="serviceident1">
+                <label for="offProcedure">Procedure: </label>
+                <input type="text" id="offProcedure" class="serviceident1">
+                <label for="offObservables">Observables: </label>
+                <select id="offObservables" class="serviceident1"></select>
+                <label for="offPhenonmenonTime">Phenomenon Time: </label>
+                <select id="offPhenonmenonTime" class="serviceident1"></select>          
+                <label for="offPhenonmenonTimeBegin">Begin Time: </label>
+                <input type="text" id="offPhenonmenonTimeBegin" class="serviceident1">
+                <label for="offPhenomenonIndeterminateTime">Indeterminate Time: </label>
+                <input type="text" id="offPhenomenonIndeterminateTime" class="serviceident1">
+                <label for="offPhenomenonEndBegin">End Time: </label>
+                <input type="text" id="offPhenomenonEndBegin" class="serviceident1">
+                <label for="grtemporalfilter">Time filter (for getting result URL): </label>
+                <input type="text" id="grtemporalfilter" placeholder="Now/2020-01-01" class="serviceident1">
+                <label for="gcURL">Capabilities URL: </label>
+                <input type="text" id="gcURL" class="capabilitiesurl">
+                <label for="grturlURL">Result Template URL: </label>
+                <input type="text" id="grturlURL" class="serviceident1">
+                <label for="grurlhttpURL">Result Http URL: </label>
+                <input type="text" id="grurlhttpURL" class="serviceident1">
+                <label for="grurlwsURL">Result Websocket URL: </label>
+                <input type="text" id="grurlwsURL" class="serviceident1">
+              </p>
+            </p>
+            <button id="btnGetTemplateURL" class="ui-button-primary">Get Result Template URL</button>
+            <button id="btnGetResultURL" class="ui-button-primary">Get Result URL (Time Filter Required)</button>
+            <div id="addserverdialog" title="Server Data">
+                <form>
+                    <fieldset class="ui-helper-reset">
+                        <label for="display_name">Display Name</label>
+                        <input type="text" name="display_name" id="display_name" value="" class="ui-widget-content ui-corner-all" />
+                        <label for="server_baseurl">Base URL</label>
+                        <input type="text" name="server_baseurl" placeholder="http://server/alias" id="server_baseurl" value="" class="ui-widget-content ui-corner-all" />
+                    </fieldset>
+                </form>
+            </div>
+            
+      </div>
+    </div>
+  </div>
+<!-- Footer -->
+<footer class="footer">
+  <div class="container">
+    <p>
+        Open Sensor Hub &copy; 2014 - 2015.
+    </p>
+  </div>
+</footer>  
+<script src="assets/js/bootstrap.min.js" type="text/javascript"></script>
+<script src="assets/js/jquery-ui-1.10.0.custom.min.js" type="text/javascript"></script>
+<script src="assets/js/google-code-prettify/prettify.js" type="text/javascript"></script>
+<script src="assets/js/docs.js" type="text/javascript"></script>
+<script src="assets/js/demo.js" type="text/javascript"></script>
+</body>
+</html>
