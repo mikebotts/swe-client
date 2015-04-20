@@ -355,19 +355,28 @@
        */
       
       getresulttemplateurl: function (offeringidentifier, observedproperty) {
-        
+
+        if ((undefined === this.baseurl) || !this.baseurl.trim()) 
+          throw new Error( _("service_url_not_provided", {"function" : "getresulttemplateurl"} ) );
+      
         return this.baseurl + _getResultTemplateBase + '&offering=' + offeringidentifier + '&observedProperty=' + observedproperty;
         
       }, // getresulttemplateurl
 
       getresulthttpurl: function (offeringidentifier, observedproperty, ptime) {
         
+        if ((undefined === this.baseurl) || !this.baseurl.trim()) 
+          throw new Error( _("service_url_not_provided", {"function" : "getresulthttpurl"} ) );
+
         return this.baseurl + _getResultBase + '&offering=' + offeringidentifier + '&observedProperty=' + observedproperty + '&temporalFilter=phenomenonTime,' + ptime;
         
       }, // getresulthttpurl
 
       getresultwsurl: function (offeringidentifier, observedproperty, ptime) {
         
+        if ((undefined === this.baseurl) || !this.baseurl.trim()) 
+          throw new Error( _("service_url_not_provided", {"function" : "getresultwsurl"} ) );
+
         return this.baseurl.replace('http:', 'ws:') + _getResultBase + '&offering=' + offeringidentifier + '&observedProperty=' + observedproperty + '&temporalFilter=phenomenonTime,' + ptime;
         
       }, // getresultwsurl
