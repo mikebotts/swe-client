@@ -363,6 +363,13 @@
         
       }, // getresulttemplateurl
 
+      /**
+       * @param {string} offeringidentifier - The identifier of the offering from the capabilities
+       * @param {string} observedproperty - The observable property from the the capabilities
+       * @param {string} ptime - The time period for the requested observable
+       * @returns {string} - The fully qualified http url to get the observable data
+       * @public
+       */
       getresulthttpurl: function (offeringidentifier, observedproperty, ptime) {
         
         if ((undefined === this.baseurl) || !this.baseurl.trim()) 
@@ -372,6 +379,13 @@
         
       }, // getresulthttpurl
 
+      /**
+       * @param {string} offeringidentifier - The identifier of the offering from the capabilities
+       * @param {string} observedproperty - The observable property from the the capabilities
+       * @param {string} ptime - The time period for the requested observable
+       * @returns {string} - The fully qualified ws url to get the observable data
+       * @public
+       */
       getresultwsurl: function (offeringidentifier, observedproperty, ptime) {
         
         if ((undefined === this.baseurl) || !this.baseurl.trim()) 
@@ -380,6 +394,29 @@
         return this.baseurl.replace('http:', 'ws:') + _getResultBase + '&offering=' + offeringidentifier + '&observedProperty=' + observedproperty + '&temporalFilter=phenomenonTime,' + ptime;
         
       }, // getresultwsurl
+
+      /**
+       * @param {string} data - A data record from the incoming feed
+       * @param {string} templateobject - The JavaScript template object for this observable
+       * @returns {Object} - The object notation of the incoming data record
+       * @public
+       */
+      interpretfeed: function (data, templateobject) {
+
+        var dataType = template.datatype;
+        
+        switch (dataType) {
+          case "textDataRecord":
+            var vals = data.trim().split(template.tokenseparator);
+            var ret = {};
+            $.each(template.tokens, function( index, token) {
+              ret[token.name] = vals[index];
+            });          
+            break;
+          default:
+            throw new Error( _("unknown_template_object", {"function" : "interpretfeed"} ) );
+        }
+      }, // interpretfeed 
       
       is: function (type, obj) {
       

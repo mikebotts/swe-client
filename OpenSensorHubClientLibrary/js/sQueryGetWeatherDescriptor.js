@@ -107,6 +107,8 @@ S.fn.getweatherdetails = function (xmlweatherdescriptor) {
     objToken.definition = $xmlWindDirection.find('Quantity').attr('definition');
     objToken.uom = $xmlWindDirection.find('Quantity').find('uom').attr('code');
     objweatherDetails.tokens[4] = objToken;
+
+    objweatherDetails.datatype = "textDataRecord";
     
     return objweatherDetails;
     

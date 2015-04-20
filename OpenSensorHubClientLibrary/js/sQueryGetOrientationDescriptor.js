@@ -99,6 +99,8 @@ S.fn.getorientationdetails = function (xmlorientationdescriptor) {
       objorientationDetails.tokens[i+1] = objToken;
     }   
 
+    objorientationDetails.datatype = "textDataRecord";
+
     return objorientationDetails;
     
   } else {

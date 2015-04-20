@@ -99,6 +99,8 @@ S.fn.getlocationdetails = function (xmllocationdescriptor) {
       objLocationDetails.tokens[i+1] = objToken;
     }   
 
+    objLocationDetails.datatype = "textDataRecord";
+    
     return objLocationDetails;
     
   } else {
