@@ -417,6 +417,49 @@
             throw new Error( _("unknown_template_object", {"function" : "interpretfeed"} ) );
         }
       }, // interpretfeed 
+
+      /**
+       * This is the callback supplied by the consumer that handles socket onmessage event.
+       *
+       * @onmessagecallback feedonmessage
+       * @param {Object} Event
+       */      
+      /**
+       * This is the callback supplied by the consumer that handles socket onerror event.
+       *
+       * @onerrorcallback feedonerror
+       * @param {Object} Event
+       */      
+      /**
+       * This is the callback supplied by the consumer that handles socket onclose event.
+       *
+       * @oneclosecallback feedonclose
+       * @param {Object} Event
+       */      
+
+      /**
+       * @param {string} data - A data record from the incoming feed
+       * @param {onmessagecallback} feedonmessage - The callback that handles socket messages
+       * @param {onerrorcallback} feedonerror - The callback that handles socket errors
+       * @param {oneclosecallback} feedonclose - The callback that handles socket close
+       * @returns {Object} - The web socket
+       * @public
+       */
+
+       openwsfeed: function(feedsource, feedonmessage, feedonerror, feedonclose) {
+        var ws = new WebSocket(feedSource);
+        ws.onmessage = function (event) {
+          feedonmessage(event);
+        }
+        ws.onerror = function (event) {
+          ws.close();
+          feedonerror(event);
+        }
+        ws.onclose = function (event) {
+          feedonclose(event);
+        }
+        return ws;    
+      }, // openwsfeed
       
       is: function (type, obj) {
       
