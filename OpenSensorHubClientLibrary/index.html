@@ -940,7 +940,8 @@ $( "#gldTokens").change(function() {
                   <p class="docs-lead">
                   Data can be retrieved using a GET request via XMLHttp or using a websocket.  It is recommended to use websockets
                   when retrieving live data streams, or when playing back recorded streams, so as to avoid setting up timers and polling
-                  intervals.  
+                  intervals.  However, it is better to use XMLHttp GET requests to fetch the data template because it is a small
+                  finite schema that describes the data.
                   </p>
                   <p class="docs-lead">
                   The URL for retrieving data is very similar to getting the result template, with two key differences.  The request 
