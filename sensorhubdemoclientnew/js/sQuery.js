@@ -448,8 +448,7 @@
        * @public
        */
 
-      openwsfeed: function(feedsource, feedonmessage, feedonerror, feedonclose) {
-
+       openwsfeed: function(feedsource, feedonmessage, feedonerror, feedonclose) {
         var ws = new WebSocket(feedsource);
         var retArgs = Array.prototype.slice.call(arguments, 4);
                 
