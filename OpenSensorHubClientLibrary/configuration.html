@@ -97,6 +97,7 @@
       </div>
     </div>
   </div>
+
   <div class="container">
     <div class="row">
         <div class="span4 bs-docs-sidebar">
@@ -118,7 +119,8 @@
 </div>
             </p>
         </div>
-        </div>
+        </div>        
+
         <div class="span8">
         <div class="row-fluid">
             <p class="docs-lead">
@@ -147,6 +149,7 @@
                 <input type="text" id="offProcedure" class="serviceident">
                 <label for="offObservables">Observables: </label>
                 <select id="offObservables" class="serviceident"></select>
+                <button id="btnAddSOSServer" class="ui-button-primary">Associate to selected Data Item</button>
                 <label for="offPhenonmenonTime">Phenomenon Time: </label>
                 <select id="offPhenonmenonTime" class="serviceident"></select>          
                 <label for="offPhenonmenonTimeBegin">Begin Time: </label>
@@ -157,18 +160,8 @@
                 <input type="text" id="offPhenomenonEndBegin" class="serviceident">
                 <label for="grtemporalfilter">Time filter (for getting result URL): </label>
                 <input type="text" id="grtemporalfilter" placeholder="Now/2020-01-01" class="serviceident">
-                <label for="gcURL">Capabilities URL: </label>
-                <input type="text" id="gcURL" class="capabilitiesurl">
-                <label for="grturlURL">Result Template URL: </label>
-                <input type="text" id="grturlURL" class="serviceident">
-                <label for="grurlhttpURL">Result Http URL: </label>
-                <input type="text" id="grurlhttpURL" class="serviceident">
-                <label for="grurlwsURL">Result Websocket URL: </label>
-                <input type="text" id="grurlwsURL" class="serviceident">
               </p>
             </p>
-            <button id="btnGetTemplateURL" class="ui-button-primary">Get Result Template URL</button>
-            <button id="btnGetResultURL" class="ui-button-primary">Get Result URL (Time Filter Required)</button>
             <div id="addserverdialog" title="Server Data">
                 <form>
                     <fieldset class="ui-helper-reset">
@@ -180,6 +173,7 @@
                 </form>
             </div>
       </div>
+    </div>
     </div>
   </div>
 <!-- Footer -->
