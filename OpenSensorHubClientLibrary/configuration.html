@@ -13,10 +13,11 @@
 <head>
   <meta charset="utf-8" />
   <meta name="author" content="Open Sensor Hub" />
-  <title>Open Sensor Hub</title>
+  <title>Open Sensor Hub Client Configuration</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <link rel="resource" type="application/l10n" href="locales/locales.ini" />
   <script src="js/l10n.js"></script>
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/jstree/3.1.0/themes/default/style.min.css" />
   <link href="assets/css/bootstrap.min.css" rel="stylesheet">
   <link type="text/css" href="css/custom-theme/jquery-ui-1.10.0.custom.css" rel="stylesheet" />
   <link type="text/css" href="assets/css/font-awesome.min.css" rel="stylesheet" />
@@ -28,7 +29,7 @@
 
   <script src="js/sQuery.js"></script>
   <script src="js/capabilities.js"></script>
- 
+  <script src="//cdnjs.cloudflare.com/ajax/libs/jstree/3.1.0/jstree.min.js"></script> 
 </head>
 <body data-spy="scroll" data-target=".bs-docs-sidebar" data-twttr-rendered="true">
   <!-- Navbar -->
@@ -50,7 +51,7 @@
                           <a href="./index.html">Client Library</a>
                       </li>
                       <li>
-                          <a href="./configuration.html">Data Items Configuration</a>
+                          <a href="./capabilities.html">Server Capabilities</a>
                       </li>
                       <li>
                           <a href="https://github.com/mikebotts">Contact</a>
@@ -63,17 +64,72 @@
   <!-- Subhead -->
   <header class="jumbotron subhead" id="overview">
       <div class="container">
-          <h1>SOS Server Capabilities</h1>
-          <p class="lead">Review the capabilities of a SOS server</p>
+          <h1>Open Sensor Hub Client Configuration</h1>
+          <p class="lead">Configuring Client Data Items</p>
       </div>
   </header>
   <div class="container">
     <div class="row">
-      <div class="span12">
+        <div class="span12">
+        <div class="row-fluid">
+          <h1>1. Overview</h1>
+          <p class="docs-lead">
+            Welcome! On this site you can configure the data items you want to incorporate into your SOS application.  The data items configured here
+            will be stored and accessible in your application.  So, what is a data item?  In the SOS language, a data item is essentially an observable property.
+            A SOS server can have multiple offerings.  In the SOS, observations are grouped into layers per each sensor system. These layers are 
+            called ObservationOffering (or short: offering).  An offering may contain multiple observable properties.  
+          </p>
+        </div>
+        <div class="alert alert-info">
+            <span class="icon-info-sign"></span> Sensor Systems <strong>have</strong> offering<strong>(s)</strong>, and offerings <strong>have</strong> observable propert<strong>y/(ies)</strong>.
+        </div>              
+        <div class="row-fluid">
+          <p class="docs-lead">
+            Data items are typically organized into a parent-child hierarchy, essentially tree views!  A data item may reside within one or more parents 
+            in the tree.  This site provides the ability to create your organization tree without requiring you to associate SOS observable properties to 
+            them, although you may associate observables as you create the tree.  Once you have organized your tree as you desire, you can associate them 
+            to the desired observable property.
+          </p>
+        </div>
+        <div class="row-fluid">
+          <h1>2. Configuration</h1>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="container">
+    <div class="row">
+        <div class="span4 bs-docs-sidebar">
+        <div class="row-fluid">
+            <p class="docs-lead">
+              Freely organize your data items using the tree below. Then navigate the SOS server capabilities using the panel to your right and 
+              associate the desired observable property to your data item.
+            </p>
+            <p class="docs-lead">
+<div id="container">
+  <ul>
+    <li>Root node
+      <ul>
+        <li>Child node 1</li>
+        <li>Child node 2</li>
+      </ul>
+    </li>
+  </ul>
+</div>
+            </p>
+        </div>
+        </div>
+        <div class="span8">
+        <div class="row-fluid">
+            <p class="docs-lead">
+              Select or add a SOS server to navigate it's capabilities and determine the offering and observable property that you want to 
+              associate with a data item in your tree.  Then click the associate button.
+            </p>
+        </div>
         <div class="row-fluid">
             <p class="docs-lead">
               <p class="docs-lead">
-                <select id = "offServers" class="baseurl1">
+                <select id = "offServers" class="baseurl">
                  <option value = "">Select a SOS Server</option>
                  <option value = "http://bottsgeo.com:8181/sensorhub">Mike's Server [http://bottsgeo.com:8181/sensorhub] </option>
                  <option value = "http://ec2-52-16-177-252.eu-west-1.compute.amazonaws.com:8181/sensorhub">Alex's Server [http://ec2-52-16-177-252.eu-west-1.compute.amazonaws.com:8181/sensorhub]</option>
@@ -82,33 +138,33 @@
               </p>
               <p class="docs-lead">
                 <label for="offerings">Offerings: </label>
-                <select id="offerings" class="serviceident1"></select>
+                <select id="offerings" class="serviceident"></select>
                 <label for="offIdentifier">Identifier: </label>
-                <input type="text" id="offIdentifier" class="serviceident1">
+                <input type="text" id="offIdentifier" class="serviceident">
                 <label for="offDescription">Description: </label>
-                <input type="text" id="offDescription" class="serviceident1">
+                <input type="text" id="offDescription" class="serviceident">
                 <label for="offProcedure">Procedure: </label>
-                <input type="text" id="offProcedure" class="serviceident1">
+                <input type="text" id="offProcedure" class="serviceident">
                 <label for="offObservables">Observables: </label>
-                <select id="offObservables" class="serviceident1"></select>
+                <select id="offObservables" class="serviceident"></select>
                 <label for="offPhenonmenonTime">Phenomenon Time: </label>
-                <select id="offPhenonmenonTime" class="serviceident1"></select>          
+                <select id="offPhenonmenonTime" class="serviceident"></select>          
                 <label for="offPhenonmenonTimeBegin">Begin Time: </label>
-                <input type="text" id="offPhenonmenonTimeBegin" class="serviceident1">
+                <input type="text" id="offPhenonmenonTimeBegin" class="serviceident">
                 <label for="offPhenomenonIndeterminateTime">Indeterminate Time: </label>
-                <input type="text" id="offPhenomenonIndeterminateTime" class="serviceident1">
+                <input type="text" id="offPhenomenonIndeterminateTime" class="serviceident">
                 <label for="offPhenomenonEndBegin">End Time: </label>
-                <input type="text" id="offPhenomenonEndBegin" class="serviceident1">
+                <input type="text" id="offPhenomenonEndBegin" class="serviceident">
                 <label for="grtemporalfilter">Time filter (for getting result URL): </label>
-                <input type="text" id="grtemporalfilter" placeholder="Now/2020-01-01" class="serviceident1">
+                <input type="text" id="grtemporalfilter" placeholder="Now/2020-01-01" class="serviceident">
                 <label for="gcURL">Capabilities URL: </label>
                 <input type="text" id="gcURL" class="capabilitiesurl">
                 <label for="grturlURL">Result Template URL: </label>
-                <input type="text" id="grturlURL" class="serviceident1">
+                <input type="text" id="grturlURL" class="serviceident">
                 <label for="grurlhttpURL">Result Http URL: </label>
-                <input type="text" id="grurlhttpURL" class="serviceident1">
+                <input type="text" id="grurlhttpURL" class="serviceident">
                 <label for="grurlwsURL">Result Websocket URL: </label>
-                <input type="text" id="grurlwsURL" class="serviceident1">
+                <input type="text" id="grurlwsURL" class="serviceident">
               </p>
             </p>
             <button id="btnGetTemplateURL" class="ui-button-primary">Get Result Template URL</button>
@@ -123,12 +179,10 @@
                     </fieldset>
                 </form>
             </div>
-            
       </div>
     </div>
   </div>
-</div>
-  <!-- Footer -->
+<!-- Footer -->
 <footer class="footer">
   <div class="container">
     <p>
@@ -141,5 +195,28 @@
 <script src="assets/js/google-code-prettify/prettify.js" type="text/javascript"></script>
 <script src="assets/js/docs.js" type="text/javascript"></script>
 <script src="assets/js/demo.js" type="text/javascript"></script>
+<script>
+$(function() {
+  $('#container').jstree({
+    'core' : {
+      'data' : [
+          {
+              "text" : "Root node",
+              "state" : {"opened" : true },
+              "children" : [
+                  {
+                    "text" : "Child node 1",
+                    "data" : "test",
+                    "state" : { "selected" : true },
+                    "icon" : "glyphicon glyphicon-flash"
+                  },
+                  { "text" : "Child node 2", "state" : { "disabled" : true } }
+              ]
+        }
+      ]
+    }
+  });
+});
+</script>
 </body>
 </html>
