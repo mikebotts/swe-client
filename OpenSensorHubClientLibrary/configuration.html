@@ -181,37 +181,43 @@
 <script src="assets/js/google-code-prettify/prettify.js" type="text/javascript"></script>
 <script src="assets/js/docs.js" type="text/javascript"></script>
 <script src="assets/js/demo.js" type="text/javascript"></script>
+<script src="js/moment.min.js" type="text/javascript"></script>
 <script>
 $(function() {
-  
-var taxonomyId = '2e8022ed-03c4-d301-3b6d-fa2245737b51';
-$.get('https://get-json.azurewebsites.net/api/v1/Taxonomy/' + taxonomyId).done(function(data){
-  render(data.taxonomy);
-});
 
-function render(vehicles) {
-  var jsTreeFormat = JSON.parse(JSON.stringify(vehicles), function(k, v) {
-    if (k === "parentId") {
-        this.parent = (v) ? v : '#';
-    } else if (k === "name") {
-        this.text = v;
-    } else {
-        return v;
-    }
-  });
-  $('#tree').jstree({ 'core' : {'check_callback' : true,'data' : jsTreeFormat }, 'plugins' : ['contextmenu'] });
-}
+	if("undefined" !== typeof(Storage) ) {
+		// Get saved data items
+		var _DI = localStorage.getItem("sosDataItems");
+		if ((undefined === _DI) || (null === _DI)) {
+			// Add root data item node if no data items found
+			console.log("Adding root data item.");
+			_DI = '[{"id":"440ecdb0-d2a9-ea62-37de-fe78c30b3b1e","text":"Data Items","icon":true,"li_attr":{"id":"440ecdb0-d2a9-ea62-37de-fe78c30b3b1e"},"a_attr":{"href":"#","id":"440ecdb0-d2a9-ea62-37de-fe78c30b3b1e_anchor"},"state":{"loaded":true,"opened":true,"selected":false,"disabled":false},"data":{"0":{"key":"created","value":"' + moment().format() + '","type":null}},"children":[]}]';
+			localStorage.setItem("sosDataItems",_DI);
+		} 
+	var jsTreeFormat = JSON.parse(_DI, function(k, v) {
+		if (k === "parentId") {
+			this.parent = (v) ? v : '#';
+		} else if (k === "name") {
+			this.text = v;
+		} else {
+			return v;
+		}
+	});
+	$('#tree').jstree({ 'core' : {'check_callback' : true,'data' : jsTreeFormat }, 'plugins' : ['contextmenu'] });
 
-$("#btnAddSOSServer").button().click(function(){
-	var st = $("#tree").jstree(true).get_json();
-	console.log(st);
-	var st1 = JSON.stringify(st);
-	console.log(st1);
-	var arr_from_json = JSON.parse(st1);
-	console.log(arr_from_json);
-});
+	$("#btnAddSOSServer").button().click(function(){
+		var st = $("#tree").jstree(true).get_json();
+		console.log(st);
+		var st1 = JSON.stringify(st);
+		console.log(st1);
+		var arr_from_json = JSON.parse(st1);
+		console.log(arr_from_json);
+	});
 
-
+		
+	} else {
+		throw new Error("Local storage not supported.");
+	}  
 
 });
 
