@@ -29,6 +29,7 @@
 
   <script src="js/sQuery.js"></script>
   <script src="//cdnjs.cloudflare.com/ajax/libs/jstree/3.1.0/jstree.min.js"></script> 
+  <script src="js/math.uuid.js"></script>
 </head>
 <body data-spy="scroll" data-target=".bs-docs-sidebar" data-twttr-rendered="true">
   <!-- Navbar -->
@@ -100,17 +101,17 @@
   <div class="container">
     <div class="row">
         <div class="span4 bs-docs-sidebar">
-        <div class="row-fluid">
-            <p class="docs-lead">
-              Freely organize your data items using the tree below. Then navigate the SOS server capabilities using the panel to your right and 
-              associate the desired observable property to your data item.
-            </p>
-            <p class="docs-lead">
-
-			<div id="tree">
-			</div>
-            </p>
-        </div>
+          <div class="row-fluid">
+              <p class="docs-lead">
+                Freely organize your data items using the tree below. Then navigate the SOS server capabilities using the panel to your right and 
+                associate the desired observable property to your data item.
+              </p>
+              <p class="docs-lead">
+                <button id="btnSaveTree" class="ui-button-primary">Save Configuration</button>
+                <div id="tree">
+                </div>
+              </p>
+          </div>
         </div>        
 
         <div class="span8">
@@ -184,35 +185,100 @@
 <script src="js/moment.min.js" type="text/javascript"></script>
 <script>
 $(function() {
-
 	if("undefined" !== typeof(Storage) ) {
+	
 		// Get saved data items
 		var _DI = localStorage.getItem("sosDataItems");
+
+      
 		if ((undefined === _DI) || (null === _DI)) {
 			// Add root data item node if no data items found
-			console.log("Adding root data item.");
+			//console.log("Adding root data item.");
 			_DI = '[{"id":"440ecdb0-d2a9-ea62-37de-fe78c30b3b1e","text":"Data Items","icon":true,"li_attr":{"id":"440ecdb0-d2a9-ea62-37de-fe78c30b3b1e"},"a_attr":{"href":"#","id":"440ecdb0-d2a9-ea62-37de-fe78c30b3b1e_anchor"},"state":{"loaded":true,"opened":true,"selected":false,"disabled":false},"data":{"0":{"key":"created","value":"' + moment().format() + '","type":null}},"children":[]}]';
 			localStorage.setItem("sosDataItems",_DI);
 		} 
-	var jsTreeFormat = JSON.parse(_DI, function(k, v) {
-		if (k === "parentId") {
-			this.parent = (v) ? v : '#';
-		} else if (k === "name") {
-			this.text = v;
-		} else {
-			return v;
-		}
-	});
-	$('#tree').jstree({ 'core' : {'check_callback' : true,'data' : jsTreeFormat }, 'plugins' : ['contextmenu'] });
+		
+		var jsTreeFormat = JSON.parse(_DI, function(k, v) {
+			if (k === "parentId") {
+				this.parent = (v) ? v : '#';
+			} else if (k === "name") {
+				this.text = v;
+			} else {
+				return v;
+			}
+		});
 
-	$("#btnAddSOSServer").button().click(function(){
-		var st = $("#tree").jstree(true).get_json();
-		console.log(st);
-		var st1 = JSON.stringify(st);
-		console.log(st1);
-		var arr_from_json = JSON.parse(st1);
-		console.log(arr_from_json);
-	});
+		$('#tree').jstree(  { 'core' : {'check_callback' :  function (op, node, par, pos, more) {
+                                                          if ( more && more.dnd && (op === 'move_node' || op === 'copy_node') && (par.id === "#")) {
+                                                            // Don't allow moving before the root node (Data Items)
+                                                            return false;
+                                                          }
+                                                          return true;
+                                                        }, 
+                                    'data' : jsTreeFormat }, 
+                          'dnd': { check_while_dragging: true },                          
+                          'plugins' : ['contextmenu','dnd'],
+                          'contextmenu' : { 'items' : function(node) {
+                                                        var tmp = $.jstree.defaults.contextmenu.items();
+                                                        delete tmp.create.action;
+                                                        tmp.create.label = "New Data Item";
+                                                        tmp.create.action = function (data) {
+                                                                              var inst = $.jstree.reference(data.reference),
+                                                                                  obj = inst.get_node(data.reference);
+                                                                              //console.log(obj.id);
+                                                                              inst.create_node( obj, 
+                                                                                                { type : "default", 
+                                                                                                  id: Math.uuid().toLowerCase(),
+                                                                                                  data : { "0" : {"key"   : "created",
+                                                                                                                  "value" : moment().format(),
+                                                                                                                  "type"  : null
+                                                                                                           },
+                                                                                                           "1" : {"key"   : "parentId",
+                                                                                                                  "value" : obj.id,
+                                                                                                                  "type"  : null
+                                                                                                           }
+                                                                                                         }    
+                                                                                                }, 
+                                                                                                "last", 
+                                                                                                function (new_node) {
+                                                                                                  setTimeout(function () { inst.edit(new_node); },0);
+                                                                                                }
+                                                                                              )
+                                                                            };
+                                                        return tmp;
+                                                      }
+                                          },
+                        } );
+
+                         
+    $('#tree').on('move_node.jstree', function(e, data) {
+      console.log(data);
+    });
+    
+    
+/*                        
+    $('#tree').on('create_node.jstree', function(e, data) {
+      data.node.id = Math.uuid().toLowerCase();
+      data.node.data = {
+        "0": { "key" : "created",  "value" : moment().format() }, 
+        "1": { "key" : "parentId", "value" : data.parent 111111} 
+      };
+    });
+*/    
+		$("#btnAddSOSServer").button().click(function(){
+			var st = $("#tree").jstree(true).get_json();
+			console.log(st);
+			var st1 = JSON.stringify(st);
+			console.log(st1);
+			var arr_from_json = JSON.parse(st1);
+			console.log(arr_from_json);
+		});
+
+		$("#btnSaveTree").button().click(function(){
+			var _DI = JSON.stringify($("#tree").jstree(true).get_json());
+			localStorage.setItem("sosDataItems",_DI);
+      console.log("Data items saved.")
+		});
 
 		
 	} else {
