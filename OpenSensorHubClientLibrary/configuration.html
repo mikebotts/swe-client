@@ -18,6 +18,7 @@
   <link rel="resource" type="application/l10n" href="locales/locales.ini" />
   <script src="js/l10n.js"></script>
   <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/jstree/3.1.0/themes/default/style.min.css" />
+  <link rel="stylesheet" href="css/jquery.webui-popover.css">
   <link href="assets/css/bootstrap.min.css" rel="stylesheet">
   <link type="text/css" href="css/custom-theme/jquery-ui-1.10.0.custom.css" rel="stylesheet" />
   <link type="text/css" href="assets/css/font-awesome.min.css" rel="stylesheet" />
@@ -26,7 +27,7 @@
 
   <script src="//code.jquery.com/jquery-1.11.2.min.js"></script>
   <!--  <script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script> -->
-
+  <script src="js/jquery.webui-popover.js"></script>
   <script src="js/sQuery.js"></script>
   <script src="//cdnjs.cloudflare.com/ajax/libs/jstree/3.1.0/jstree.min.js"></script> 
   <script src="js/math.uuid.js"></script>
@@ -293,7 +294,10 @@ $(function() {
     });
     
     $('#tree').on('hover_node.jstree',function(e,data){
-    $("#"+data.node.id).prop('title', "add your custom title here");
+      //$("#"+data.node.id).prop('title', "add your custom title here");
+      //console.log("Hover");
+      console.log(data.node.text);
+      $("#"+data.node.id).webuiPopover({title:data.node.text,content:'Content'});
     })    
 
 		$("#btnShowTree").button().click(function(){
