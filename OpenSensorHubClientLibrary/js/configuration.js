@@ -15,10 +15,11 @@
   var $offerings = null;
 
   $( "#btnAddSOSServer").button().click(function(){
-    dialog.dialog( "open" );
+    addserverdialog.dialog( "open" );
   });  
 
-  var dialog = $( "#addserverdialog" ).dialog({
+
+  var addserverdialog = $( "#newserverdialog" ).dialog({
     autoOpen: false,
     modal: true,
     buttons: {
@@ -31,13 +32,13 @@
       }
     },
     close: function() {
-        form[ 0 ].reset();
+        addserverform[ 0 ].reset();
     }
   });
 
-  var form = dialog.find( "form" ).submit(function( event ) {
+  var addserverform = addserverdialog.find( "form" ).submit(function( event ) {
     addServer();
-    dialog.dialog( "close" );
+    addserverdialog.dialog( "close" );
     event.preventDefault();
   });
 

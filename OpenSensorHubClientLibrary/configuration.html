@@ -29,9 +29,9 @@
   <!--  <script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script> -->
   <script src="js/jquery.webui-popover.js"></script>
   <script src="js/sQuery.js"></script>
+  <script src="js/configuration.js"></script>
   <script src="//cdnjs.cloudflare.com/ajax/libs/jstree/3.1.0/jstree.min.js"></script> 
   <script src="js/math.uuid.js"></script>
-  <script src="js/configuration.js"></script>
   
 </head>
 <body data-spy="scroll" data-target=".bs-docs-sidebar" data-twttr-rendered="true">
@@ -162,13 +162,25 @@
                 <input type="text" id="grtemporalfilter" placeholder="Now/2020-01-01" class="serviceident">
               </p>
             </p>
-            <div id="addserverdialog" title="Server Data">
+            
+            <div id="newserverdialog" title="Server Data">
                 <form>
                     <fieldset class="ui-helper-reset">
                         <label for="display_name">Display Name</label>
                         <input type="text" name="display_name" id="display_name" value="" class="ui-widget-content ui-corner-all" />
                         <label for="server_baseurl">Base URL</label>
                         <input type="text" name="server_baseurl" placeholder="http://server/alias" id="server_baseurl" value="" class="ui-widget-content ui-corner-all" />
+                    </fieldset>
+                </form>
+            </div>
+            
+            <div id="assignactionsdialog" title="Assign Actions">
+                <form>
+                    <fieldset class="ui-helper-reset">
+                      <label for="selectaction">Actions: </label>
+                      <select id="selectaction" class="serviceident">
+                        <option value="">Select an Action</option>
+                      </select>
                     </fieldset>
                 </form>
             </div>
@@ -231,7 +243,10 @@ $(function() {
                           'contextmenu' : { 'items' : function(node) {
                                                         var tmp = $.jstree.defaults.contextmenu.items();
                                                         delete tmp.create.action;
-                                                        tmp.create.label = "New Data Item";
+                                                        tmp.create.label = "New Item";
+                                                        tmp.rename.label = "Rename Item";
+                                                        tmp.remove.label = "Delete Item";
+                                                        tmp.ccp.label = "Edit Item";
                                                         tmp.create.action = function (data) {
                                                                               var inst = $.jstree.reference(data.reference),
                                                                                   obj = inst.get_node(data.reference);
@@ -239,21 +254,17 @@ $(function() {
                                                                                                 { type : "default", 
                                                                                                   id: Math.uuid().toLowerCase(),
                                                                                                   data : { "0" : {"key"   : "created",
-                                                                                                                  "value" : moment().format()
-                                                                                                           },
+                                                                                                                  "value" : moment().format() },
                                                                                                            "1" : {"key"   : "parentid",
-                                                                                                                  "value" : obj.id
-                                                                                                           },
+                                                                                                                  "value" : obj.id },
                                                                                                            "2" : {"key"   : "moved",
-                                                                                                                  "value" : null
-                                                                                                           },
+                                                                                                                  "value" : null },
                                                                                                            "3" : {"key"   : "oldparentid",
-                                                                                                                  "value" : null
-                                                                                                           },
+                                                                                                                  "value" : null },
                                                                                                            "4" : { "key"  : "observables",
-                                                                                                                   "value" : {}
-                                                                                                           }
-                                                                                                         }    
+                                                                                                                   "value" : {} },
+                                                                                                           "5" : { "key"  : "actions",
+                                                                                                                   "value" : {} } }    
                                                                                                 }, 
                                                                                                 "last", 
                                                                                                 function (new_node) {
@@ -262,12 +273,49 @@ $(function() {
                                                                                                 }
                                                                                               )
                                                                             };
+                                                        tmp["actions"] = {
+                                                        
+                                                        label: "Assign Actions",
+                                                        action: function (node) {
+                                                          assign_actions(node);
+                                                        
+                                                        }
+        
+                                                        };  
+                                                        
+                                                        console.log(tmp);
                                                         return tmp;
                                                       }
                                           },
                         } );
 
-                         
+
+    var addactionsdialog = $( "#assignactionsdialog" ).dialog({
+      autoOpen: false,
+      modal: true,
+      buttons: {
+        Add: function() {
+          $( this ).dialog( "close" );
+        },
+        Cancel: function() {
+          $( this ).dialog( "close" );
+        }
+      },
+      close: function() {
+          addactionsform[ 0 ].reset();
+      }
+    });
+    
+    var addactionsform = addactionsdialog.find( "form" ).submit(function( event ) {
+      addactionsdialog.dialog( "close" );
+      event.preventDefault();
+    });   
+
+    function assign_actions(n){
+      addactionsdialog.dialog( "open" );;
+    }  
+    
+    
     $('#tree').on('move_node.jstree', function(e, data) {
       console.log(data);
       // Extract into separate variables for ease of following
@@ -294,10 +342,7 @@ $(function() {
     });
     
     $('#tree').on('hover_node.jstree',function(e,data){
-      //$("#"+data.node.id).prop('title', "add your custom title here");
-      //console.log("Hover");
-      console.log(data.node.text);
-      $("#"+data.node.id).webuiPopover({title:data.node.text,content:'Content'});
+      $('a[id=' + data.node.id + '_anchor]').webuiPopover({title:data.node.text,content:'Content'});
     })    
 
 		$("#btnShowTree").button().click(function(){
