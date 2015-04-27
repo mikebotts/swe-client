@@ -182,6 +182,7 @@
                         <option value="">Select an Action</option>
                         <option value="map_mapbox_using_leaflet">Render using Leaflet and Mapbox</option>
                       </select>
+                      <label class="checkbox-inline"><input type="checkbox" id="isdefaultaction" value="">Set as default action</label>
                     </fieldset>
                 </form>
             </div>
@@ -323,10 +324,14 @@ $(function() {
         }
       }
 
-      if (0 === Object.keys(actions).length) {
-        // No actions.  Add this one.
-        actions[Object.keys(actions).length+1] =  { name: $("#selectaction option:selected").val(), isdefault: "1" };
-      }
+      // TODO: Duplicate check and only one default action check here 
+      actions[Object.keys(actions).length+1] =  { name: $("#selectaction option:selected").val(), 
+                                                  isdefault: ($('#isdefaultaction').prop('checked')) ? 1 : 0, 
+                                                  id: Math.uuid().toLowerCase()};
+                                                  
+      
+      console.log(nData);
+      
     } // assignAction()
     
     function assign_actions(n){
