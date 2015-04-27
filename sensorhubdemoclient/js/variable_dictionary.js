@@ -146,9 +146,9 @@ var osm_StreetMapURL        = 'http://{s}.tile.osm.org/{z}/{x}/{y}.png',
     ggl_RoadMap             = new L.Google('ROADMAP'),
     // Huntsville  34.727024, -86.655947
     //map                     = new L.Map('map').setView(new L.LatLng(34.73, -86.585), 12);
-    //map                     = new L.Map('map').setView(new L.LatLng(34.727024, -86.655947), 12);
+    map                     = new L.Map('map').setView(new L.LatLng(34.727024, -86.655947), 12);
     // Ft Payne
-    map                     = new L.Map('map').setView(new L.LatLng(34.443525, -85.720135), 12);
+    //map                     = new L.Map('map').setView(new L.LatLng(34.443525, -85.720135), 12);
 
 
 
