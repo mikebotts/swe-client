@@ -1,0 +1,106 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <script src="http://ec2-107-20-7-174.compute-1.amazonaws.com/sensorhubrainbow/js/OpenLayers.js"></script>
+    <script type="text/javascript">
+        var map, layer;
+        var xhReq;
+        var marker;
+        var markers;
+        var epsg4326 = new OpenLayers.Projection("EPSG:4326");
+        var junk;
+
+        function addZero(x,n) {
+          if (x.toString().length < n) {
+            x = "0" + x;
+          }
+          return x;
+        }
+
+        function myFunction() {
+          var d = new Date();
+          var h = addZero(d.getHours(), 2);
+          var m = addZero(d.getMinutes(), 2);
+          var s = addZero(d.getSeconds(), 2);
+          var ms = addZero(d.getMilliseconds(), 3);
+          return h + ":" + m + ":" + s + ":" + ms;
+        }
+
+        function init(){
+          map = new OpenLayers.Map( 'map', {            
+            controls: [
+              //new OpenLayers.Control.LayerSwitcher(),
+              new OpenLayers.Control.Navigation({zoomBoxEnabled: true, zoomWheelEnabled: true}),
+              //new OpenLayers.Control.PanZoomBar(),
+              new OpenLayers.Control.MousePosition(),
+              new OpenLayers.Control.ScaleLine()
+            ]
+          });
+          map.numZoomLevels = 17;
+
+          // OSM background map layer
+          var osm = new OpenLayers.Layer.OSM();
+          map.addLayer(osm);
+
+          // vector layer
+          markers = new OpenLayers.Layer.Markers("Markers");
+          map.addLayer(markers);
+
+          // center map on HSV
+          var center = new OpenLayers.LonLat(-86.5850, 34.7300).transform(epsg4326, map.getProjectionObject());
+          map.setCenter(center, 11);
+
+          // create marker
+          var size = new OpenLayers.Size(30, 30);
+          var offset = new OpenLayers.Pixel(-size.w/2, -size.h/2);
+          var icon = new OpenLayers.Icon('http://54.172.40.148:8080/img/draw_point_on.png', size, offset);
+          marker = new OpenLayers.Marker(new OpenLayers.LonLat(0, 0), icon);
+          markers.addMarker(marker);
+
+          // query SOS GPS stream
+          xhReq = new XMLHttpRequest();
+          var url = "http://54.172.40.148:8080/sensorhub/sos?service=SOS&version=2.0&request=GetResult&offering=urn:mysos:offering02&observedProperty=http://sensorml.com/ont/swe/property/Location&temporalFilter=phenTime,now/2015-06-01";
+          //xhReq.open("GET", url + ((/\?/).test(url) ? "&" : "?") + (new Date()).getTime(), true);
+          xhReq.open("GET", url);
+          
+          junk = "Before sending request: " + myFunction();
+          xhReq.overrideMimeType("text/plain; charset=x-user-defined");
+          xhReq.send();
+          pollTimer = setInterval(pollLatestResponse, 100);
+          console.clear();
+          console.log(junk);
+        }
+
+        function pollLatestResponse() {
+          var allMessages = xhReq.responseText;
+          //console.log("Waiting: " + myFunction());
+          var endRec = allMessages.lastIndexOf("\n");
+          var startRec = allMessages.lastIndexOf("\n", endRec-1) + 1;
+          if (startRec < 0)
+            startRec = 0;
+          var rec = allMessages.substring(startRec, endRec);
+
+          if (rec.length > 0) {
+            console.log("[In pollLatestResponse]->Records received @: "+ myFunction());
+            console.log("[In pollLatestResponse]->responseType: " + xhReq.responseType);
+            console.log("[In pollLatestResponse]->readyState: " + xhReq.readyState);
+            console.log("[In pollLatestResponse]->Record length: " + rec.length);
+            console.log(allMessages);
+            document.getElementById("text").innerHTML = rec;
+            var tokens = rec.split(",");
+            var lat = parseFloat(tokens[1]);
+            var lon = parseFloat(tokens[2]);
+            var alt = parseFloat(tokens[3]);
+            marker.lonlat = new OpenLayers.LonLat(lon, lat).transform(epsg4326, map.getProjectionObject());
+            markers.redraw();
+            clearInterval(pollTimer);
+            pollTimer=0;
+          }
+        }
+    </script>
+  </head>
+  <body onload="init()" style="font-family: verdana">
+    <h1 id="title">SOS Client Example</h1>
+    <div id="map" style="width:100%; height:768px" class="smallmap"></div>    
+    <div id="text">Waiting for first GPS pos...</div>
+  </body>
+</html>
