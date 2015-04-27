@@ -178,8 +178,9 @@
                 <form>
                     <fieldset class="ui-helper-reset">
                       <label for="selectaction">Actions: </label>
-                      <select id="selectaction" class="serviceident">
+                      <select id="selectaction">
                         <option value="">Select an Action</option>
+                        <option value="map_mapbox_using_leaflet">Render using Leaflet and Mapbox</option>
                       </select>
                     </fieldset>
                 </form>
@@ -210,7 +211,7 @@ $(function() {
 		// Get saved data items
 		var _DI = localStorage.getItem("sosDataItems");
 
-    // _DI = '[{"id":"440ecdb0-d2a9-ea62-37de-fe78c30b3b1e","text":"Data Items","icon":true,"li_attr":{"id":"440ecdb0-d2a9-ea62-37de-fe78c30b3b1e"},"a_attr":{"href":"#","id":"440ecdb0-d2a9-ea62-37de-fe78c30b3b1e_anchor"},"state":{"loaded":true,"opened":true,"selected":false,"disabled":false},"data":{"0":{"key":"created","value":"' + moment().format() + '"}},"children":[]}]';
+    //_DI = '[{"id":"440ecdb0-d2a9-ea62-37de-fe78c30b3b1e","text":"Data Items","icon":true,"li_attr":{"id":"440ecdb0-d2a9-ea62-37de-fe78c30b3b1e"},"a_attr":{"href":"#","id":"440ecdb0-d2a9-ea62-37de-fe78c30b3b1e_anchor"},"state":{"loaded":true,"opened":true,"selected":false,"disabled":false},"data":{"0":{"key":"created","value":"' + moment().format() + '"}},"children":[]}]';
       
 		if ((undefined === _DI) || (null === _DI)) {
 			// Add root data item node if no data items found
@@ -241,13 +242,13 @@ $(function() {
                           'dnd': { check_while_dragging: true /* You need this or check_callback will not be called when moving nodes */},                          
                           'plugins' : ['contextmenu','dnd'],
                           'contextmenu' : { 'items' : function(node) {
-                                                        var tmp = $.jstree.defaults.contextmenu.items();
-                                                        delete tmp.create.action;
-                                                        tmp.create.label = "New Item";
-                                                        tmp.rename.label = "Rename Item";
-                                                        tmp.remove.label = "Delete Item";
-                                                        tmp.ccp.label = "Edit Item";
-                                                        tmp.create.action = function (data) {
+                                                        var itm = $.jstree.defaults.contextmenu.items();
+                                                        delete itm.create.action;
+                                                        itm.create.label = "New Item";
+                                                        itm.rename.label = "Rename Item";
+                                                        itm.remove.label = "Delete Item";
+                                                        itm.ccp.label = "Edit Item";
+                                                        itm.create.action = function (data) {
                                                                               var inst = $.jstree.reference(data.reference),
                                                                                   obj = inst.get_node(data.reference);
                                                                               inst.create_node( obj, 
@@ -273,18 +274,13 @@ $(function() {
                                                                                                 }
                                                                                               )
                                                                             };
-                                                        tmp["actions"] = {
-                                                        
-                                                        label: "Assign Actions",
-                                                        action: function (node) {
-                                                          assign_actions(node);
-                                                        
-                                                        }
-        
-                                                        };  
-                                                        
-                                                        console.log(tmp);
-                                                        return tmp;
+                                                        itm["actions"] =  { label: "Assign Actions",
+                                                                            action: function (node) {                                                      
+                                                                                      assign_actions($.jstree.reference(node.reference).get_node(node.reference));
+                                                                                    }
+                                                                          };  
+                
+                                                        return itm;
                                                       }
                                           },
                         } );
@@ -294,7 +290,8 @@ $(function() {
       autoOpen: false,
       modal: true,
       buttons: {
-        Add: function() {
+        Assign: function() {
+          assignAction($(this).data("node").data);
           $( this ).dialog( "close" );
         },
         Cancel: function() {
@@ -311,8 +308,29 @@ $(function() {
       event.preventDefault();
     });   
 
+    function assignAction(nData) {
+      // Check if action is already assigned to data item
+      var actions = null;
+      
+      for (var i in nData) {
+        // Just in case some other code touched my collection object!
+        if (nData.hasOwnProperty(i)) { 
+          switch (nData[i]['key']) {
+            case "actions":
+              actions = nData[i]['value'];
+              break;
+          }
+        }
+      }
+
+      if (0 === Object.keys(actions).length) {
+        // No actions.  Add this one.
+        actions[Object.keys(actions).length+1] =  { name: $("#selectaction option:selected").val(), isdefault: "1" };
+      }
+    } // assignAction()
+    
     function assign_actions(n){
-      addactionsdialog.dialog( "open" );;
+      addactionsdialog.data('node', n).dialog( "open" );
     }  
     
     
@@ -342,7 +360,7 @@ $(function() {
     });
     
     $('#tree').on('hover_node.jstree',function(e,data){
-      $('a[id=' + data.node.id + '_anchor]').webuiPopover({title:data.node.text,content:'Content'});
+      //$('a[id=' + data.node.id + '_anchor]').webuiPopover({title:data.node.text,content:'Content'});
     })    
 
 		$("#btnShowTree").button().click(function(){
