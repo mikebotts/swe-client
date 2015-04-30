@@ -86,9 +86,9 @@ $( document ).ready(function() {
   $.get(WEATHER_DESCRIPTOR,
     function(data) {
       // TODO: We need to change the logic here to loop through resulting data and store actual locations
-      dataObjects[2].name = "Station 1";
-      dataObjects[2].lat = 34.73;
-      dataObjects[2].lon = -86.585;
+      dataObjects[2].name = "Station uah362";
+      dataObjects[2].lat = 34.80;
+      dataObjects[2].lon = -86.759;
       }, 'xml');  
 
   // Get data descriptor for PTZ pan feed
@@ -135,6 +135,7 @@ function log(msg) {
     //objDiv.scrollTop = objDiv.scrollHeight;
     var d = $('#dbg');
     d.scrollTop(d.prop("scrollHeight"));    
+
 } // log
 
 function send_ptz_command(ptzURL, ptzParams) {
@@ -146,6 +147,7 @@ function send_ptz_command(ptzURL, ptzParams) {
     http.send(params);  
   } catch (e) {
     log(e);
+
   }
 } // send_ptz_command
 
@@ -183,10 +185,14 @@ function getRTOrientationFeed(feedSource, feedType) {
   ws.onclose = function (event) {
     switch(feedType) {
       case POLICECAR_GPS_FEED:
+        log("Police car orientation socket closed.");
         currentPolicecarOrientation = 0;
+        policecarOrientationSocket = null;
         break;
       case PATROLMAN_GPS_FEED:
+        log("Patrolman orientation socket closed.");
         currentPatrolmanOrientation = 0;
+        patrolmanOrientationSocket = null;
         break;
        default:
         throw new Error("Unknown real-time orientation feed source.");
@@ -214,7 +220,9 @@ function getPTZPanFeed(feedSource) {
       ws.close();
   }
   ws.onclose = function (event) {
+      log("PTZ Pan reading socket closed.");
       PTZ_PAN_ANGLE = 0;
+      ptzSocket = null;
       
   }
   return ws;
@@ -257,12 +265,16 @@ function getRTGPSFeed(feedSource) {
     ws.onclose = function (event) {
       switch(feedSource) {
         case POLICECAR_GPS_FEED:
+          log ("Police car socket closed.");
           removeMarker(policeCarMarker);
           policeCarMarker=null;
+          policecarsocket = null;
           break;
         case PATROLMAN_GPS_FEED:
+          log ("Patrolman socket closed.");
           removeMarker(patrolManMarker);
-          patrolManMarker=null;            
+          patrolManMarker=null;  
+          patrolmansocket = null;
           break;
          default:
           throw new Error("Unknown real-time GPS feed source.");
@@ -270,8 +282,10 @@ function getRTGPSFeed(feedSource) {
       
     }
     return ws;    
+
   } catch (e) {
     alert (e);
+
   }
 
 } // getRTGPSFeed
@@ -310,6 +324,7 @@ function getRTWeatherFeed(feedSource) {
   ws.onclose = function (event) {
     switch(feedSource) {
       case WEATHER_STATION_1_RT_FEED:
+        
         // Close direction and speed charts
         dataObjects[2].locationon = false;
         dataObjects[2].temperatureon = false;
@@ -346,13 +361,14 @@ function getRTWeatherFeed(feedSource) {
 function removeMarker(thisMarker) {
   map.removeLayer(thisMarker);
   thisMarker.update(thisMarker);
+
 } //removeMarker
 
 function buildWeatherStationMarker(sensorLocation) {
   if (null === weatherStationMarker) {
     weatherStationMarker = L.marker(
                           [sensorLocation.lat, sensorLocation.lon], 
-                          {icon: L.icon({ iconUrl: 'http://54.80.60.180:6080/images/weatherstationicon.png',
+                          {icon: L.icon({ iconUrl: 'http://bottsgeo.com/democlient/images/weatherstationicon.png',
                                           iconSize: [34, 77],})}).addTo(map)
                         .bindPopup('<div id="pop-weatherStationName">Station ID: ' + sensorLocation.name + '</div>', { className: 'marker-popup' , closeButton: false});
   }
@@ -416,7 +432,7 @@ function buildGPSMarker(data, markerType) {
         if (policeCarMarker === null) {
           policeCarMarker = L.rotatedMarker(
                                 [s_lat, s_long], 
-                                {icon: L.icon({ iconUrl: 'http://54.80.60.180:6080/images/policecar.png',
+                                {icon: L.icon({ iconUrl: 'http://bottsgeo.com/democlient/images/policecar.png',
                                                 iconSize: [18,38],})}).addTo(map)
                               .bindPopup('<div id="pop-policeCarMarker">Latitude: ' + s_lat + '<br />Longitude: ' + s_long + '</div>', { className: 'marker-popup' , closeButton: false});
         } else {
@@ -431,7 +447,7 @@ function buildGPSMarker(data, markerType) {
         if (patrolManMarker === null) {
           patrolManMarker = L.rotatedMarker(
                                 [s_lat, s_long], 
-                                {icon: L.icon({ iconUrl: 'http://54.80.60.180:6080/images/policeman.png',
+                                {icon: L.icon({ iconUrl: 'http://bottsgeo.com/democlient/images/policeman.png',
                                                 iconSize: [24, 24],})}).addTo(map)
                               .bindPopup('<div id="pop-patrolManMarker">Latitude: ' + s_lat + '<br />Longitude: ' + s_long + '</div>', { className: 'marker-popup' , closeButton: false });
         } else {
@@ -443,7 +459,7 @@ function buildGPSMarker(data, markerType) {
         if (policeCarLookRaysMarker === null) {
           policeCarLookRaysMarker = L.rotatedMarker(
                                 [s_lat, s_long], 
-                                {icon: L.icon({ iconUrl: 'http://54.80.60.180:6080/images/cameralookrays.png',
+                                {icon: L.icon({ iconUrl: 'http://bottsgeo.com/democlient/images/cameralookrays.png',
                                                 iconSize: [26,51],})}).addTo(map);
         } else {
           policeCarLookRaysMarker.setLatLng([s_lat, s_long]);
@@ -455,7 +471,7 @@ function buildGPSMarker(data, markerType) {
         if (patrolManLookRaysMarker === null) {
           patrolManLookRaysMarker = L.rotatedMarker(
                                 [s_lat, s_long], 
-                                {icon: L.icon({ iconUrl: 'http://54.80.60.180:6080/images/cameralookrays.png',
+                                {icon: L.icon({ iconUrl: 'http://bottsgeo.com/democlient/images/cameralookrays.png',
                                                 iconSize: [26,51],})}).addTo(map);
         } else {
           patrolManLookRaysMarker.setLatLng([s_lat, s_long]);
@@ -571,6 +587,7 @@ function processWebSocketFeed(rec, recordDescriptor, typeofFeed, markerType, mar
         case "POLICECAR_ORIENTATION_FEED":
           currentPolicecarOrientation = response.rotation | 0;
           break;
+
       }
       break;
     case "AXIS_PAN_ANGLE":
