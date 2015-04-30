@@ -220,6 +220,8 @@
                                                                                                            "4" : { "key"  : "observables",
                                                                                                                    "value" : {} },
                                                                                                            "5" : { "key"  : "actions",
+                                                                                                                   "value" : {} },    
+                                                                                                           "6" : { "key"  : "styles",
                                                                                                                    "value" : {} } }    
                                                                                                 }, 
                                                                                                 "last", 
@@ -236,6 +238,12 @@
                                                                                     }
                                                                           };  
                 
+                                                        itm["styles"] =  { label: "Assign Styles",
+                                                                            action: function (node) {
+                                                                                      instNode = $.jstree.reference(node.reference).get_node(node.reference); 
+                                                                                      addstylesdialog.data('node', instNode).dialog( "open" );                                                                            
+                                                                                    }
+                                                                          };  
                                                         return itm;
                                                       }
                                           },
@@ -304,6 +312,39 @@
                                                       
   } // assignAction()
 
+  function assignStyle(nData) {
+
+    var selectedStyle = $("#selectstyle option:selected").val(),
+        styles = null;
+    
+    if ("" === selectedStyle) {
+      alert("Please select a style.");
+      return;
+    }
+
+    // Get data item's styles
+    for (var i in nData) {
+      // Just in case some other code touched my collection object, check hasOwnProperty!
+      if (nData.hasOwnProperty(i)) { 
+        switch (nData[i]['key']) {
+          case "styles":
+            styles = nData[i]['value'];
+            break;
+        }
+      }
+    }
+
+    // TODO: Only one default style check needs to be added here
+    
+    // Tag selected style with the data item.
+    styles[Object.keys(styles).length+1] =  { name: selectedStyle, 
+                                              isdefault: ($('#isdefaultstyle').prop('checked')) ? 1 : 0, 
+                                              iconurl: $("#image_url").val(),
+                                              iconsize: $("#image_size").val(),
+                                              id: Math.uuid().toLowerCase()};
+                                                      
+  } // assignStyle()
+  
   $('#tree').on('move_node.jstree', function(e, data) {
     // Extract into separate variables for ease of following
     var oldParentId = data.old_parent;
@@ -327,6 +368,28 @@
       }
     }
   });
+
+  var addstylesdialog = $( "#assignsytledialog" ).dialog({
+    autoOpen: false,
+    modal: true,
+    buttons: {
+      Assign: function() {
+        assignStyle($(this).data("node").data);
+        $( this ).dialog( "close" );
+      },
+      Cancel: function() {
+        $( this ).dialog( "close" );
+      }
+    },
+    close: function() {
+        addstyleform[ 0 ].reset();
+    }
+  });
+  
+  var addstyleform = addstylesdialog.find( "form" ).submit(function( event ) {
+    addstylesdialog.dialog( "close" );
+    event.preventDefault();
+  });   
   
   $('#tree').on('hover_node.jstree',function(e,data){
     if ($('#showDataItemDetails').prop('checked'))
@@ -391,6 +454,8 @@
   });
 
   $("#btnResetTree").button().click(function(){
+    var st = $("#tree").jstree(true).get_json();
+    console.log(st);
     confirmdialog.dialog( "open" );
   });
 

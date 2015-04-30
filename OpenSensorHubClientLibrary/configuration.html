@@ -186,6 +186,24 @@
                     </fieldset>
                 </form>
             </div>
+
+            <div id="assignsytledialog" title="Assign Styles">
+                <form>
+                    <fieldset class="ui-helper-reset">
+                      <label for="selectstyle">Style: </label>
+                      <select id="selectstyle">
+                        <option value="">Select a Style</option>
+                        <option value="leaflet_marker_icon_image">Leaflet Image Icon</option>
+                      </select>
+                      <label for="image_url">Image URL</label>
+                      <input type="text" name="image_url" placeholder="Image URL" id="image_url" value="" class="ui-widget-content ui-corner-all" />
+                      <label for="image_size">Image Size</label>
+                      <input type="text" name="image_size" placeholder="width(in px), height(in px)" id="image_size" value="" class="ui-widget-content ui-corner-all" />
+                      <label class="checkbox-inline"><input type="checkbox" id="isdefaultstyle" value="">Set as default style</label>
+                    </fieldset>
+                </form>
+            </div>
+
             <div id="data-items-reset-dialog-confirm" title="Confirm">Do you want to delete all data items?</div>
       </div>
     </div>
