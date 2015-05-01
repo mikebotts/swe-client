@@ -75,15 +75,15 @@
         }        
       }
     }
-
+    
     switch (action.text) {
       
       case "map_mapbox_using_leaflet" :
       
-        console.log('map using leafet');
-        
         break;
+
       default:
+      
         throw new Error("Unknown action");
     
     }

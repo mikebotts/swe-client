@@ -45,6 +45,27 @@
     $("#offServers").append("<option value='" + $("#server_baseurl").val() + "'>" + $("#display_name").val() + "</option>");
   }
 
+  var observabledisplaynamedialog = $( "#observabledisplaynamedialog").dialog({
+    autoOpen: false,
+    resizable: false,
+    modal: true,
+    buttons: [
+      {
+        text: "Associate",
+        click: function () {
+                  $(this).dialog('close');
+                  associateObservableToDataItem($("#op_display_name").val(), $("#selecttemplatetype option:selected").val());
+                 }
+      },
+      {
+        text: "Cancel",
+        click: function () {
+                  $(this).dialog('close');
+                }
+      }
+    ]
+  });
+  
   $( "#offServers").change(function() {
     if (this.value === "")  {
       $("#offIdentifier").val("");
@@ -197,6 +218,7 @@
                           'dnd': { check_while_dragging: true /* You need this or check_callback will not be called when moving nodes */},                          
                           'plugins' : ['contextmenu','dnd'],
                           'contextmenu' : { 'items' : function(node) {
+                                                        var observables = null;
                                                         var itm = $.jstree.defaults.contextmenu.items();
                                                         delete itm.create.action;
                                                         itm.create.label = "New Item";
@@ -233,7 +255,32 @@
                                                                             };
                                                         itm["actions"] =  { label: "Assign Actions",
                                                                             action: function (node) {
-                                                                                      instNode = $.jstree.reference(node.reference).get_node(node.reference); 
+                                                                                      instNode = $.jstree.reference(node.reference).get_node(node.reference);
+                                                                                      console.log(instNode);
+                                                                                      var myData = instNode.data;
+                                                                                      // Get data item's observables
+                                                                                      for (var i in myData) {
+                                                                                        // Just in case some other code touched my collection object, check hasOwnProperty!
+                                                                                        if (myData.hasOwnProperty(i)) { 
+                                                                                          switch (myData[i]['key']) {
+                                                                                            case "observables":
+                                                                                              observables = myData[i]['value'];
+                                                                                              break;
+                                                                                          }
+                                                                                        }
+                                                                                      }
+                                                                                      console.log(observables);
+                                                                                      // Add observable display name to dropdown
+                                                                                      $("#selectops").empty();
+                                                                                      for (var i in observables) {
+                                                                                        
+                                                                                        // Just in case some other code touched my collection object, check hasOwnProperty!
+                                                                                        if (observables.hasOwnProperty(i)) {
+                                                                                          $('#selectops').append($("<option></option>").attr("value", observables[i]['id']).text(observables[i]['displayname']));
+                                                                                        }
+                                                                                      }
+                                                                                      
+                                                                                      $('#selectops').multiselect();  
                                                                                       addactionsdialog.data('node', instNode).dialog( "open" );                                                                            
                                                                                     }
                                                                           };  
@@ -275,17 +322,19 @@
   function assignAction(nData) {
 
     var selectedAction = $("#selectaction option:selected").val(),
-        actions = null;
+        actions = null, 
+        ops = null;
     
     if ("" === selectedAction) {
       alert("Please select an action.");
       return;
     }
 
+
     // Get data item's actions
     for (var i in nData) {
       // Just in case some other code touched my collection object, check hasOwnProperty!
-      if (nData.hasOwnProperty(i)) { 
+      if (nData.hasOwnProperty(i)) {
         switch (nData[i]['key']) {
           case "actions":
             actions = nData[i]['value'];
@@ -308,7 +357,17 @@
     // Tag selected action with the data item.
     actions[Object.keys(actions).length+1] =  { name: selectedAction, 
                                                 isdefault: ($('#isdefaultaction').prop('checked')) ? 1 : 0, 
-                                                id: Math.uuid().toLowerCase()};
+                                                id: Math.uuid().toLowerCase(),
+                                                observables: {}};
+    
+    ops =  actions[Object.keys(actions).length]['observables'];
+    
+    $('#selectops option:selected').each(function() {
+        var observable = new Object();
+        observable.id = $(this).val();
+        observable.name = $(this).text();
+        ops[Object.keys(ops).length+1] = observable; 
+    })
                                                       
   } // assignAction()
 
@@ -397,19 +456,25 @@
     else
       $('a[id=' + data.node.id + '_anchor]').webuiPopover('destroy');
   })    
-
-  $("#btnAssociateDataItem").button().click(function(){
-
-    if (undefined === $("#offIdentifier").val().trim() || !$("#offIdentifier").val().trim()) {
-      alert( "Identifier must be set." );
+  
+  function associateObservableToDataItem(observabledisplayname, templatetype) {
+    
+    // All the regular checks for null, undefined and empty parameters
+    if ((undefined === observabledisplayname) || (null === observabledisplayname)) {
+      alert("Please provide display name.");
+      return;
+    } else {
+      if ("" === observabledisplayname.trim()) {
+        alert("Please provide display name.");
+        return;
+      }
+    }
+    if ("" === templatetype) {
+      alert("Please select template type.");
       return;
     }
 
-    if (undefined === $("#grtemporalfilter").val().trim() || !$("#grtemporalfilter").val().trim()) {
-      alert( "Time filter must be supplied." );
-      return;
-    }
-
+    // Build the URLs
     var templateurl = S($("#offServers option:selected").val())
                   .getresulttemplateurl($("#offIdentifier").val(), 
                                         $("#offObservables option:selected").text());
@@ -436,6 +501,12 @@
 
           // Save the template URL and feed URL for the current observable
           var observableProperty = new Object();
+          observableProperty.templatetype = templatetype;
+          observableProperty.identifier = $("#offIdentifier").val();
+          observableProperty.observableproperty = $("#offObservables option:selected").text();
+          observableProperty.server = $("#offServers option:selected").text();
+          observableProperty.displayname = observabledisplayname;
+          observableProperty.id = Math.uuid().toLowerCase();
           observableProperty.tempateurl = templateurl;
           observableProperty.dataurl = wsurl;
           mydata[i]['value'][Object.keys(mydata[i]['value']).length+1] =  observableProperty;
@@ -445,6 +516,22 @@
       }
     }
     alert('Observed property successfully associated with selected data item.');
+  }
+
+  $("#btnAssociateDataItem").button().click(function(){
+
+    if (undefined === $("#offIdentifier").val().trim() || !$("#offIdentifier").val().trim()) {
+      alert( "Identifier must be set." );
+      return;
+    }
+
+    if (undefined === $("#grtemporalfilter").val().trim() || !$("#grtemporalfilter").val().trim()) {
+      alert( "Time filter must be supplied." );
+      return;
+    }
+    
+    observabledisplaynamedialog.dialog('open');
+
   });
   
   $("#btnSaveTree").button().click(function(){
