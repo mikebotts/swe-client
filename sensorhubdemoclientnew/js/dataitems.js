@@ -37,12 +37,65 @@
                                     'data' : jsTreeFormat }, 
                           'plugins' : ['checkbox'],
                           "checkbox": {
-                                        "keep_selected_style": false,
-                                        "three_state": false,
+                                        keep_selected_style: false,
+                                        three_state: false,
+                                        tie_selection : false
                                       },
                         } );
-  }
+  } // loadDataItems
 
+  $('#tree').on('check_node.jstree',function(e,data){
+    
+    // Perform default action
+    var mydata = data.node.data,
+        action = null;
+    
+    for (var i in mydata) {
+
+      // Just in case some other code touched my collection object, check hasOwnProperty!
+      if (mydata.hasOwnProperty(i)) {
+
+        if (mydata[i]['key'] === "actions") {
+
+          var actions = mydata[i]['value'];
+          
+          for (var j in actions) {
+
+            if (actions.hasOwnProperty(j)) {
+            
+              if (1 === actions[j]['isdefault']) {
+              
+                action = actions[j];
+                
+                break;
+              }
+            }
+          }
+          break;
+        }        
+      }
+    }
+
+    switch (action.text) {
+      
+      case "map_mapbox_using_leaflet" :
+      
+        console.log('map using leafet');
+        
+        break;
+      default:
+        throw new Error("Unknown action");
+    
+    }
+  
+    
+  }) // check_node   
+
+  $('#tree').on('uncheck_node.jstree',function(e,data){
+
+  }) // uncheck_node
+  
+  
   $('#tree').on('hover_node.jstree',function(e,data){
     if ($('#showDataItemDetails').prop('checked'))
       $('a[id=' + data.node.id + '_anchor]').webuiPopover({title:data.node.text,content:'Content'});
@@ -54,6 +107,6 @@
 		loadDataItems(localStorage.getItem("sosDataItems"));
 	} else {
     throw new Error("Local storage not supported.");
-	}  
+	}
   
 });
