@@ -36,11 +36,12 @@
  display:block;
 }
 
-#map { 
-  width: 100%; 
+#map {
+  margin-top:2px; 
+  width: 1060px; 
   /*height: 620px; */
-  height: 520px;
-  border: 1px solid black; 
+  height: 600px;
+  border: 1px dotted black; 
 }
 
 #patrolmancam {
@@ -332,3 +333,5 @@
   -o-transition-delay: 0.8s;
   transition-delay: 0.8s;
 }
+.jstree li.jstree-open > a.jstree-anchor > i.jstree-checkbox, 
+.jstree li.jstree-closed > a.jstree-anchor > i.jstree-checkbox { display:none; }
