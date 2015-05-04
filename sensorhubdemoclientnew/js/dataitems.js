@@ -80,6 +80,8 @@
       
       case "map_mapbox_using_leaflet" :
       
+        S().mapmapboxusingleaflet(action,mydata);
+
         break;
 
       default:

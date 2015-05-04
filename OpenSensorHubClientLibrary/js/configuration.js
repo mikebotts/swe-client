@@ -507,7 +507,7 @@
           observableProperty.server = $("#offServers option:selected").text();
           observableProperty.displayname = observabledisplayname;
           observableProperty.id = Math.uuid().toLowerCase();
-          observableProperty.tempateurl = templateurl;
+          observableProperty.templateurl = templateurl;
           observableProperty.dataurl = wsurl;
           mydata[i]['value'][Object.keys(mydata[i]['value']).length+1] =  observableProperty;
           
