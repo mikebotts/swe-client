@@ -79,9 +79,8 @@
     switch (action.text) {
       
       case "map_mapbox_using_leaflet" :
-      
-        S().mapmapboxusingleaflet(action,mydata);
-
+        
+        S().getdata(action,mydata, sockets, socketdata);
         break;
 
       default:

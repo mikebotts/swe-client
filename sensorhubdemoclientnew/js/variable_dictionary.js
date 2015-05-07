@@ -16,6 +16,9 @@ var PTZ_ADJUSTMENT_ANGLE_TO_ZERO = -67.25;
 
 var template = null;
 
+var sockets = {};
+var socketdata = {};
+
 var weatherDetails = null,
     gpsDetails = null,
     orientationDetails = null;    

@@ -15,30 +15,24 @@
  * @returns {Object} objLocationDetails - Returns the location data record format
  * @public
  */
-S.fn.mapmapboxusingleaflet = function (action, data){
+S.fn.getdata = function (nodeaction, nodedata, socketcol, socketdatacol){
   
   /* 
-    The action object holds observables that it is dependent on.
+    The nodeaction object holds observables that it is dependent on.
     These observables hold an ID that maps back to the data observables 
     that holds all the details.
   */ 
   
-    console.log(data);
-    
-    var actionobservables = action.observables,
+    var actionobservables = nodeaction.observables,
         observables = null,
-        styleicon = null,
-        stylesize = null,
         observableid = [],
-        templateurl = [],
-        dataurl = [],
-        templatetype = [];
+        dataurl = [];
 
-    for (var i in data) {
+    for (var i in nodedata) {
     // Just in case some other code touched my collection object, check hasOwnProperty!
-      if (data.hasOwnProperty(i)) {
-        if (data[i]['key'] === "observables") {
-          var observables = data[i]['value'];
+      if (nodedata.hasOwnProperty(i)) {
+        if (nodedata[i]['key'] === "observables") {
+          var observables = nodedata[i]['value'];
           break;
         }        
       }
@@ -49,30 +43,45 @@ S.fn.mapmapboxusingleaflet = function (action, data){
         for (var j in observables) {
           if (observables.hasOwnProperty(j)) {
             if (observables[j].id === actionobservables[i].id) {
-              observableid[observableid.length] = observables[j].id;
-              templateurl[templateurl.length] = observables[j].templateurl;
-              dataurl[dataurl.length] = observables[j].dataurl;
-              templatetype[templatetype.length] = observables[j].templatetype;
+              observableid.push(observables[j].id);
+              dataurl.push(observables[j].dataurl);
             }
           }
         }
       }
     }
   
-  // Get the templates
-  templateurl.forEach(function(element, index, array){
-    switch (templatetype[index]) {
-      case "locationtemplate":
-        S().getlocationdescriptor(element, function(t) {
-          templates.push(S().getlocationdetails(t));
-        });
-        break
-      case "orientationtemplate":
-        S().getorientationdescriptor(element, function(t) {
-          templates.push(S().getorientationdetails(t));
-        });
-        break
-    }
+  // Establish feeds
+  dataurl.forEach(function(element,index,array){
+
+    socketcol[observableid[index]] = S().openwsfeed(element,socketOnMessage,socketOnError,socketOnClose,observableid[index]);
+  
   });
   
-}; // mapmapboxusingleaflet
+  function socketOnMessage(sockid, e) {
+
+    var reader = new FileReader();
+    reader.readAsText(e.data);
+    reader.onload = function () {
+      socketdatacol[sockid] = reader.result;    
+    }    
+  } // socketOnMessage()
+
+  function socketOnClose(sockid, e) {
+
+    socketcol[sockid] = null;
+    socketdatacol[sockid] = null;
+    delete socketcol[sockid];
+    delete socketdatacol[sockid];
+  
+  } // socketOnClose()
+  
+  function socketOnError(sockid, e) {
+
+    socketcol[sockid].close();
+  
+  } // socketOnError()
+
+  return this;
+  
+}; // getdata
