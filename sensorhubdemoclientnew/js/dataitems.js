@@ -16,14 +16,15 @@
     $.event.trigger(myevent);
   });  
 
-  //var timer = setInterval(function(){$.event.trigger(myevent);}, 2000);
+  var timer = setInterval(function(){$.event.trigger(myevent);}, 100);
   
   $( document ).on('myevent',  function (e) { 
-    console.log(socketparseddata);
+
     $.each($("#tree").jstree("get_checked",true),function(){
 
       // Get the node data
-      var mydata = this.data, action = null;
+      var mydata = this.data, action = null, style = null;
+
       // Get node action
       for (var i in mydata) {
 
@@ -43,10 +44,59 @@
           }        
         }
       }
+
+      // Get node style
+      for (var i in mydata) {
+
+        // Just in case some other code touched my collection object, check hasOwnProperty!
+        if (mydata.hasOwnProperty(i)) {
+          if (mydata[i]['key'] === "styles") {
+            var styles = mydata[i]['value'];
+            for (var j in styles) {
+              if (styles.hasOwnProperty(j)) {
+                if (1 === styles[j]['isdefault']) {
+                  style = styles[j];
+                  break;
+                }
+              }
+            }
+            break;
+          }        
+        }
+      }
       
     if (action) {
-      // Call S().parsedata
+
+      // Parse the data.
       S().parsedata(action, mydata, socketdata, templates, socketparseddata);
+      
+      switch (action.text) {
+        
+        case "map_mapbox_using_leaflet" :
+          
+          // Style and render
+          if (style) {
+            
+            var styleobj = {};
+            S().getstyle(style,styleobj);
+            
+            // Render
+            if (markers[style.id]){
+              map.removeLayer(markers[style.id]);
+              markers[style.id].update(markers[style.id]);
+              
+            }
+            markers[style.id] = L.marker([socketparseddata["0f307d6a-e251-4e98-b29e-49ad4bacc514"].lat, socketparseddata["0f307d6a-e251-4e98-b29e-49ad4bacc514"].lon], {icon: styleobj[style.id]}).addTo(map);
+
+          }
+          
+          break;
+
+        default:
+        
+          throw new Error("Unknown action");
+      
+      }
     }      
       
     });
@@ -94,19 +144,12 @@
 
       // Just in case some other code touched my collection object, check hasOwnProperty!
       if (mydata.hasOwnProperty(i)) {
-
         if (mydata[i]['key'] === "actions") {
-
           var actions = mydata[i]['value'];
-          
           for (var j in actions) {
-
             if (actions.hasOwnProperty(j)) {
-            
               if (1 === actions[j]['isdefault']) {
-              
                 action = actions[j];
-                
                 break;
               }
             }
@@ -117,35 +160,15 @@
     }
     
     if (action) {
-
-      switch (action.text) {
-        
-        case "map_mapbox_using_leaflet" :
-          
-          /**
-            *
-            * S().gettemplate will get the template(s) and place them in templates.
-            * S().getdata will open the sockets for the actions and place them in sockets.  
-            * S().getdata will also place the last raw incoming message into socketdata.
-            *
-            */
-          S().gettemplate(action, mydata, templates)
-          .getdata(action, mydata, sockets, socketdata);
-             
-          
-          // Now that socketdata contains the last message for the socket, what do we want to do with it?
-          // Say, GPS feed is coming in with time, lat, lon, alt, and socketdata contains the last such data record
-          // Say, messages have been requested for 12:00:00 - 13:00:00 and are coming in
-          // I just want to act on these incoming messages every 5 seconds.
-          //
-          
-          break;
-
-        default:
-        
-          throw new Error("Unknown action");
-      
-      }
+      /**
+        *
+        * S().gettemplate will get the template(s) and place them in templates.
+        * S().getdata will open the sockets for the actions and place them in sockets.  
+        * S().getdata will also place the last raw incoming message into socketdata.
+        *
+        */
+      S().gettemplate(action, mydata, templates)
+         .getdata(action, mydata, sockets, socketdata);
     
     }
     

@@ -24,6 +24,9 @@ var sockets = {};
 var socketdata = {};
 var templates = {};
 var socketparseddata = {};
+var styles = {};
+var markers = {};
+
 
 var weatherDetails = null,
     gpsDetails = null,
