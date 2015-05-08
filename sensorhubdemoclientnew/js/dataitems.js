@@ -16,10 +16,40 @@
     $.event.trigger(myevent);
   });  
 
+  //var timer = setInterval(function(){$.event.trigger(myevent);}, 2000);
   
   $( document ).on('myevent',  function (e) { 
-   var instance = $('#tree').jstree(true);
-    console.log(instance._model.data);   
+    console.log(socketparseddata);
+    $.each($("#tree").jstree("get_checked",true),function(){
+
+      // Get the node data
+      var mydata = this.data, action = null;
+      // Get node action
+      for (var i in mydata) {
+
+        // Just in case some other code touched my collection object, check hasOwnProperty!
+        if (mydata.hasOwnProperty(i)) {
+          if (mydata[i]['key'] === "actions") {
+            var actions = mydata[i]['value'];
+            for (var j in actions) {
+              if (actions.hasOwnProperty(j)) {
+                if (1 === actions[j]['isdefault']) {
+                  action = actions[j];
+                  break;
+                }
+              }
+            }
+            break;
+          }        
+        }
+      }
+      
+    if (action) {
+      // Call S().parsedata
+      S().parsedata(action, mydata, socketdata, templates, socketparseddata);
+    }      
+      
+    });
   });  
  
   function loadDataItems(dataItems) {
@@ -102,7 +132,6 @@
           S().gettemplate(action, mydata, templates)
           .getdata(action, mydata, sockets, socketdata);
              
-             //.parsedata(action, mydata, sockets, socketdata, socketparseddata);
           
           // Now that socketdata contains the last message for the socket, what do we want to do with it?
           // Say, GPS feed is coming in with time, lat, lon, alt, and socketdata contains the last such data record
