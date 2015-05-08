@@ -11,7 +11,17 @@
  */
 
  $(function() {
-    
+
+  $( "#btnTriggerMyCustomEvent").button().click(function(){
+    $.event.trigger(myevent);
+  });  
+
+  
+  $( document ).on('myevent',  function (e) { 
+   var instance = $('#tree').jstree(true);
+    console.log(instance._model.data);   
+  });  
+ 
   function loadDataItems(dataItems) {
 
     if ((undefined === dataItems) || (null === dataItems)) {
@@ -35,7 +45,7 @@
                                                         },
                                     'multiple' : false,
                                     'data' : jsTreeFormat }, 
-                          'plugins' : ['checkbox'],
+                          'plugins' : ['checkbox', 'ui'],
                           "checkbox": {
                                         keep_selected_style: false,
                                         three_state: false,
@@ -76,18 +86,40 @@
       }
     }
     
-    switch (action.text) {
-      
-      case "map_mapbox_using_leaflet" :
-        
-        S().getdata(action,mydata, sockets, socketdata);
-        break;
+    if (action) {
 
-      default:
+      switch (action.text) {
+        
+        case "map_mapbox_using_leaflet" :
+          
+          /**
+            *
+            * S().gettemplate will get the template(s) and place them in templates.
+            * S().getdata will open the sockets for the actions and place them in sockets.  
+            * S().getdata will also place the last raw incoming message into socketdata.
+            *
+            */
+          S().gettemplate(action, mydata, templates)
+          .getdata(action, mydata, sockets, socketdata);
+             
+             //.parsedata(action, mydata, sockets, socketdata, socketparseddata);
+          
+          // Now that socketdata contains the last message for the socket, what do we want to do with it?
+          // Say, GPS feed is coming in with time, lat, lon, alt, and socketdata contains the last such data record
+          // Say, messages have been requested for 12:00:00 - 13:00:00 and are coming in
+          // I just want to act on these incoming messages every 5 seconds.
+          //
+          
+          break;
+
+        default:
+        
+          throw new Error("Unknown action");
       
-        throw new Error("Unknown action");
+      }
     
     }
+    
   
     
   }) // check_node   
@@ -96,11 +128,11 @@
 
   }) // uncheck_node
   
-  
   $('#tree').on('hover_node.jstree',function(e,data){
-    if ($('#showDataItemDetails').prop('checked'))
+    if ($('#showDataItemDetails').prop('checked')){
+    console.log(templates);
       $('a[id=' + data.node.id + '_anchor]').webuiPopover({title:data.node.text,content:'Content'});
-    else
+    } else
       $('a[id=' + data.node.id + '_anchor]').webuiPopover('destroy');
   })    
 

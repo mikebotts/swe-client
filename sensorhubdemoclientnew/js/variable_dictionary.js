@@ -10,6 +10,10 @@
  * Developer are Copyright (C) 2014-2015 the Initial Developer. All Rights Reserved.
  */
 
+var myevent = $.Event('myevent');
+myevent.name = 'My Event';
+
+
 var DEBUG_MODE = true;
 
 var PTZ_ADJUSTMENT_ANGLE_TO_ZERO = -67.25;
@@ -18,6 +22,8 @@ var template = null;
 
 var sockets = {};
 var socketdata = {};
+var templates = {};
+var socketparseddata = {};
 
 var weatherDetails = null,
     gpsDetails = null,
