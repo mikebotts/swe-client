@@ -19,6 +19,10 @@ var PrimitiveGraphic = function () {
   this.x = null;
   this.y = null;
   this.z = null;
+  this.r = null;
+  this.g = null;
+  this.b = null;
+  this.t = null;
   this.basename = "PrmitiveGraphic";
   
   return this;

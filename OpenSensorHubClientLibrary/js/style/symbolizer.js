@@ -13,38 +13,43 @@
 /**
  * @public
  */
- 
-var ShapeType = {
-  
-  UNKNOWN : 0,
-  SQUARE : 1,
-  CIRCLE : 2,
-  TRIANGLE : 3,
-  STAR : 4,
-  ICON : 5,
-  SYMBOL : 6
-}
 
-var PointGraphic = function () {
+var Symbolizer = function() {
 
-  this.shapetype = ShapeType.UNKNOWN;
-  this.orientation = null;
-  this.size = null;
-  this.icon = null;
-  this.iconwidth = null;
-  this.iconheight = null;
-  this.iconoffsetx = 0;
-  this.iconoffsety = 0;
-  this.weight = null;
-  this.radius = null;
-  this.fillcolor = null;
-  this.color = null;
-  this.opacity = null;
-  this.fillopacity = null;
-  this.symbol = null;
+  this.geometry = null;
+  this.name = null;
+  this.enabled = false;
   
+  var __construct = function(me) {
+     me.geometry = new Geometry();
+  }(this)
+
+  this.getGeometry = function() {
+    return this.geometry;
+  }
+
+  this.setGeometry = function (g) {
+    this.geometry =  g;
+  }
+  
+  this.setenabled = function(e) {
+    this.enabled = e;
+  }
+  
+  this.getenabled = function() {
+    return this.enabled;
+  }
+   
+  this.setname = function(n) {
+    this.name = n;
+  }
+
+  this.getname = function() {
+    return this.name;
+  }
+
   return this;
-
+  
 };
-
-PointGraphic.prototype = Object.create(PrimitiveGraphic.prototype);
+ 
+ 
