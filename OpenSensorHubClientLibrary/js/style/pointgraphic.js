@@ -11,6 +11,7 @@
  */
 
 /**
+ * @date May 28, 2015
  * @public
  */
  
@@ -27,6 +28,7 @@ var ShapeType = {
 
 var PointGraphic = function () {
 
+  // Public
   this.shapetype = ShapeType.UNKNOWN;
   this.orientation = null;
   this.size = null;
@@ -45,6 +47,7 @@ var PointGraphic = function () {
   
   return this;
 
-};
+} // PointGraphic
 
+// Extends PrimitiveGraphic
 PointGraphic.prototype = Object.create(PrimitiveGraphic.prototype);

@@ -11,41 +11,45 @@
  */
 
 /**
+ * @date May 28, 2015
  * @public
  */
 
 var Symbolizer = function() {
 
-  this.geometry = null;
-  this.name = null;
-  this.enabled = false;
+  // Private
+  var _geometry = null;
+  var _name = null;
+  var _enabled = false;
   
+  // Constructor
   var __construct = function(me) {
-     me.geometry = new Geometry();
-  }(this)
+     geometry = new Geometry();
+  }()
 
+  
   this.getGeometry = function() {
-    return this.geometry;
+    return _geometry;
   }
 
   this.setGeometry = function (g) {
-    this.geometry =  g;
+    _geometry =  g;
   }
   
   this.setenabled = function(e) {
-    this.enabled = e;
+    _enabled = e;
   }
   
   this.getenabled = function() {
-    return this.enabled;
+    return _enabled;
   }
    
   this.setname = function(n) {
-    this.name = n;
+    _name = n;
   }
 
   this.getname = function() {
-    return this.name;
+    return _name;
   }
 
   return this;

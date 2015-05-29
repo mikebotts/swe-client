@@ -11,11 +11,16 @@
  */
 
 /**
+ * @date May 28, 2015
  * @public
  */
  
 var PrimitiveGraphic = function () {
 
+  // Private
+  var _basename = "PrmitiveGraphic";
+
+  // Public
   this.x = null;
   this.y = null;
   this.z = null;
@@ -23,8 +28,12 @@ var PrimitiveGraphic = function () {
   this.g = null;
   this.b = null;
   this.t = null;
-  this.basename = "PrmitiveGraphic";
+  
+  // Getters & Setters
+  this.basename = function () {
+    return _basename;
+  }
   
   return this;
   
-};
+} // PrimitiveGraphic

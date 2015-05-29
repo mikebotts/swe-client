@@ -14,19 +14,33 @@
  * @public
  */
  
-var PointStyler = function (sym) {
+var PointStyler = function () {
 
-  this.symbolizer = null;
-  this.point = null;
+  // Private
+  var _symbolizer = null;
+  var _point = null;
   
-  __construct = function (me) {
-    me.symbolizer = sym;
-    me.point = new PointGraphic();
-  } (this);
+  // Constructor
+  __construct = function () {
+    _point = new PointGraphic();
+  } ();
+
+  this.setSymbolizer = function(symbolizer) {
+    _symbolizer = symbolizer;
+  }  
   
-  point.x = sym.x;
-  point.y = sym.y;
-  point.z = sym.z;
+  this.getSymbolizer = function () {
+    return _symbolizer;
+  }
   
-  return point;
-};
+  this.getPoint = function() {
+    
+    // Merge data with symbology and return renderer independent point graphic
+    
+    return _point;
+  }
+  
+  return this;
+
+} // PointStyler
+

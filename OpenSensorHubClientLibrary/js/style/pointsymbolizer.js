@@ -11,17 +11,28 @@
  */
 
 /**
+ * @date May 28, 2015
  * @public
  */
  
 var PointSymbolizer = function () {
   
-  this.opacity = null;
-  this.size = null;
-  this.rotation = null;
-  this.spacing = null;
-  this.images = [];
+  // Privates
+  var _graphic = null;
+
+  // Getters & Setters
+  
+  this.getGraphic = function() {
+    return _graphic;
+  }
+  
+  this.setGraphic = function(graphic) {
+    _graphic = graphic;
+  }
+
+  return this;
   
 };
 
+// Extends Symbolizer
 PointSymbolizer.prototype = Object.create(Symbolizer.prototype);

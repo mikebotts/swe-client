@@ -11,14 +11,77 @@
  */
 
 /**
+ * @date May 28, 2015
  * @public
  */
  
 var Geometry = function () {
+
+  // Privates
+  var _x = null;
+  var _y = null;
+  var _z = null;
+  var _t = null;
+  var _propertyName = null;
+  var _breaks = null;
+  var _object = null;
+
+  this.getPropertyName = function() {
+    return _propertyName;
+  }  
+
+  this.setPropertyName = function(pn) {
+    _propertyName = pn;
+  }
+
+  this.getT = function() {
+    return _t;
+  }
   
-  this.x = null;
-  this.y = null;
-  this.z = null;
-  this.t = null;
+  this.setT = function(t) {
+    _t = t;
+  }
+
+  this.getX = function() {
+    return _x;
+  }
   
-}
+  this.setX = function(x) {
+    _x = x;
+  }
+
+  this.getY = function() {
+    return _y;
+  }
+  
+  this.setY = function(y) {
+    _y = y;
+  }
+
+  this.getZ = function() {
+    return _z;
+  }
+  
+  this.setZ = function(z) {
+    _z = z;
+  }
+  
+  this.getBreaks = function () {
+    return _breaks;
+  }
+  
+  this.setBreaks = function(b) {
+    _breaks = b;
+  }
+
+  this.getObject = function() {
+    return _object;
+  }  
+  
+  this.setObject = function(o) {
+    _object = o;
+  }
+    
+  return this;
+
+} // Geometry
