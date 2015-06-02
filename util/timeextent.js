@@ -206,32 +206,30 @@ var TimeExtent = function () {
    * at the end
    */
   this.getTimes = function () {
-      double time = getAdjustedLeadTime();
-      double lagTime = getAdjustedLagTime();
+    var time = getAdjustedLeadTime();
+    var lagTime = getAdjustedLagTime();
 
-      // if step is 0 returns two extreme points
-      if (timeStep == 0.0)
-      {
-          return new double[] {time, lagTime};
-      }
-          
-      double timeRange = Math.abs(time - lagTime);
-      double remainder = timeRange % timeStep;
-      int steps = (int) (timeRange / timeStep) + 1;       
+    // if step is 0 returns two extreme points
+    if (_timeStep == 0.0) {
+      return [time, lagTime];
+    }
+        
+    var timeRange = Math.abs(time - lagTime);
+    var remainder = timeRange % _timeStep;
+    var steps = (timeRange / _timeStep) + 1;       
 
-      double[] times;
-      if (remainder != 0.0)
-      {
-          times = new double[steps + 1];
-          times[steps] = lagTime;
-      }
-      else
-          times = new double[steps];
+    var times = [];
+    if (remainder != 0.0) {
+      times = new Array(steps + 1);
+      times[steps] = lagTime;
+    }
+    else
+      times = new Array(steps);
 
-      for (int i = 0; i < steps; i++)
-          times[i] = time - i * timeStep;
-      
-      return times;
+    for (var i = 0; i < steps; i++)
+      times[i] = time - i * _timeStep;
+    
+    return times;  
   }
 
 
@@ -246,7 +244,6 @@ var TimeExtent = function () {
   }
 
 
-  @Override
   public boolean equals(Object obj)
   {
       if (obj == null)
@@ -298,18 +295,17 @@ var TimeExtent = function () {
    * @param time
    * @return
    */
-  public boolean contains(double time)
-  {
-      double thisLag = this.getAdjustedLagTime();
-      double thisLead = this.getAdjustedLeadTime();
-      
-      if (time < thisLag)
-              return false;
-      
-      if (time > thisLead)
-              return false;
-      
-      return true;
+  this.containsTime = function(time) {
+    var thisLag = this.getAdjustedLagTime();
+    var thisLead = this.getAdjustedLeadTime();
+    
+    if (time < thisLag)
+      return false;
+    
+    if (time > thisLead)
+      return false;
+    
+    return true;
   }
   
   
@@ -318,26 +314,25 @@ var TimeExtent = function () {
    * @param timeExtent
    * @return
    */
-  public boolean contains(TimeExtent timeExtent)
-  {
-      double thisLag = this.getAdjustedLagTime();
-      double thisLead = this.getAdjustedLeadTime();
-      double otherLag = timeExtent.getAdjustedLagTime();
-      double otherLead = timeExtent.getAdjustedLeadTime();
-      
-      if (otherLag < thisLag)
-          return false;
-      
-      if  (otherLag > thisLead)
-          return false;
-      
-      if (otherLead < thisLag)
-          return false;        
-      
-      if (otherLead > thisLead)
-          return false;
-      
-      return true;
+  this.containsTimeExtent = function (timeExtent) {
+    var thisLag = this.getAdjustedLagTime();
+    var thisLead = this.getAdjustedLeadTime();
+    var otherLag = timeExtent.getAdjustedLagTime();
+    var otherLead = timeExtent.getAdjustedLeadTime();
+    
+    if (otherLag < thisLag)
+      return false;
+    
+    if  (otherLag > thisLead)
+      return false;
+    
+    if (otherLead < thisLag)
+      return false;        
+    
+    if (otherLead > thisLead)
+      return false;
+    
+    return true;
   }
   
   
@@ -542,7 +537,6 @@ var TimeExtent = function () {
   this.setTimeZone = function(timeZone) {
       _timeZone = timeZone;
   }
-
   
 } // TimeExtent
 
