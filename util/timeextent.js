@@ -8,6 +8,13 @@
  *
  * The Initial Developer is Terravolv, Inc. Portions created by the Initial
  * Developer are Copyright (C) 2014-2015 the Initial Developer. All Rights Reserved.
+ *
+ * The Original Code is the "Space Time Toolkit".
+ *
+ * The Initial Developer of the Original Code is the VAST team at the
+ * University of Alabama in Huntsville (UAH). <http://vast.uah.edu>
+ * Portions created by the Initial Developer are Copyright (C) 2007
+ * the Initial Developer. All Rights Reserved.
  */
 
 /**
@@ -21,7 +28,7 @@ var TimeExtent = function () {
   var _NOW = Double.MIN_VALUE;
   var _UNKNOWN = Double.MAX_VALUE;
   
-  var _baseTime = Double.NaN;
+  var _baseTime = Number.NaN;
   var _timeBias = 0;
   var _timeStep = 0;
   var _leadTimeDelta = 0;
@@ -99,7 +106,7 @@ var TimeExtent = function () {
    */
   this.getBaseTime = function () {
     if (_baseAtNow)
-      return getNow() + _timeBias;
+      return this.getNow() + _timeBias;
     else
       return _baseTime;
   }
@@ -114,7 +121,7 @@ var TimeExtent = function () {
    *       Consider removing and replacing with calls to getBaseTime();
    */
   this.getAdjustedTime = function () {
-    return (getBaseTime() + _timeBias);
+    return (this.getBaseTime() + _timeBias);
   }
 
 
@@ -138,23 +145,23 @@ var TimeExtent = function () {
 
 
   this.getTimeRange = function () {
-    return (getAdjustedLeadTime() - getAdjustedLagTime());
+    return (this.getAdjustedLeadTime() - this.getAdjustedLagTime());
   }
 
 
   this.getAdjustedLeadTime = function () {
     if (endNow)
-      return getNow() + _timeBias;
+      return this.getNow() + _timeBias;
     else
-      return (getBaseTime() + _timeBias + _leadTimeDelta);
+      return (this.getBaseTime() + _timeBias + _leadTimeDelta);
   }
 
 
   this.getAdjustedLagTime = function() {
-    if (beginNow)
-      return getNow() + _timeBias;
+    if (_beginNow)
+      return this.getNow() + _timeBias;
     else
-      return (getBaseTime() + _timeBias - _lagTimeDelta);
+      return (this.getBaseTime() + _timeBias - _lagTimeDelta);
   }
   
   
@@ -196,7 +203,7 @@ var TimeExtent = function () {
     if (_timeStep == 0.0)
       return 1;
     else
-      return ((getAdjustedLeadTime() - getAdjustedLagTime()) / _timeStep);
+      return ((this.getAdjustedLeadTime() - this.getAdjustedLagTime()) / _timeStep);
   }
   
   
@@ -206,8 +213,8 @@ var TimeExtent = function () {
    * at the end
    */
   this.getTimes = function () {
-    var time = getAdjustedLeadTime();
-    var lagTime = getAdjustedLagTime();
+    var time = this.getAdjustedLeadTime();
+    var lagTime = this.getAdjustedLagTime();
 
     // if step is 0 returns two extreme points
     if (_timeStep == 0.0) {
@@ -235,58 +242,50 @@ var TimeExtent = function () {
 
   this.toString = function() {
     var tString = new String("TimeExtent:");
-    tString += "\n  baseTime = " + (baseAtNow ? "now" : baseTime);
-    tString += "\n  timeBias = " + timeBias;
-    tString += "\n  timeStep = " + timeStep;
-    tString += "\n  leadTimeDelta = " + leadTimeDelta;
-    tString += "\n  lagTimeDelta = " + lagTimeDelta;
+    tString += "\n  baseTime = " + (_baseAtNow ? "now" : _baseTime);
+    tString += "\n  timeBias = " + _timeBias;
+    tString += "\n  timeStep = " + _timeStep;
+    tString += "\n  leadTimeDelta = " + _leadTimeDelta;
+    tString += "\n  lagTimeDelta = " + _lagTimeDelta;
     return tString;
   }
 
-
-  public boolean equals(Object obj)
-  {
-      if (obj == null)
-              return false;
-      
-      if (!(obj instanceof TimeExtent))
-              return false;
-      
-      return equals((TimeExtent)obj);
-  }
-  
-  
   /**
-   * Checks if time extents are equal (no null check)
+   * Checks if time extents are equal
    * (i.e. stop=stop AND start=start)
    * @param timeExtent
    * @return
    */
-  public boolean equals(TimeExtent timeExtent)
-  {
-      if (!baseAtNow)
-      {
-              if (( this.getAdjustedLagTime() != timeExtent.getAdjustedLagTime() ) &&
-                 !( this.isBeginNow() && timeExtent.isBeginNow() ))
-                  return false;
-              
-              if (( this.getAdjustedLeadTime() != timeExtent.getAdjustedLeadTime() ) &&
-                 !( this.isEndNow() && timeExtent.isEndNow() ))
-                  return false;
-      }
-      else
-      {
-              if (!timeExtent.isBaseAtNow())
-                      return false;
-              
-              if (this.getLagTimeDelta() != timeExtent.getLagTimeDelta())
-                      return false;
-              
-              if (this.getLeadTimeDelta() != timeExtent.getLeadTimeDelta())
-                      return false;                   
-      }
+  this.equals = function(timeExtent) {
+    
+    if (obj === null)
+      return false;
+    
+    if (!(obj instanceof TimeExtent))
+      return false;
+
+    if (!_baseAtNow) {
+      if (( this.getAdjustedLagTime() != timeExtent.getAdjustedLagTime() ) &&
+         !( this.isBeginNow() && timeExtent.isBeginNow() ))
+        return false;
       
-      return true;
+      if (( this.getAdjustedLeadTime() != timeExtent.getAdjustedLeadTime() ) &&
+         !( this.isEndNow() && timeExtent.isEndNow() ))
+        return false;
+    }
+    else
+    {
+      if (!timeExtent.isBaseAtNow())
+        return false;
+      
+      if (this.getLagTimeDelta() != timeExtent.getLagTimeDelta())
+        return false;
+      
+      if (this.getLeadTimeDelta() != timeExtent.getLeadTimeDelta())
+        return false;                   
+    }
+    
+    return true;
   }
   
   
@@ -341,23 +340,22 @@ var TimeExtent = function () {
    * @param timeExtent
    * @return
    */
-  public boolean intersects(TimeExtent timeExtent)
-  {
-      double thisLag = this.getAdjustedLagTime();
-      double thisLead = this.getAdjustedLeadTime();
-      double otherLag = timeExtent.getAdjustedLagTime();
-      double otherLead = timeExtent.getAdjustedLeadTime();
-      
-      if (otherLag > thisLag && otherLag < thisLead)
-          return true;
-      
-      if (otherLead > thisLag && otherLead < thisLead)
-          return true;
-      
-      if (otherLag <= thisLag && otherLead >= thisLead)
-          return true;
-      
-      return false;
+  this.intersects = function(timeExtent) {
+    var thisLag = this.getAdjustedLagTime();
+    var thisLead = this.getAdjustedLeadTime();
+    var otherLag = timeExtent.getAdjustedLagTime();
+    var otherLead = timeExtent.getAdjustedLeadTime();
+    
+    if (otherLag > thisLag && otherLag < thisLead)
+      return true;
+    
+    if (otherLead > thisLag && otherLead < thisLead)
+      return true;
+    
+    if (otherLag <= thisLag && otherLead >= thisLead)
+      return true;
+    
+    return false;
   }
   
   
@@ -366,7 +364,7 @@ var TimeExtent = function () {
    * @return
    */
   this.isNull = function() {
-    return (Double.isNaN(_baseTime) && !_baseAtNow);
+    return (isNaN(_baseTime) && !_baseAtNow);
   }
   
   
@@ -383,7 +381,7 @@ var TimeExtent = function () {
    * Resets all variables so that extent is null
    */
   this.nullify = function() {
-    _baseTime = Double.NaN;
+    _baseTime = Number.NaN;
     _timeBias = 0;
     _timeStep = 0;
     _leadTimeDelta = 0;
@@ -449,7 +447,7 @@ var TimeExtent = function () {
   {
       beginNow = false;
       
-      if (Double.isNaN(baseTime) || baseAtNow)
+      if (isNaN(baseTime) || baseAtNow)
       {
           baseTime = startTime;
           lagTimeDelta = 0.0;
@@ -489,7 +487,7 @@ var TimeExtent = function () {
   {
       endNow = false;
       
-      if (Double.isNaN(baseTime) || baseAtNow)
+      if (isNaN(baseTime) || baseAtNow)
       {
           baseTime = stopTime;
           leadTimeDelta = 0.0;
