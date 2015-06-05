@@ -396,20 +396,18 @@ var TimeExtent = function () {
    * Resizes this extent so that it contains the given time value
    * @param t time value (MUST be in same reference frame as the extent)
    */
-  public void resizeToContain(double t)
-  {
-      if (isNull())
-      {
-          baseTime = t;
-          timeBias = 0;
-          return;
-      }    
-      
-      double adjBaseTime = getAdjustedTime();
-      if (t > getAdjustedLeadTime())
-          leadTimeDelta = t - adjBaseTime;
-      else if (t < getAdjustedLagTime())
-          lagTimeDelta = adjBaseTime - t; 
+  this.resizeToContain = function(t) {
+    if (isNull()) {
+      _baseTime = t;
+      _timeBias = 0;
+      return;
+    }    
+    
+    var adjBaseTime = this.getAdjustedTime();
+    if (t > this.getAdjustedLeadTime())
+      _leadTimeDelta = t - _adjBaseTime;
+    else if (t < this.getAdjustedLagTime())
+      _lagTimeDelta = _adjBaseTime - t; 
   }
   
   
@@ -418,14 +416,14 @@ var TimeExtent = function () {
    * only if previous call was made more than 1 second ago.
    * @return
    */
-  private double now = 0;
-  private double getNow()
-  {
-      double exactNow = System.currentTimeMillis()/1000;
-      if (exactNow - now > NOW_ACCURACY)
-          now = exactNow;
-      
-      return now;
+  var now = 0;
+
+  this.getNow() {
+    var exactNow = (new Date().getTime())/1000;
+    if (exactNow - now > _NOW_ACCURACY)
+      now = exactNow;
+    
+    return now;
   }
   
   
@@ -433,9 +431,8 @@ var TimeExtent = function () {
    * Helper method to get start time
    * @return
    */
-  public double getStartTime()
-  {
-      return getAdjustedLagTime();
+  var this.getStartTime = function() {
+    return this.getAdjustedLagTime();
   }
   
   
@@ -443,29 +440,21 @@ var TimeExtent = function () {
    * Helper method to set start time
    * @param startTime
    */
-  public void setStartTime(double startTime)
-  {
-      beginNow = false;
-      
-      if (isNaN(baseTime) || baseAtNow)
-      {
-          baseTime = startTime;
-          lagTimeDelta = 0.0;
-          baseAtNow = false;
-      }
-      
-      else if (startTime > baseTime)
-      {
-          double stopTime = baseTime + leadTimeDelta;
-          baseTime = startTime;
-          leadTimeDelta = Math.max(0.0, stopTime - baseTime);
-          lagTimeDelta = 0.0;
-      }
-      
-      else
-      {
-          lagTimeDelta = baseTime - startTime;
-      }
+  this.setStartTime(startTime) {
+    _beginNow = false;
+    
+    if (isNaN(_baseTime) || _baseAtNow) {
+      _baseTime = startTime;
+      _lagTimeDelta = 0.0;
+      _baseAtNow = false;
+    } else if (startTime > _baseTime) {
+      var stopTime = _baseTime + _leadTimeDelta;
+      _baseTime = startTime;
+      _leadTimeDelta = Math.max(0.0, stopTime - _baseTime);
+      _lagTimeDelta = 0.0;
+    } else {
+      _lagTimeDelta = _baseTime - startTime;
+    }
   }
 
 
@@ -473,58 +462,46 @@ var TimeExtent = function () {
    * Helper method to get stop time
    * @return
    */
-  public double getStopTime()
-  {
-      return getAdjustedLeadTime();
+  var this.getStopTime = function() {
+    return this.getAdjustedLeadTime();
   }
   
   
   /**
-   * Helper method to set stop time
+   * Helper method to set stop timeget
    * @param stopTime
    */
-  public void setStopTime(double stopTime)
-  {
-      endNow = false;
-      
-      if (isNaN(baseTime) || baseAtNow)
-      {
-          baseTime = stopTime;
-          leadTimeDelta = 0.0;
-          baseAtNow = false;
-      }
-      
-      else if (stopTime < baseTime)
-      {
-          double startTime = baseTime - lagTimeDelta;
-          baseTime = stopTime;
-          lagTimeDelta = Math.max(0.0, baseTime - startTime);
-          leadTimeDelta = 0.0;
-      }
-      
-      else
-      {
-          leadTimeDelta = stopTime - baseTime;
-      }
+  this.setStopTime = function(stopTime) {
+    _endNow = false;
+    
+    if (isNaN(baseTime) || _baseAtNow) {
+      _baseTime = stopTime;
+      _leadTimeDelta = 0.0;
+      _baseAtNow = false;
+    } else if (stopTime < _baseTime) {
+      var startTime = _baseTime - _lagTimeDelta;
+      _baseTime = stopTime;
+      _lagTimeDelta = Math.max(0.0, _baseTime - startTime);
+      _leadTimeDelta = 0.0;
+    } else {
+      _leadTimeDelta = stopTime - _baseTime;
+    }
   }
 
-  
-  public String getIsoString(int zone)
-  {
-      if (baseAtNow)
-      {
-          String start = beginNow ? "now" : "unknown";
-          String stop = endNow ? "now" : "unknown";
-          String duration = DateTimeFormat.formatIsoPeriod(getTimeRange());
-          return start + "/" + stop + "/" + duration;
-      }
-      else
-      {
-          String start = beginNow ? "now" : DateTimeFormat.formatIso(getStartTime(), zone);
-          String stop = endNow ? "now" : DateTimeFormat.formatIso(getStopTime(), zone);
-          return start + "/" + stop;
-      }
+  /*
+  this.getIsoString = function(zone) {
+    if (_baseAtNow) {
+      var start = _beginNow ? "now" : "unknown";
+      var stop = _endNow ? "now" : "unknown";
+      var duration = DateTimeFormat.formatIsoPeriod(this.getTimeRange());
+      return start + "/" + stop + "/" + duration;
+    } else {
+      var start = _beginNow ? "now" : DateTimeFormat.formatIso(this.getStartTime(), zone);
+      var stop = _endNow ? "now" : DateTimeFormat.formatIso(this.getStopTime(), zone);
+      return start + "/" + stop;
+    }
   }
+  */
 
 
   this.getTimeZone = function() {
