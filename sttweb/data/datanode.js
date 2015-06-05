@@ -1,160 +1,104 @@
-package org.vast.stt.data;
-
-import java.util.ArrayList;
-import java.util.Hashtable;
-import java.util.List;
-
-import org.vast.cdm.common.DataComponent;
-import org.vast.data.DataArray;
-import org.vast.data.DataGroup;
-import org.vast.data.DataValue;
-
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. 
+ *
+ * Software distributed under the License is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
+ * for the specific language governing rights and limitations under the License.
+ *
+ * The Initial Developer is Terravolv, Inc. Portions created by the Initial
+ * Developer are Copyright (C) 2014-2015 the Initial Developer. All Rights Reserved.
+ *
+ * The Original Code is the "Space Time Toolkit".
+ *
+ * The Initial Developer of the Original Code is the VAST team at the
+ * University of Alabama in Huntsville (UAH). <http://vast.uah.edu>
+ * Portions created by the Initial Developer are Copyright (C) 2007
+ * the Initial Developer. All Rights Reserved.
+ */
 
 /**
- * <p><b>Title:</b><br/>
- * Data Node
- * </p>
- *
- * <p><b>Description:</b><br/>
- * TODO DataNode type description
- * </p>
- *
- * <p>Copyright (c) 2007</p>
- * @author Alexandre Robin
- * @date Apr 1, 2006
- * @version 1.0
+ * @date June 4, 2015
+ * @public
  */
-public class DataNode
-{
-    protected List<String> possibleScalarMappings;
-    protected List<String> possibleBlockMappings;
-    protected Hashtable<String, BlockList> listMap;
-    protected ArrayList<BlockList> listArray;
-    protected boolean nodeStructureReady;
+
+var DataNode = function () {
+  
+  // Private
+  var _possibleScalarMappings = [];
+  var _possibleBlockMappings = [];
+  var _listMap = {};
+  var _nodeStructureReady = false;
         
-    
-    public DataNode()
-    {
-        possibleScalarMappings = new ArrayList<String>();
-        possibleBlockMappings = new ArrayList<String>();
-        listMap = new Hashtable<String, BlockList>(1);
-        listArray = new ArrayList<BlockList>(1);
+  this.createList = function(component) {
+    var newList = new BlockList();
+    newList.setBlockStructure(component);
+    _listMap[component.getName()] = newList;
+    rebuildMappings(component);
+    component.clearData();
+    return newList;
+  }
+  
+  this.getList = function(name) {
+    return _listMap[name];
+  }
+  
+  this.removeList = function(name) {
+    delete _listMap[name];
+  }
+  
+  public void clearList(name) {
+    _listMap[name] = null;
+  }
+  
+  this.hasData = function() {
+    for (var member in _listMap) {
+      if (null !== member) {
+        return true;
+      }  
     }
-    
-    
-    public ArrayList<BlockList> getListArray()
-    {
-        return listArray;
+    return false;
+  }
+  
+  this.rebuildMappings = function(component) {
+    possibleScalarMappings.length = 0;
+    possibleBlockMappings.length = 0;
+    findPossibleMappings(component, component.getName());
+  }
+  
+  this.findPossibleMappings = function(component, componentPath) {
+    // for each array, build an array mapper
+    if (component instanceof DataArray) {
+      possibleBlockMappings.push(componentPath);
+      var childComponent = component.getArrayComponent();
+      var childPath = componentPath + '/' + childComponent.getName();
+      findPossibleMappings(childComponent, childPath);
+    } else if (component instanceof DataGroup) {
+      possibleBlockMappings.push(componentPath);
+      for (int i = 0; i < component.getComponentCount(); i++) {
+        var childComponent = component.getComponent(i);
+        var childPath = componentPath + '/' + childComponent.getName();
+        findPossibleMappings(childComponent, childPath);
+      }
+    } else if (component instanceof DataValue) {
+      possibleScalarMappings.push(componentPath);
     }
-    
-    
-    public BlockList createList(DataComponent component)
-    {
-        BlockList newList = new BlockList();
-        newList.setBlockStructure(component);
-        listMap.put(component.getName(), newList);
-        listArray.add(newList);
-        rebuildMappings(component);
-        component.clearData();
-        return newList;
-    }
-    
-    
-    public BlockList getList(String name)
-    {
-        return listMap.get(name);
-    }
-    
-    
-    public void removeList(String name)
-    {
-        BlockList list = listMap.remove(name);
-        listArray.remove(list);
-    }
-    
-    
-    public void clearList(String name)
-    {
-        listMap.get(name).clear();
-    }
-    
-    
-    public void clearAll()
-    {
-        for (int i=0; i<listArray.size(); i++)
-            listArray.get(i).clear();
-    }
-    
-    
-    public boolean hasData()
-    {
-    	for (int i=0; i<listArray.size(); i++)
-    		if (listArray.get(i).getSize() > 0)
-    			return true;
-    			
-    	return false;
-    }
-    
-    
-    public void rebuildMappings(DataComponent component)
-    {
-        possibleScalarMappings.clear();
-        possibleBlockMappings.clear();
-        findPossibleMappings(component, component.getName());
-    }
-    
-    
-    private void findPossibleMappings(DataComponent component, String componentPath)
-    {
-        // for each array, build an array mapper
-        if (component instanceof DataArray)
-        {
-            possibleBlockMappings.add(componentPath);
-            DataComponent childComponent = ((DataArray)component).getArrayComponent();
-            String childPath = componentPath + '/' + childComponent.getName();
-            findPossibleMappings(childComponent, childPath);
-        }
-        
-        // just descend into DataGroups
-        else if (component instanceof DataGroup)
-        {
-            possibleBlockMappings.add(componentPath);
-            for (int i = 0; i < component.getComponentCount(); i++)
-            {
-                DataComponent childComponent = component.getComponent(i);
-                String childPath = componentPath + '/' + childComponent.getName();
-                findPossibleMappings(childComponent, childPath);
-            }
-        }
-        
-        // handle DataValues
-        else if (component instanceof DataValue)
-        {
-            possibleScalarMappings.add(componentPath);
-        }
-    }
+  }
 
+  this.getPossibleBlockMappings = function() {
+    return _possibleBlockMappings;
+  }
 
-    public List<String> getPossibleBlockMappings()
-    {
-        return possibleBlockMappings;
-    }
+  this.getPossibleScalarMappings = function() {
+    return _possibleScalarMappings;
+  }
 
+  public boolean isNodeStructureReady() {
+    return _nodeStructureReady;
+  }
 
-    public List<String> getPossibleScalarMappings()
-    {
-        return possibleScalarMappings;
-    }
+  this.setNodeStructureReady = function(nodeStructureReady) {
+    _nodeStructureReady = nodeStructureReady;
+  }
 
-
-    public boolean isNodeStructureReady()
-    {
-        return nodeStructureReady;
-    }
-
-
-    public void setNodeStructureReady(boolean nodeStructureReady)
-    {
-        this.nodeStructureReady = nodeStructureReady;
-    }
 }
